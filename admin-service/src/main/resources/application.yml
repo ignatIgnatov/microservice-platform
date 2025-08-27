@@ -1,0 +1,13 @@
+server:
+  port: 8084
+
+spring:
+  application:
+    name: admin-service
+  config:
+    activate:
+      on-profile: docker
+
+keycloak:
+  auth-server-url: ${KEYCLOAK_URL}
+  realm: ${KEYCLOAK_REALM}

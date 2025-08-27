@@ -1,0 +1,44 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: microservice-ingress
+  namespace: microservice-platform
+  annotations:
+    kubernetes.io/ingress.class: alb
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
+    alb.ingress.kubernetes.io/ssl-redirect: '443'
+spec:
+  rules:
+    - host: api.yourdomain.com
+      http:
+        paths:
+          - path: /auth
+            pathType: Prefix
+            backend:
+              service:
+                name: auth-service-service
+                port:
+                  number: 8082
+          - path: /ads
+            pathType: Prefix
+            backend:
+              service:
+                name: ad-service-service
+                port:
+                  number: 8083
+          - path: /admin
+            pathType: Prefix
+            backend:
+              service:
+                name: admin-service-service
+                port:
+                  number: 8084
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: api-gateway-service
+                port:
+                  number: 8081

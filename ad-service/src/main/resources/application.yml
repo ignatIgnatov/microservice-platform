@@ -1,0 +1,30 @@
+server:
+  port: 8083
+
+spring:
+  application:
+    name: ad-service
+  datasource:
+    url: jdbc:postgresql://postgres:5432/ad_service_db
+    username: postgres
+    password: password
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+---
+spring:
+  config:
+    activate:
+      on-profile: docker
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${KEYCLOAK_ISSUER_URI}
+
+keycloak:
+  auth-server-url: ${KEYCLOAK_URL}
+  realm: ${KEYCLOAK_REALM}
