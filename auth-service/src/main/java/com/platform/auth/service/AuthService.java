@@ -5,21 +5,27 @@ import com.platform.auth.dto.RegisterRequest;
 import com.platform.auth.dto.TokenResponse;
 import jakarta.ws.rs.core.Response;
 import org.keycloak.admin.client.Keycloak;
-import org.keycloak.admin.client.KeycloakBuilder;
 import org.keycloak.admin.client.resource.UsersResource;
 import org.keycloak.representations.idm.CredentialRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.*;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 @Service
 public class AuthService {
@@ -39,14 +45,15 @@ public class AuthService {
     private String clientSecret;
 
     private final RestTemplate restTemplate;
+    private final Keycloak keycloak;
 
-    public AuthService(RestTemplate restTemplate) {
+    public AuthService(RestTemplate restTemplate, Keycloak keycloak) {
         this.restTemplate = restTemplate;
+        this.keycloak = keycloak;
     }
 
     public void registerUser(RegisterRequest request) {
         try {
-            Keycloak keycloak = getKeycloakAdminClient();
             // First check if user already exists
             UsersResource usersResource = keycloak.realm(realm).users();
             List<UserRepresentation> existingUsers = usersResource.search(request.getEmail(), true);
@@ -95,9 +102,6 @@ public class AuthService {
     public TokenResponse authenticateUser(LoginRequest request) {
         try {
             String tokenUrl = keycloakServerUrl + "/realms/" + realm + "/protocol/openid-connect/token";
-            log.debug("Attempting login for user: {}", request.getEmail());
-            log.debug("Token URL: {}", tokenUrl);
-            log.debug("Client ID: {}, Client Secret: {}", clientId, clientSecret);
 
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
@@ -181,15 +185,5 @@ public class AuthService {
     public String getFacebookLoginUrl() {
         return keycloakServerUrl + "/realms/" + realm + "/broker/facebook/login?client_id=" + clientId +
                 "&response_type=code&redirect_uri=http://localhost:3000/auth/callback";
-    }
-
-    private Keycloak getKeycloakAdminClient() {
-        return KeycloakBuilder.builder()
-                .serverUrl(keycloakServerUrl)
-                .realm("master")
-                .clientId("admin-cli")
-                .username("admin")
-                .password("admin")
-                .build();
     }
 }
