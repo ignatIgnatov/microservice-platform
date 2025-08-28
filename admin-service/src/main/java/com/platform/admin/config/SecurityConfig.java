@@ -42,7 +42,7 @@ public class SecurityConfig {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/actuator/**").permitAll()
+                        .requestMatchers("/actuator/**", "/v3/api-docs" , "/v3/api-docs/**", "/swagger/**", "/swagger-ui.html", "/webjars/**", "/swagger-ui/**").permitAll()
                         .anyRequest().hasRole("admin")
                 )
                 .oauth2ResourceServer(oauth2 -> oauth2

@@ -28,3 +28,9 @@ spring:
 keycloak:
   auth-server-url: ${KEYCLOAK_URL}
   realm: ${KEYCLOAK_REALM}
+
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true

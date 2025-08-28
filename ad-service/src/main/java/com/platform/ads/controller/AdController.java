@@ -2,6 +2,7 @@ package com.platform.ads.controller;
 
 import com.platform.ads.entity.Ad;
 import com.platform.ads.service.AdService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -13,7 +14,7 @@ import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/ads")
-@CrossOrigin(origins = "*")
+@Tag(name = "Authentication", description = "User authentication and registration endpoints")
 public class AdController {
 
     @Autowired

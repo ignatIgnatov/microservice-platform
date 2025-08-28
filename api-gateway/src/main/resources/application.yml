@@ -6,6 +6,17 @@ spring:
     name: api-gateway
   cloud:
     gateway:
+      globalcors:
+        corsConfigurations:
+          '[/**]':
+            allowedOrigins: "http://localhost:3000, https://qhti-v2.vercel.app"
+            allowedMethods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - OPTIONS
+            allowedHeaders: "*"
       routes:
         - id: auth-service
           uri: http://localhost:8082
@@ -19,11 +30,42 @@ spring:
           uri: http://localhost:8084
           predicates:
             - Path=/admin/**
+        # API docs routes за Swagger
+        - id: auth-api-docs
+          uri: http://localhost:8082
+          predicates:
+            - Path=/v3/api-docs/auth
+          filters:
+            - RewritePath=/v3/api-docs/auth, /v3/api-docs
+        - id: ad-api-docs
+          uri: http://localhost:8083
+          predicates:
+            - Path=/v3/api-docs/ad
+          filters:
+            - RewritePath=/v3/api-docs/ad, /v3/api-docs
+        - id: admin-api-docs
+          uri: http://localhost:8084
+          predicates:
+            - Path=/v3/api-docs/admin
+          filters:
+            - RewritePath=/v3/api-docs/admin, /v3/api-docs
   security:
     oauth2:
       resourceserver:
         jwt:
           issuer-uri: http://localhost:8080/realms/microservice-platform
+
+springdoc:
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui.html
+    urls:
+      - name: auth-service
+        url: /v3/api-docs/auth
+      - name: ad-service
+        url: /v3/api-docs/ad
+      - name: admin-service
+        url: /v3/api-docs/admin
 
 keycloak:
   auth-server-url: http://localhost:8080
@@ -40,6 +82,17 @@ spring:
       on-profile: docker
   cloud:
     gateway:
+      globalcors:
+        corsConfigurations:
+          '[/**]':
+            allowedOrigins: "http://localhost:3000"
+            allowedMethods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - OPTIONS
+            allowedHeaders: "*"
       routes:
         - id: auth-service
           uri: http://auth-service:8082
@@ -53,15 +106,46 @@ spring:
           uri: http://admin-service:8084
           predicates:
             - Path=/admin/**
+        # API docs routes за Docker
+        - id: auth-api-docs
+          uri: http://auth-service:8082
+          predicates:
+            - Path=/v3/api-docs/auth
+          filters:
+            - RewritePath=/v3/api-docs/auth, /v3/api-docs
+        - id: ad-api-docs
+          uri: http://ad-service:8083
+          predicates:
+            - Path=/v3/api-docs/ad
+          filters:
+            - RewritePath=/v3/api-docs/ad, /v3/api-docs
+        - id: admin-api-docs
+          uri: http://admin-service:8084
+          predicates:
+            - Path=/v3/api-docs/admin
+          filters:
+            - RewritePath=/v3/api-docs/admin, /v3/api-docs
   security:
     oauth2:
       resourceserver:
         jwt:
           issuer-uri: ${KEYCLOAK_ISSUER_URI}
 
+springdoc:
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui.html
+    urls:
+      - name: auth-service
+        url: /v3/api-docs/auth
+      - name: ad-service
+        url: /v3/api-docs/ad
+      - name: admin-service
+        url: /v3/api-docs/admin
+
 keycloak:
   auth-server-url: ${KEYCLOAK_URL}
-  realm: ${KEYCLOAK_URL}
+  realm: ${KEYCLOAK_REALM}
   resource: ${KEYCLOAK_CLIENT_ID}
   public-client: false
   credentials:

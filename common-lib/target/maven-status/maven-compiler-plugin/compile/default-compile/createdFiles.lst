@@ -1,0 +1,11 @@
+com\platform\common\exception\InsufficientPermissionsException.class
+com\platform\common\exception\GlobalExceptionHandler.class
+com\platform\common\exception\InvalidTokenException.class
+com\platform\common\exception\BusinessException.class
+com\platform\common\exception\UserAlreadyExistsException.class
+com\platform\common\exception\ErrorResponse$ErrorResponseBuilder.class
+com\platform\common\exception\ErrorResponse.class
+com\platform\common\exception\ResourceNotFoundException.class
+com\platform\common\exception\ServiceUnavailableException.class
+com\platform\common\exception\AdNotFoundException.class
+com\platform\common\exception\KeycloakOperationException.class

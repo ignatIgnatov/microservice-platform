@@ -1,0 +1,10 @@
+C:\Users\user\Desktop\marketplace-platform\common-lib\src\main\java\com\platform\common\exception\UserAlreadyExistsException.java
+C:\Users\user\Desktop\marketplace-platform\common-lib\src\main\java\com\platform\common\exception\InvalidTokenException.java
+C:\Users\user\Desktop\marketplace-platform\common-lib\src\main\java\com\platform\common\exception\AdNotFoundException.java
+C:\Users\user\Desktop\marketplace-platform\common-lib\src\main\java\com\platform\common\exception\ResourceNotFoundException.java
+C:\Users\user\Desktop\marketplace-platform\common-lib\src\main\java\com\platform\common\exception\InsufficientPermissionsException.java
+C:\Users\user\Desktop\marketplace-platform\common-lib\src\main\java\com\platform\common\exception\KeycloakOperationException.java
+C:\Users\user\Desktop\marketplace-platform\common-lib\src\main\java\com\platform\common\exception\GlobalExceptionHandler.java
+C:\Users\user\Desktop\marketplace-platform\common-lib\src\main\java\com\platform\common\exception\ServiceUnavailableException.java
+C:\Users\user\Desktop\marketplace-platform\common-lib\src\main\java\com\platform\common\exception\BusinessException.java
+C:\Users\user\Desktop\marketplace-platform\common-lib\src\main\java\com\platform\common\exception\ErrorResponse.java
