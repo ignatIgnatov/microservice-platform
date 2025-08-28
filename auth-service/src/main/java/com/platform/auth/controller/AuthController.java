@@ -4,6 +4,7 @@ import com.platform.auth.dto.LoginRequest;
 import com.platform.auth.dto.RegisterRequest;
 import com.platform.auth.dto.TokenResponse;
 import com.platform.auth.dto.UserInfoResponse;
+import com.platform.auth.dto.UserValidationResponse;
 import com.platform.auth.exception.UserNotFoundException;
 import com.platform.auth.service.AuthService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -147,6 +148,29 @@ public class AuthController {
                     .roles(roles)
                     .build();
         });
+    }
+
+    @Operation(summary = "Validate user by email",
+            description = "Check if user exists in Keycloak")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "User validation result"),
+            @ApiResponse(responseCode = "500", description = "Validation failed")
+    })
+    @GetMapping("/validate-user")
+    public Mono<ResponseEntity<UserValidationResponse>> validateUser(@RequestParam String email) {
+        return authService.findUserByEmail(email)
+                .map(user -> ResponseEntity.ok(UserValidationResponse.builder()
+                        .exists(true)
+                        .userId(user.getId())
+                        .email(user.getEmail())
+                        .firstName(user.getFirstName())
+                        .lastName(user.getLastName())
+                        .build()))
+                .onErrorReturn(UserNotFoundException.class,
+                        ResponseEntity.ok(UserValidationResponse.builder()
+                                .exists(false)
+                                .email(email)
+                                .build()));
     }
 
     public List<String> getRoles(Jwt jwt) {

@@ -132,6 +132,16 @@ spring:
           issuer-uri: ${KEYCLOAK_ISSUER_URI}
 
 springdoc:
+  api-docs:
+    enabled: true
+    path: /v3/api-docs
+    urls:
+      - name: auth-service
+        url: /v3/api-docs/auth
+      - name: ad-service
+        url: /v3/api-docs/ad
+      - name: admin-service
+        url: /v3/api-docs/admin
   swagger-ui:
     enabled: true
     path: /swagger-ui.html

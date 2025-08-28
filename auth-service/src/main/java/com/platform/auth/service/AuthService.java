@@ -7,6 +7,7 @@ import com.platform.auth.exception.BusinessException;
 import com.platform.auth.exception.InvalidTokenException;
 import com.platform.auth.exception.KeycloakOperationException;
 import com.platform.auth.exception.UserAlreadyExistsException;
+import com.platform.auth.exception.UserNotFoundException;
 import com.platform.auth.exception.WrongPasswordException;
 import jakarta.ws.rs.core.Response;
 import lombok.extern.slf4j.Slf4j;
@@ -261,5 +262,32 @@ public class AuthService {
                 throw new BusinessException("Failed to generate Facebook login URL", HttpStatus.INTERNAL_SERVER_ERROR);
             }
         });
+    }
+
+    public Mono<UserRepresentation> findUserByEmail(String email) {
+        return Mono.fromCallable(() -> {
+                    try {
+                        log.debug("Searching for user with email: {}", email);
+                        UsersResource usersResource = keycloak.realm(realm).users();
+                        List<UserRepresentation> users = usersResource.search(email, true); // exact match
+
+                        if (users.isEmpty()) {
+                            log.warn("User not found with email: {}", email);
+                            throw new UserNotFoundException(email);
+                        }
+
+                        UserRepresentation user = users.get(0);
+                        log.info("Found user: {} with ID: {}", user.getEmail(), user.getId());
+                        return user;
+
+                    } catch (Exception e) {
+                        log.error("Error searching for user by email {}: {}", email, e.getMessage());
+                        if (e instanceof UserNotFoundException) {
+                            throw e;
+                        }
+                        throw new KeycloakOperationException("searchUser", "Failed to search user: " + e.getMessage());
+                    }
+                })
+                .subscribeOn(Schedulers.boundedElastic());
     }
 }

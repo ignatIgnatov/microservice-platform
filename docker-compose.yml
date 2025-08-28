@@ -88,9 +88,11 @@ services:
       KEYCLOAK_URL: ${KEYCLOAK_URL}
       KEYCLOAK_REALM: ${KEYCLOAK_REALM}
       KEYCLOAK_ISSUER_URI: ${KEYCLOAK_ISSUER_URI}
+      SERVICES_AUTH_SERVICE_URL: ${SERVICES_AUTH_SERVICE_URL}
     depends_on:
       - keycloak
       - postgres
+      - auth-service
     networks:
       - microservice-network
 
