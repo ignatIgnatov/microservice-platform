@@ -1,36 +1,47 @@
 package com.platform.ads.dto;
 
-import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
+import com.platform.ads.dto.enums.AdType;
+import com.platform.ads.dto.enums.BoatCategory;
 import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 
 @Data
 @Builder
-@NoArgsConstructor
-@AllArgsConstructor
 public class BoatSearchRequest {
-
-    @NotNull(message = "Category is required")
+    // Common search criteria
     private BoatCategory category;
-
-    private String query;
     private String location;
     private PriceInfo.PriceType priceType;
     private BigDecimal minPrice;
     private BigDecimal maxPrice;
-    private ItemCondition condition;
     private AdType adType;
-    private String sortBy; // PRICE_LOW_TO_HIGH, PRICE_HIGH_TO_LOW, NEWEST, OLDEST
-    private Integer page;
-    private Integer size;
+    private String sortBy;
 
-    // Category-specific filters
-    private BoatSearchFilters boatFilters;
-    private JetSkiSearchFilters jetSkiFilters;
-    private TrailerSearchFilters trailerFilters;
-    private EngineSearchFilters engineFilters;
+    // Category-specific search criteria can be added here
+    // For example:
+    private String brand;
+    private String model;
+    private Integer minYear;
+    private Integer maxYear;
+    private String condition;
+
+    // Marine Electronics specific
+    private String electronicsType;
+    private String screenSize;
+    private Boolean gpsIntegrated;
+
+    // Fishing specific
+    private String fishingType;
+    private String fishingTechnique;
+    private String targetFish;
+
+    // Parts specific
+    private String partType;
+
+    // Services specific
+    private String serviceType;
+    private Boolean authorizedService;
+    private String supportedBrand;
 }

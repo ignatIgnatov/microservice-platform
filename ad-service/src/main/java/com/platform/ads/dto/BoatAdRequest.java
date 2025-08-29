@@ -1,15 +1,15 @@
 package com.platform.ads.dto;
 
-import jakarta.validation.constraints.*;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.platform.ads.dto.enums.AdType;
+import com.platform.ads.dto.enums.BoatCategory;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import com.fasterxml.jackson.annotation.JsonInclude;
-
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.util.List;
 
 // Main request DTO
 @Data
@@ -50,4 +50,8 @@ public class BoatAdRequest {
     private JetSkiSpecificationDto jetSkiSpec;
     private TrailerSpecificationDto trailerSpec;
     private EngineSpecificationDto engineSpec;
+    private MarineElectronicsSpecificationDto marineElectronicsSpec;
+    private FishingSpecificationDto fishingSpec;
+    private PartsSpecificationDto partsSpec;
+    private ServicesSpecificationDto servicesSpec;
 }

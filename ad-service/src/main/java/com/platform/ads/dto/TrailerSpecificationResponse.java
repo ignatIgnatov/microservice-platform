@@ -1,5 +1,7 @@
 package com.platform.ads.dto;
 
+import com.platform.ads.dto.enums.ItemCondition;
+import com.platform.ads.dto.enums.TrailerFeature;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

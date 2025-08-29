@@ -132,13 +132,7 @@ public class GlobalExceptionHandler implements ErrorWebExceptionHandler {
             builder.message(ex.getMessage());
             log.error("Configuration error: {}", ex.getMessage());
         } else if (ex instanceof WebExchangeBindException bindException) {
-            Map<String, String> validationErrors = new HashMap<>();
-            bindException.getBindingResult().getFieldErrors().forEach(error ->
-                    validationErrors.put(error.getField(), error.getDefaultMessage())
-            );
-            builder.message("Validation failed")
-                    .validationErrors(validationErrors);
-            log.warn("Validation error: {}", bindException.getMessage());
+            return handleWebExchangeBindException(bindException);
         } else if (ex instanceof AuthenticationException) {
             builder.message("Authentication failed");
             log.warn("Authentication failed: {}", ex.getMessage());
@@ -152,6 +146,9 @@ public class GlobalExceptionHandler implements ErrorWebExceptionHandler {
         } else if (ex instanceof IllegalArgumentException) {
             builder.message(ex.getMessage());
             log.warn("Illegal argument: {}", ex.getMessage());
+        } else if (ex instanceof InvalidFieldValueException) {
+            builder.message(ex.getMessage());
+            log.warn("Invalid field: {}", ex.getMessage());
         } else {
             builder.message("An unexpected error occurred");
             log.error("Unexpected error occurred", ex);
@@ -251,5 +248,29 @@ public class GlobalExceptionHandler implements ErrorWebExceptionHandler {
             case SERVICE_UNAVAILABLE -> "Service Unavailable";
             default -> "Error";
         };
+    }
+
+    private ErrorResponse handleWebExchangeBindException(WebExchangeBindException ex) {
+        Map<String, String> validationErrors = new HashMap<>();
+        ex.getBindingResult().getFieldErrors().forEach(error ->
+                validationErrors.put(error.getField(), error.getDefaultMessage())
+        );
+
+        // Логване на всички грешки
+        if (log.isWarnEnabled()) {
+            StringBuilder errorLog = new StringBuilder("Validation errors: ");
+            validationErrors.forEach((field, error) ->
+                    errorLog.append(field).append(": ").append(error).append("; ")
+            );
+            log.warn(errorLog.toString());
+        }
+
+        return ErrorResponse.builder()
+                .timestamp(LocalDateTime.now())
+                .status(HttpStatus.BAD_REQUEST.value())
+                .error("Bad Request")
+                .message("Validation failed")
+                .validationErrors(validationErrors)
+                .build();
     }
 }

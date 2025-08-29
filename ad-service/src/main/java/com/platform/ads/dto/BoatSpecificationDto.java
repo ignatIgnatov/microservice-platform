@@ -1,5 +1,9 @@
 package com.platform.ads.dto;
 
+import com.platform.ads.dto.enums.Equipment;
+import com.platform.ads.dto.enums.ExteriorFeature;
+import com.platform.ads.dto.enums.InteriorFeature;
+import com.platform.ads.dto.enums.ItemCondition;
 import jakarta.validation.constraints.DecimalMax;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Max;

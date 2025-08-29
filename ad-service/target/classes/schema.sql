@@ -37,6 +37,10 @@ CREATE TABLE IF NOT EXISTS ads (
     active BOOLEAN NOT NULL DEFAULT true,
     views_count INTEGER DEFAULT 0 CHECK (views_count >= 0),
     featured BOOLEAN DEFAULT false,
+    approval_status VARCHAR(20) DEFAULT 'APPROVED',
+    rejection_reason TEXT,
+    approved_by_user_id VARCHAR(100),
+    approved_at TIMESTAMP
 
     -- Constraints
     CONSTRAINT valid_price_for_fixed_type
@@ -180,6 +184,94 @@ CREATE TABLE IF NOT EXISTS trailer_specifications_features (
     CONSTRAINT unique_trailer_feature UNIQUE(trailer_spec_id, feature)
 );
 
+
+-- Marine Electronics Specifications Table
+CREATE TABLE marine_electronics_specifications (
+    id BIGSERIAL PRIMARY KEY,
+    ad_id BIGINT NOT NULL REFERENCES ads(id) ON DELETE CASCADE,
+    electronics_type VARCHAR(50) NOT NULL,
+    brand VARCHAR(100) NOT NULL,
+    model VARCHAR(100),
+    year INTEGER,
+    in_warranty BOOLEAN,
+    condition VARCHAR(20) NOT NULL,
+
+    -- Sonar specific fields
+    working_frequency VARCHAR(20),
+    depth_range VARCHAR(20),
+    screen_size VARCHAR(20),
+    probe_included BOOLEAN,
+    screen_type VARCHAR(30),
+    gps_integrated BOOLEAN,
+    bulgarian_language BOOLEAN,
+
+    -- Probe specific fields
+    power VARCHAR(10),
+    frequency VARCHAR(20),
+    material VARCHAR(50),
+    range_length VARCHAR(20),
+    mounting VARCHAR(30),
+
+    -- Trolling motor specific fields
+    thrust INTEGER,
+    voltage VARCHAR(10),
+    tube_length VARCHAR(20),
+    control_type VARCHAR(20),
+    mounting_type VARCHAR(20),
+    motor_type VARCHAR(20),
+    water_resistance VARCHAR(30),
+    weight VARCHAR(20),
+
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Fishing Specifications Table
+CREATE TABLE fishing_specifications (
+    id BIGSERIAL PRIMARY KEY,
+    ad_id BIGINT NOT NULL REFERENCES ads(id) ON DELETE CASCADE,
+    fishing_type VARCHAR(50) NOT NULL,
+    brand VARCHAR(100),
+    fishing_technique VARCHAR(30) NOT NULL,
+    target_fish VARCHAR(50) NOT NULL,
+    condition VARCHAR(20) NOT NULL,
+
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Parts Specifications Table
+CREATE TABLE parts_specifications (
+    id BIGSERIAL PRIMARY KEY,
+    ad_id BIGINT NOT NULL REFERENCES ads(id) ON DELETE CASCADE,
+    part_type VARCHAR(50) NOT NULL,
+    condition VARCHAR(20) NOT NULL,
+
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Services Specifications Table
+CREATE TABLE services_specifications (
+    id BIGSERIAL PRIMARY KEY,
+    ad_id BIGINT NOT NULL REFERENCES ads(id) ON DELETE CASCADE,
+    service_type VARCHAR(50) NOT NULL,
+    company_name VARCHAR(200) NOT NULL,
+    is_authorized_service BOOLEAN,
+    is_official_representative BOOLEAN,
+    description TEXT,
+    contact_phone VARCHAR(20) NOT NULL,
+    contact_phone2 VARCHAR(20),
+    contact_email VARCHAR(100) NOT NULL,
+    address TEXT NOT NULL,
+    website VARCHAR(200),
+    supported_brands TEXT, -- comma-separated values
+    supported_materials TEXT, -- comma-separated enum values
+
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
 -- Indexes for performance optimization
 CREATE INDEX IF NOT EXISTS idx_ads_category ON ads(category);
 CREATE INDEX IF NOT EXISTS idx_ads_price_type ON ads(price_type);
@@ -224,6 +316,27 @@ CREATE INDEX IF NOT EXISTS idx_boat_interior_features_boat_spec_id ON boat_inter
 CREATE INDEX IF NOT EXISTS idx_boat_exterior_features_boat_spec_id ON boat_exterior_features(boat_spec_id);
 CREATE INDEX IF NOT EXISTS idx_boat_equipment_boat_spec_id ON boat_equipment(boat_spec_id);
 
+-- Create indexes for better query performance
+CREATE INDEX IF NOT EXISTS idx_marine_electronics_specifications_ad_id ON marine_electronics_specifications(ad_id);
+CREATE INDEX idx_marine_electronics_specifications_electronics_type ON marine_electronics_specifications(electronics_type);
+CREATE INDEX idx_marine_electronics_specifications_brand ON marine_electronics_specifications(brand);
+
+CREATE INDEX IF NOT EXISTS idx_fishing_specifications_ad_id ON fishing_specifications(ad_id);
+CREATE INDEX IF NOT EXISTS idx_fishing_specifications_fishing_type ON fishing_specifications(fishing_type);
+CREATE INDEX IF NOT EXISTS idx_fishing_specifications_fishing_technique ON fishing_specifications(fishing_technique);
+CREATE INDEX idx_fishing_specifications_target_fish ON fishing_specifications(target_fish);
+
+CREATE INDEX IF NOT EXISTS idx_parts_specifications_ad_id ON parts_specifications(ad_id);
+CREATE INDEX IF NOT EXISTS idx_parts_specifications_part_type ON parts_specifications(part_type);
+
+CREATE INDEX IF NOT EXISTS idx_services_specifications_ad_id ON services_specifications(ad_id);
+CREATE INDEX IF NOT EXISTS idx_services_specifications_service_type ON services_specifications(service_type);
+CREATE INDEX IF NOT EXISTS idx_services_specifications_company_name ON services_specifications(company_name);
+
+CREATE INDEX IF NOT EXISTS idx_ads_approval_status ON ads(approval_status);
+CREATE INDEX IF NOT EXISTS idx_ads_approved_by ON ads(approved_by_user_id);
+CREATE INDEX IF NOT EXISTS idx_ads_approved_at ON ads(approved_at);
+
 -- Text search indexes (if using PostgreSQL full-text search)
 CREATE INDEX IF NOT EXISTS idx_ads_text_search ON ads USING gin(to_tsvector('english', title || ' ' || description));
 
@@ -240,3 +353,4 @@ SELECT * FROM ads WHERE active = true AND featured = true;
 --     ('Красива моторна лодка', 'Отлична лодка в перфектно състояние. Подходяща за семейни разходки и риболов.', 'BOATS_AND_YACHTS', 15000.00, 'FIXED_PRICE', 'Варна', 'FROM_PRIVATE', 'test@example.com', 'user123', 'Иван', 'Петров', true);
 
 COMMIT;
+

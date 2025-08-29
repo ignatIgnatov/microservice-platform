@@ -1,5 +1,7 @@
 package com.platform.ads.dto;
 
+import com.platform.ads.dto.enums.AdType;
+import com.platform.ads.dto.enums.BoatCategory;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -36,6 +38,10 @@ public class BoatAdResponse {
     private JetSkiSpecificationResponse jetSkiSpec;
     private TrailerSpecificationResponse trailerSpec;
     private EngineSpecificationResponse engineSpec;
+    private MarineElectronicsSpecificationResponse marineElectronicsSpec;
+    private FishingSpecificationResponse fishingSpec;
+    private PartsSpecificationResponse partsSpec;
+    private ServicesSpecificationResponse servicesSpec;
 
     // Computed fields
     private String userFullName;

@@ -1,5 +1,6 @@
 package com.platform.ads.dto;
 
+import com.platform.ads.dto.enums.ItemCondition;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
