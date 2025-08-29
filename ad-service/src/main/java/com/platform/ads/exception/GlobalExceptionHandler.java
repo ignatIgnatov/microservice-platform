@@ -2,7 +2,6 @@ package com.platform.ads.exception;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.validation.ConstraintViolationException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.web.reactive.error.ErrorWebExceptionHandler;
@@ -25,7 +24,7 @@ import java.util.Map;
 
 @Slf4j
 @Component
-@Order(-10)
+@Order(-2)
 @RequiredArgsConstructor
 public class GlobalExceptionHandler implements ErrorWebExceptionHandler {
 
@@ -39,17 +38,14 @@ public class GlobalExceptionHandler implements ErrorWebExceptionHandler {
             return Mono.error(ex);
         }
 
-        // Set response headers
         response.getHeaders().add("Content-Type", MediaType.APPLICATION_JSON_VALUE);
 
-        // Build error response
         ErrorResponse errorResponse = buildErrorResponse(ex, exchange);
         HttpStatus status = determineHttpStatus(ex);
 
         response.setStatusCode(status);
         logException(ex, status);
 
-        // Serialize response
         String responseBody;
         try {
             responseBody = objectMapper.writeValueAsString(errorResponse);
@@ -73,17 +69,68 @@ public class GlobalExceptionHandler implements ErrorWebExceptionHandler {
                 .path(path);
 
         // Handle specific exceptions
-        if (ex instanceof AdNotFoundException) {
-            builder.message(ex.getMessage());
-            log.warn("User already exists: {}", ex.getMessage());
-        } else if (ex instanceof UserNotFoundException) {
-            builder.message(ex.getMessage());
-            log.warn("User not found: {}", ex.getMessage());
-        } else if (ex instanceof BusinessException businessEx) {
+        if (ex instanceof BusinessException businessEx) {
             builder.message(businessEx.getMessage())
                     .status(businessEx.getStatus().value())
                     .error(getErrorMessage(businessEx.getStatus()));
-            log.warn("Business exception: {}", businessEx.getMessage());
+            logBusinessException(businessEx);
+        } else if (ex instanceof UserNotFoundException) {
+            builder.message(ex.getMessage());
+            log.warn("User not found: {}", ex.getMessage());
+        } else if (ex instanceof UserAlreadyExistsException) {
+            builder.message(ex.getMessage());
+            log.warn("User already exists: {}", ex.getMessage());
+        } else if (ex instanceof AdNotFoundException) {
+            builder.message(ex.getMessage());
+            log.warn("Ad not found: {}", ex.getMessage());
+        } else if (ex instanceof AdValidationException) {
+            builder.message(ex.getMessage());
+            log.warn("Ad validation error: {}", ex.getMessage());
+        } else if (ex instanceof CategoryMismatchException) {
+            builder.message(ex.getMessage());
+            log.warn("Category mismatch: {}", ex.getMessage());
+        } else if (ex instanceof AdOwnershipException) {
+            builder.message(ex.getMessage());
+            log.warn("Ad ownership violation: {}", ex.getMessage());
+        } else if (ex instanceof InvalidTokenException) {
+            builder.message(ex.getMessage());
+            log.warn("Invalid token: {}", ex.getMessage());
+        } else if (ex instanceof WrongPasswordException) {
+            builder.message(ex.getMessage());
+            log.warn("Wrong password attempt: {}", ex.getMessage());
+        } else if (ex instanceof AuthServiceException) {
+            builder.message(ex.getMessage());
+            log.error("Auth service error: {}", ex.getMessage());
+        } else if (ex instanceof ExternalServiceException) {
+            builder.message(ex.getMessage());
+            log.error("External service error: {}", ex.getMessage());
+        } else if (ex instanceof InvalidPriceException) {
+            builder.message(ex.getMessage());
+            log.warn("Invalid price: {}", ex.getMessage());
+        } else if (ex instanceof MandatoryFieldMissingException) {
+            builder.message(ex.getMessage());
+            log.warn("Mandatory field missing: {}", ex.getMessage());
+        } else if (ex instanceof InvalidEnumValueException) {
+            builder.message(ex.getMessage());
+            log.warn("Invalid enum value: {}", ex.getMessage());
+        } else if (ex instanceof InvalidSearchCriteriaException) {
+            builder.message(ex.getMessage());
+            log.warn("Invalid search criteria: {}", ex.getMessage());
+        } else if (ex instanceof SearchTimeoutException) {
+            builder.message(ex.getMessage());
+            log.warn("Search timeout: {}", ex.getMessage());
+        } else if (ex instanceof ImageUploadException) {
+            builder.message(ex.getMessage());
+            log.warn("Image upload error: {}", ex.getMessage());
+        } else if (ex instanceof UnsupportedFileTypeException) {
+            builder.message(ex.getMessage());
+            log.warn("Unsupported file type: {}", ex.getMessage());
+        } else if (ex instanceof TooManyRequestsException) {
+            builder.message(ex.getMessage());
+            log.warn("Too many requests: {}", ex.getMessage());
+        } else if (ex instanceof ConfigurationException) {
+            builder.message(ex.getMessage());
+            log.error("Configuration error: {}", ex.getMessage());
         } else if (ex instanceof WebExchangeBindException bindException) {
             Map<String, String> validationErrors = new HashMap<>();
             bindException.getBindingResult().getFieldErrors().forEach(error ->
@@ -92,14 +139,6 @@ public class GlobalExceptionHandler implements ErrorWebExceptionHandler {
             builder.message("Validation failed")
                     .validationErrors(validationErrors);
             log.warn("Validation error: {}", bindException.getMessage());
-        } else if (ex instanceof ConstraintViolationException constraintEx) {
-            Map<String, String> validationErrors = new HashMap<>();
-            constraintEx.getConstraintViolations().forEach(violation ->
-                    validationErrors.put(violation.getPropertyPath().toString(), violation.getMessage())
-            );
-            builder.message("Validation constraints violated")
-                    .validationErrors(validationErrors);
-            log.warn("Constraint violation: {}", constraintEx.getMessage());
         } else if (ex instanceof AuthenticationException) {
             builder.message("Authentication failed");
             log.warn("Authentication failed: {}", ex.getMessage());
@@ -121,14 +160,60 @@ public class GlobalExceptionHandler implements ErrorWebExceptionHandler {
         return builder.build();
     }
 
+    private void logBusinessException(BusinessException ex) {
+        if (ex.getStatus().is5xxServerError()) {
+            log.error("Business exception (server error): {}", ex.getMessage(), ex);
+        } else if (ex.getStatus().is4xxClientError()) {
+            log.warn("Business exception (client error): {}", ex.getMessage());
+        } else {
+            log.info("Business exception: {}", ex.getMessage());
+        }
+    }
+
     private HttpStatus determineHttpStatus(Throwable ex) {
         if (ex instanceof BusinessException businessEx) {
             return businessEx.getStatus();
-        } else if (ex instanceof AdNotFoundException || ex instanceof UserNotFoundException) {
+        } else if (ex instanceof UserAlreadyExistsException) {
+            return HttpStatus.CONFLICT;
+        } else if (ex instanceof UserNotFoundException) {
             return HttpStatus.NOT_FOUND;
+        } else if (ex instanceof AdNotFoundException) {
+            return HttpStatus.NOT_FOUND;
+        } else if (ex instanceof AdValidationException) {
+            return HttpStatus.BAD_REQUEST;
+        } else if (ex instanceof CategoryMismatchException) {
+            return HttpStatus.BAD_REQUEST;
+        } else if (ex instanceof AdOwnershipException) {
+            return HttpStatus.FORBIDDEN;
+        } else if (ex instanceof InvalidTokenException) {
+            return HttpStatus.UNAUTHORIZED;
+        } else if (ex instanceof WrongPasswordException) {
+            return HttpStatus.UNAUTHORIZED;
+        } else if (ex instanceof AuthServiceException) {
+            return HttpStatus.SERVICE_UNAVAILABLE;
+        } else if (ex instanceof ExternalServiceException) {
+            return HttpStatus.SERVICE_UNAVAILABLE;
+        } else if (ex instanceof InvalidPriceException) {
+            return HttpStatus.BAD_REQUEST;
+        } else if (ex instanceof MandatoryFieldMissingException) {
+            return HttpStatus.BAD_REQUEST;
+        } else if (ex instanceof InvalidEnumValueException) {
+            return HttpStatus.BAD_REQUEST;
+        } else if (ex instanceof InvalidSearchCriteriaException) {
+            return HttpStatus.BAD_REQUEST;
+        } else if (ex instanceof SearchTimeoutException) {
+            return HttpStatus.REQUEST_TIMEOUT;
+        } else if (ex instanceof ImageUploadException) {
+            return HttpStatus.BAD_REQUEST;
+        } else if (ex instanceof UnsupportedFileTypeException) {
+            return HttpStatus.BAD_REQUEST;
+        } else if (ex instanceof TooManyRequestsException) {
+            return HttpStatus.TOO_MANY_REQUESTS;
+        } else if (ex instanceof ConfigurationException) {
+            return HttpStatus.INTERNAL_SERVER_ERROR;
         } else if (ex instanceof AccessDeniedException) {
             return HttpStatus.FORBIDDEN;
-        } else if (ex instanceof WebExchangeBindException || ex instanceof ConstraintViolationException) {
+        } else if (ex instanceof WebExchangeBindException) {
             return HttpStatus.BAD_REQUEST;
         } else if (ex instanceof IllegalArgumentException) {
             return HttpStatus.BAD_REQUEST;
@@ -142,12 +227,14 @@ public class GlobalExceptionHandler implements ErrorWebExceptionHandler {
     }
 
     private void logException(Throwable ex, HttpStatus status) {
+        String requestId = "REQ-" + System.currentTimeMillis(); // Simple request ID
+
         if (status.is5xxServerError()) {
-            log.error("Server error occurred: {}", ex.getMessage(), ex);
+            log.error("[{}] Server error occurred: {} - {}", requestId, status, ex.getMessage(), ex);
         } else if (status.is4xxClientError()) {
-            log.warn("Client error: {} - {}", status, ex.getMessage());
+            log.warn("[{}] Client error: {} - {}", requestId, status, ex.getMessage());
         } else {
-            log.info("Request processed with status: {}", status);
+            log.info("[{}] Request processed with status: {}", requestId, status);
         }
     }
 
@@ -158,6 +245,8 @@ public class GlobalExceptionHandler implements ErrorWebExceptionHandler {
             case FORBIDDEN -> "Forbidden";
             case NOT_FOUND -> "Not Found";
             case CONFLICT -> "Conflict";
+            case REQUEST_TIMEOUT -> "Request Timeout";
+            case TOO_MANY_REQUESTS -> "Too Many Requests";
             case INTERNAL_SERVER_ERROR -> "Internal Server Error";
             case SERVICE_UNAVAILABLE -> "Service Unavailable";
             default -> "Error";

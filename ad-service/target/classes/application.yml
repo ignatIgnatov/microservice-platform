@@ -1,0 +1,47 @@
+server:
+  port: 8083
+
+spring:
+  application:
+    name: ad-service
+  r2dbc:
+    url: r2dbc:postgresql://postgres:5432/ad_service_db
+    username: postgres
+    password: password
+    pool:
+      initial-size: 10
+      max-size: 20
+      max-idle-time: 30m
+      validation-query: SELECT 1
+  sql:
+    init:
+      schema-locations: classpath:schema.sql
+      mode: always
+
+---
+spring:
+  config:
+    activate:
+      on-profile: docker
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${KEYCLOAK_ISSUER_URI}
+
+keycloak:
+  auth-server-url: ${KEYCLOAK_URL}
+  realm: ${KEYCLOAK_REALM}
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+    enabled: true
+  swagger-ui:
+    path: /swagger-ui.html
+    enabled: true
+
+services:
+  auth-service:
+    url: ${SERVICES_AUTH_SERVICE_URL}

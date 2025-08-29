@@ -1,6 +1,6 @@
 package com.platform.ads.repository;
 
-import com.platform.ads.model.Ad;
+import com.platform.ads.entity.*;
 import org.springframework.data.r2dbc.repository.Query;
 import org.springframework.data.repository.reactive.ReactiveCrudRepository;
 import org.springframework.stereotype.Repository;
@@ -12,70 +12,63 @@ import java.math.BigDecimal;
 @Repository
 public interface AdRepository extends ReactiveCrudRepository<Ad, Long> {
 
-    // Find by user email
-    Flux<Ad> findByUserEmailOrderByCreatedAtDesc(String userEmail);
-
-    // Find by active status
+    // Basic queries
     Flux<Ad> findByActiveOrderByCreatedAtDesc(Boolean active);
+    Flux<Ad> findByCategoryAndActiveOrderByCreatedAtDesc(String category, Boolean active);
+    Flux<Ad> findByUserEmailOrderByCreatedAtDesc(String userEmail);
+    Flux<Ad> findByLocationIgnoreCaseContainingAndActiveOrderByCreatedAtDesc(String location, Boolean active);
 
-    // Count ads by user email
+    // Price queries
+    @Query("SELECT * FROM ads WHERE price_type = 'FIXED_PRICE' AND price_amount BETWEEN :minPrice AND :maxPrice AND active = true ORDER BY created_at DESC")
+    Flux<Ad> findByPriceBetweenAndActive(BigDecimal minPrice, BigDecimal maxPrice, Boolean active);
+
+    // Search queries
+    @Query("SELECT * FROM ads WHERE " +
+            "(LOWER(title) LIKE LOWER(CONCAT('%', :query, '%')) OR LOWER(description) LIKE LOWER(CONCAT('%', :query, '%'))) " +
+            "AND active = :active ORDER BY created_at DESC")
+    Flux<Ad> searchByTitleOrDescription(String query, Boolean active);
+
+    @Query("SELECT * FROM ads WHERE " +
+            "(:category IS NULL OR category = :category) AND " +
+            "(:location IS NULL OR LOWER(location) LIKE LOWER(CONCAT('%', :location, '%'))) AND " +
+            "(:priceType IS NULL OR price_type = :priceType) AND " +
+            "(:minPrice IS NULL OR (price_type = 'FIXED_PRICE' AND price_amount >= :minPrice)) AND " +
+            "(:maxPrice IS NULL OR (price_type = 'FIXED_PRICE' AND price_amount <= :maxPrice)) AND " +
+            "(:adType IS NULL OR ad_type = :adType) AND " +
+            "active = :active " +
+            "ORDER BY " +
+            "CASE WHEN :sortBy = 'PRICE_LOW_TO_HIGH' THEN price_amount END ASC, " +
+            "CASE WHEN :sortBy = 'PRICE_HIGH_TO_LOW' THEN price_amount END DESC, " +
+            "CASE WHEN :sortBy = 'OLDEST' THEN created_at END ASC, " +
+            "created_at DESC")
+    Flux<Ad> advancedSearch(String category, String location, String priceType,
+                            BigDecimal minPrice, BigDecimal maxPrice, String adType,
+                            Boolean active, String sortBy);
+
+    // Statistics
+    Mono<Long> countByActiveAndCategory(Boolean active, String category);
     Mono<Long> countByUserEmail(String userEmail);
 
-    // Search in title and description
-    @Query("SELECT * FROM ads WHERE (LOWER(title) LIKE LOWER(CONCAT('%', :query, '%')) OR LOWER(description) LIKE LOWER(CONCAT('%', :query, '%'))) AND active = :active ORDER BY created_at DESC")
-    Flux<Ad> findByTitleContainingIgnoreCaseOrDescriptionContainingIgnoreCaseAndActive(String query1, String query2, Boolean active);
-
-    // Find by category
-    Flux<Ad> findByCategoryIgnoreCaseAndActiveOrderByCreatedAtDesc(String category, Boolean active);
-
-    // Find by location
-    Flux<Ad> findByLocationIgnoreCaseAndActiveOrderByCreatedAtDesc(String location, Boolean active);
-
-    // Find by price range
-    @Query("SELECT * FROM ads WHERE price BETWEEN :minPrice AND :maxPrice AND active = :active ORDER BY created_at DESC")
-    Flux<Ad> findByPriceBetweenAndActiveOrderByCreatedAtDesc(BigDecimal minPrice, BigDecimal maxPrice, Boolean active);
-
-    // Complex search query
-    @Query("SELECT * FROM ads WHERE " +
-            "(:category IS NULL OR LOWER(category) = LOWER(:category)) AND " +
-            "(:location IS NULL OR LOWER(location) LIKE LOWER(CONCAT('%', :location, '%'))) AND " +
-            "(:minPrice IS NULL OR price >= :minPrice) AND " +
-            "(:maxPrice IS NULL OR price <= :maxPrice) AND " +
-            "(:query IS NULL OR LOWER(title) LIKE LOWER(CONCAT('%', :query, '%')) OR LOWER(description) LIKE LOWER(CONCAT('%', :query, '%'))) AND " +
-            "active = :active " +
-            "ORDER BY created_at DESC")
-    Flux<Ad> searchAds(String query, String category, String location, BigDecimal minPrice, BigDecimal maxPrice, Boolean active);
-
-    // Statistics queries
-    @Query("SELECT COUNT(*) FROM ads WHERE active = true")
-    Mono<Long> countActiveAds();
-
-    @Query("SELECT COUNT(*) FROM ads WHERE active = false")
-    Mono<Long> countInactiveAds();
-
-    @Query("SELECT AVG(price) FROM ads WHERE active = true")
+    @Query("SELECT AVG(price_amount) FROM ads WHERE active = true AND price_type = 'FIXED_PRICE'")
     Mono<BigDecimal> getAveragePrice();
 
-    @Query("SELECT MIN(price) FROM ads WHERE active = true")
+    @Query("SELECT MIN(price_amount) FROM ads WHERE active = true AND price_type = 'FIXED_PRICE'")
     Mono<BigDecimal> getMinPrice();
 
-    @Query("SELECT MAX(price) FROM ads WHERE active = true")
+    @Query("SELECT MAX(price_amount) FROM ads WHERE active = true AND price_type = 'FIXED_PRICE'")
     Mono<BigDecimal> getMaxPrice();
 
-    // User statistics
-    @Query("SELECT COUNT(*) FROM ads WHERE user_email = :userEmail AND active = true")
-    Mono<Long> countActiveAdsByUser(String userEmail);
-
-    @Query("SELECT COUNT(*) FROM ads WHERE user_email = :userEmail AND active = false")
-    Mono<Long> countInactiveAdsByUser(String userEmail);
-
-    @Query("SELECT SUM(price) FROM ads WHERE user_email = :userEmail AND active = true")
-    Mono<BigDecimal> getTotalValueByUser(String userEmail);
-
-    @Query("SELECT AVG(price) FROM ads WHERE user_email = :userEmail AND active = true")
-    Mono<BigDecimal> getAveragePriceByUser(String userEmail);
-
-    // Category statistics
-    @Query("SELECT category, COUNT(*) as ad_count FROM ads WHERE active = true GROUP BY category ORDER BY ad_count DESC")
+    @Query("SELECT category, COUNT(*) as count FROM ads WHERE active = true GROUP BY category ORDER BY count DESC")
     Flux<Object[]> getCategoryStatistics();
+
+    @Query("SELECT location, COUNT(*) as count FROM ads WHERE active = true GROUP BY location ORDER BY count DESC LIMIT 10")
+    Flux<Object[]> getLocationStatistics();
+
+    // Featured and popular
+    Flux<Ad> findByFeaturedAndActiveOrderByCreatedAtDesc(Boolean featured, Boolean active);
+    Flux<Ad> findByActiveOrderByViewsCountDesc(Boolean active);
+
+    // Update views count
+    @Query("UPDATE ads SET views_count = views_count + 1 WHERE id = :id")
+    Mono<Void> incrementViewsCount(Long id);
 }
