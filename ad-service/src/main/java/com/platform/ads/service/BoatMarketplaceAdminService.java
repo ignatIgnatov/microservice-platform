@@ -4,10 +4,12 @@ import com.platform.ads.dto.BoatAdResponse;
 import com.platform.ads.dto.CategoryStatsResponse;
 import com.platform.ads.dto.UserStatisticsResponse;
 import com.platform.ads.exception.AdNotFoundException;
+import com.platform.ads.repository.AdImageRepository;
 import com.platform.ads.repository.AdRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -21,6 +23,45 @@ public class BoatMarketplaceAdminService {
 
     private final AdRepository adRepository;
     private final BoatMarketplaceService marketplaceService;
+    private final AdImageRepository imageRepository;
+    private final ImageService imageService;
+
+    // ===========================
+    // ADMIN: FORCE DELETE WITH CLEANUP
+    // ===========================
+
+    @Transactional
+    public Mono<Void> forceDeleteAd(Long adId, String adminUserId) {
+        long startTime = System.currentTimeMillis();
+        log.info("=== ADMIN FORCE DELETE START === AdminUser: {}, AdID: {} ===", adminUserId, adId);
+
+        return adRepository.findById(adId)
+                .switchIfEmpty(Mono.error(new AdNotFoundException(adId)))
+                .flatMap(ad -> {
+                    log.info("=== ADMIN FORCE DELETING === AdID: {}, Title: '{}', Owner: {} ===",
+                            adId, ad.getTitle(), ad.getUserId());
+
+                    // Admin can delete any ad regardless of view count
+                    return deleteAllAdImagesComplete(adId)
+                            .then(adRepository.deleteById(adId))
+                            .doOnSuccess(result -> {
+                                long duration = System.currentTimeMillis() - startTime;
+                                log.info("=== ADMIN FORCE DELETE SUCCESS === AdminUser: {}, AdID: {}, Duration: {}ms ===",
+                                        adminUserId, adId, duration);
+                            });
+                });
+    }
+
+    private Mono<Void> deleteAllAdImagesComplete(Long adId) {
+        return imageRepository.findByAdIdOrderByDisplayOrder(adId)
+                .flatMap(image -> imageService.deleteFromS3(image.getS3Key())
+                        .onErrorResume(error -> {
+                            log.error("=== ADMIN S3 CLEANUP ERROR === S3Key: '{}', Error: {} ===",
+                                    image.getS3Key(), error.getMessage());
+                            return Mono.empty(); // Continue despite S3 errors
+                        }))
+                .then();
+    }
 
     // ===========================
     // PENDING APPROVAL MANAGEMENT

@@ -745,6 +745,7 @@ public class BoatMarketplaceService {
     // ===========================
     // SEARCH FUNCTIONALITY
     // ===========================
+
     private int comparePrices(BoatAdResponse ad1, BoatAdResponse ad2) {
         if (ad1.getPrice() == null && ad2.getPrice() == null) return 0;
         if (ad1.getPrice() == null) return 1;

@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @Builder
@@ -32,6 +33,9 @@ public class BoatAdResponse {
     private Boolean active;
     private Integer viewsCount;
     private Boolean featured;
+
+    private List<ImageUploadResponse> images;
+    private ImageUploadResponse primaryImage;
 
     // Category-specific specifications
     private BoatSpecificationResponse boatSpec;

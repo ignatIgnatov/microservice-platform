@@ -6,6 +6,7 @@ import com.platform.ads.dto.UserAdsStatisticsResponse;
 import com.platform.ads.dto.enums.BoatCategory;
 import com.platform.ads.entity.Ad;
 import com.platform.ads.exception.AdNotFoundException;
+import com.platform.ads.repository.AdImageRepository;
 import com.platform.ads.repository.AdRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,6 +23,8 @@ import java.time.LocalDateTime;
 public class UserAdsService {
 
     private final AdRepository adRepository;
+    private final AdImageRepository imageRepository;
+    private final ImageService imageService;
     private final BoatMarketplaceService marketplaceService;
 
     // ===========================
@@ -225,7 +228,7 @@ public class UserAdsService {
     }
 
     // ===========================
-    // ARCHIVE AD FUNCTIONALITY
+    // ENHANCED ARCHIVE WITH IMAGE HANDLING
     // ===========================
 
     @Transactional
@@ -241,19 +244,17 @@ public class UserAdsService {
                     }
 
                     LocalDateTime now = LocalDateTime.now();
-                    log.info("=== ARCHIVING AD === AdID: {}, Title: '{}' ===", adId, ad.getTitle());
+                    log.info("=== ARCHIVING AD (IMAGES REMAIN) === AdID: {}, Title: '{}' ===", adId, ad.getTitle());
 
+                    // Note: When archiving, we keep images in S3 and database
+                    // They're just not visible to public because ad is archived
                     return adRepository.archiveAd(adId, userId, now, now);
                 })
                 .doOnSuccess(result -> {
                     long duration = System.currentTimeMillis() - startTime;
                     log.info("=== ARCHIVE AD SUCCESS === UserId: {}, AdID: {}, Duration: {}ms ===",
                             userId, adId, duration);
-                })
-                .doOnError(error -> {
-                    long duration = System.currentTimeMillis() - startTime;
-                    log.error("=== ARCHIVE AD ERROR === UserId: {}, AdID: {}, Duration: {}ms, Error: {} ===",
-                            userId, adId, duration, error.getMessage());
+                    log.info("=== NOTE: ARCHIVED AD IMAGES PRESERVED === AdID: {} ===", adId);
                 });
     }
 
@@ -280,39 +281,66 @@ public class UserAdsService {
     }
 
     // ===========================
-    // DELETE AD FUNCTIONALITY
+    // ENHANCED DELETE WITH COMPLETE CLEANUP
     // ===========================
 
     @Transactional
     public Mono<Void> deleteAd(String userId, Long adId) {
         long startTime = System.currentTimeMillis();
-        log.info("=== DELETE AD START === UserId: {}, AdID: {} ===", userId, adId);
+        log.info("=== DELETE AD WITH IMAGE CLEANUP START === UserId: {}, AdID: {} ===", userId, adId);
 
         return validateAdOwnership(userId, adId)
                 .flatMap(ad -> {
                     // Business rule: Only allow deletion of ads with low interaction
                     if (ad.getViewsCount() != null && ad.getViewsCount() > 10) {
-                        log.warn("=== HIGH INTERACTION AD DELETION === AdID: {}, Views: {} ===",
+                        log.warn("=== HIGH INTERACTION AD DELETION BLOCKED === AdID: {}, Views: {} ===",
                                 adId, ad.getViewsCount());
                         return Mono.error(new IllegalStateException(
                                 "Cannot delete advertisement with high interaction. Consider archiving instead."));
                     }
 
-                    log.info("=== DELETING AD === AdID: {}, Title: '{}', Views: {} ===",
+                    log.info("=== STARTING COMPLETE AD DELETION === AdID: {}, Title: '{}', Views: {} ===",
                             adId, ad.getTitle(), ad.getViewsCount());
 
-                    return adRepository.deleteByIdAndUserId(adId, userId);
-                })
-                .doOnSuccess(result -> {
-                    long duration = System.currentTimeMillis() - startTime;
-                    log.info("=== DELETE AD SUCCESS === UserId: {}, AdID: {}, Duration: {}ms ===",
-                            userId, adId, duration);
+                    // Step 1: Delete all images from S3 and database
+                    return deleteAllAdImagesComplete(adId)
+                            // Step 2: Delete the ad (cascade will handle remaining DB relationships)
+                            .then(adRepository.deleteByIdAndUserId(adId, userId))
+                            .doOnSuccess(result -> {
+                                long duration = System.currentTimeMillis() - startTime;
+                                log.info("=== DELETE AD COMPLETE SUCCESS === UserId: {}, AdID: {}, Duration: {}ms ===",
+                                        userId, adId, duration);
+                            });
                 })
                 .doOnError(error -> {
                     long duration = System.currentTimeMillis() - startTime;
-                    log.error("=== DELETE AD ERROR === UserId: {}, AdID: {}, Duration: {}ms, Error: {} ===",
-                            userId, adId, duration, error.getMessage());
+                    log.error("=== DELETE AD WITH CLEANUP ERROR === UserId: {}, AdID: {}, Duration: {}ms, Error: {} ===",
+                            userId, adId, duration, error.getMessage(), error);
                 });
+    }
+
+    /**
+     * Deletes all images for an ad from both S3 and database
+     */
+    private Mono<Void> deleteAllAdImagesComplete(Long adId) {
+        log.info("=== DELETING ALL AD IMAGES === AdID: {} ===", adId);
+
+        return imageRepository.findByAdIdOrderByDisplayOrder(adId)
+                .doOnNext(image -> log.debug("=== FOUND IMAGE TO DELETE === ImageID: {}, S3Key: '{}' ===",
+                        image.getId(), image.getS3Key()))
+                .flatMap(image -> {
+                    // Delete from S3 first, then database record will be deleted by CASCADE
+                    return imageService.deleteFromS3(image.getS3Key())
+                            .doOnSuccess(result -> log.debug("=== S3 IMAGE DELETED === S3Key: '{}' ===", image.getS3Key()))
+                            .onErrorResume(s3Error -> {
+                                // Log S3 error but don't fail the entire deletion
+                                log.error("=== S3 DELETE FAILED === S3Key: '{}', Error: {} ===",
+                                        image.getS3Key(), s3Error.getMessage());
+                                return Mono.empty(); // Continue with other deletions
+                            });
+                })
+                .then()
+                .doOnSuccess(result -> log.info("=== ALL AD IMAGES S3 CLEANUP COMPLETE === AdID: {} ===", adId));
     }
 
     // ===========================
