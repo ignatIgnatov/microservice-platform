@@ -11,7 +11,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-// Main request DTO
 @Data
 @Builder
 @NoArgsConstructor
@@ -43,9 +42,8 @@ public class BoatAdRequest {
     @NotNull(message = "Ad type is required")
     private AdType adType;
 
-    private String userEmail; // Set from JWT
+    private String userEmail;
 
-    // Category-specific specifications
     private BoatSpecificationDto boatSpec;
     private JetSkiSpecificationDto jetSkiSpec;
     private TrailerSpecificationDto trailerSpec;

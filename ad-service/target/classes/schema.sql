@@ -40,6 +40,11 @@ CREATE TABLE IF NOT EXISTS ads (
     rejection_reason TEXT,
     approved_by_user_id VARCHAR(100),
     approved_at TIMESTAMP,
+    archived BOOLEAN DEFAULT false,
+    archived_at TIMESTAMP NULL,
+    edit_count INTEGER DEFAULT 0,
+    last_edited_at TIMESTAMP NULL,
+
 
     -- Constraints
     CONSTRAINT valid_price_for_fixed_type
@@ -281,6 +286,10 @@ CREATE INDEX IF NOT EXISTS idx_ads_active ON ads(active);
 CREATE INDEX IF NOT EXISTS idx_ads_created_at ON ads(created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_ads_views_count ON ads(views_count DESC);
 CREATE INDEX IF NOT EXISTS idx_ads_featured ON ads(featured);
+CREATE INDEX IF NOT EXISTS idx_ads_archived ON ads(archived);
+CREATE INDEX IF NOT EXISTS idx_ads_user_archived ON ads(user_id, archived);
+CREATE INDEX IF NOT EXISTS idx_ads_archived_at ON ads(archived_at);
+CREATE INDEX IF NOT EXISTS idx_ads_last_edited ON ads(last_edited_at);
 
 -- Composite indexes for common queries
 CREATE INDEX IF NOT EXISTS idx_ads_category_active_created ON ads(category, active, created_at DESC);

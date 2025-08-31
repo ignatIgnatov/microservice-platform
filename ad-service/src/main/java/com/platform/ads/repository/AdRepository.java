@@ -8,6 +8,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.Map;
 
 @Repository
@@ -77,4 +78,128 @@ public interface AdRepository extends ReactiveCrudRepository<Ad, Long> {
             BigDecimal minPrice, BigDecimal maxPrice, String adType,
             Boolean active, String sortBy
     );
+
+    // Get all ads by user ID (for user's dashboard)
+    @Query("""
+        SELECT * FROM ads 
+        WHERE user_id = :userId 
+        ORDER BY created_at DESC
+        """)
+    Flux<Ad> findByUserId(String userId);
+
+    // Get user's ads with status filter
+    @Query("""
+        SELECT * FROM ads 
+        WHERE user_id = :userId 
+        AND (:active IS NULL OR active = :active)
+        ORDER BY created_at DESC
+        """)
+    Flux<Ad> findByUserIdAndActive(String userId, Boolean active);
+
+    // Get user's ads by category
+    @Query("""
+        SELECT * FROM ads 
+        WHERE user_id = :userId 
+        AND (:category IS NULL OR category = :category)
+        ORDER BY created_at DESC
+        """)
+    Flux<Ad> findByUserIdAndCategory(String userId, String category);
+
+    // Get user's ads with full filtering
+    @Query("""
+        SELECT * FROM ads 
+        WHERE user_id = :userId
+        AND (:active IS NULL OR active = :active)
+        AND (:category IS NULL OR category = :category)
+        ORDER BY 
+            CASE WHEN :sortBy = 'OLDEST' THEN created_at END ASC,
+            CASE WHEN :sortBy = 'MOST_VIEWED' THEN views_count END DESC,
+            CASE WHEN :sortBy = 'FEATURED' THEN featured END DESC,
+            created_at DESC
+        """)
+    Flux<Ad> findUserAdsWithFilters(String userId, Boolean active, String category, String sortBy);
+
+    // Count user's total ads
+    @Query("SELECT COUNT(*) FROM ads WHERE user_id = :userId")
+    Mono<Long> countByUserId(String userId);
+
+    // Count user's active ads
+    @Query("SELECT COUNT(*) FROM ads WHERE user_id = :userId AND active = true")
+    Mono<Long> countActiveByUserId(String userId);
+
+    // Get user's most viewed ad
+    @Query("""
+        SELECT * FROM ads 
+        WHERE user_id = :userId 
+        ORDER BY views_count DESC 
+        LIMIT 1
+        """)
+    Mono<Ad> findMostViewedByUserId(String userId);
+
+    // Check if user owns the ad
+    @Query("SELECT COUNT(*) > 0 FROM ads WHERE id = :adId AND user_id = :userId")
+    Mono<Boolean> isAdOwnedByUser(Long adId, String userId);
+
+    // Update ad basic information
+    @Query("""
+        UPDATE ads SET 
+            title = :title,
+            description = :description,
+            quick_description = :quickDescription,
+            price_amount = :priceAmount,
+            price_type = :priceType,
+            including_vat = :includingVat,
+            location = :location,
+            updated_at = :updatedAt,
+            edit_count = COALESCE(edit_count, 0) + 1,
+            last_edited_at = :lastEditedAt
+        WHERE id = :adId AND user_id = :userId
+        """)
+    Mono<Void> updateAdBasicInfo(
+            Long adId, String userId, String title, String description, String quickDescription,
+            BigDecimal priceAmount, String priceType, Boolean includingVat, String location,
+            LocalDateTime updatedAt, LocalDateTime lastEditedAt
+    );
+
+    // Archive ad
+    @Query("""
+        UPDATE ads SET 
+            archived = true,
+            archived_at = :archivedAt,
+            active = false,
+            updated_at = :updatedAt
+        WHERE id = :adId AND user_id = :userId
+        """)
+    Mono<Void> archiveAd(Long adId, String userId, LocalDateTime archivedAt, LocalDateTime updatedAt);
+
+    // Unarchive ad
+    @Query("""
+        UPDATE ads SET 
+            archived = false,
+            archived_at = NULL,
+            active = true,
+            updated_at = :updatedAt
+        WHERE id = :adId AND user_id = :userId
+        """)
+    Mono<Void> unarchiveAd(Long adId, String userId, LocalDateTime updatedAt);
+
+    // Delete ad and all related specifications (cascade will handle specifications)
+    @Query("DELETE FROM ads WHERE id = :adId AND user_id = :userId")
+    Mono<Void> deleteByIdAndUserId(Long adId, String userId);
+
+    // Get user's archived ads
+    @Query("""
+        SELECT * FROM ads 
+        WHERE user_id = :userId AND archived = true
+        ORDER BY archived_at DESC
+        """)
+    Flux<Ad> findArchivedByUserId(String userId);
+
+    // Get user's non-archived ads
+    @Query("""
+        SELECT * FROM ads 
+        WHERE user_id = :userId AND (archived IS NULL OR archived = false)
+        ORDER BY created_at DESC
+        """)
+    Flux<Ad> findNonArchivedByUserId(String userId);
 }

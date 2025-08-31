@@ -16,10 +16,12 @@ com\platform\ads\dto\EngineSearchFilters$EngineSearchFiltersBuilder.class
 com\platform\ads\controller\BoatMarketplaceController.class
 com\platform\ads\dto\PartsSpecificationDto$PartsSpecificationDtoBuilder.class
 com\platform\ads\entity\ServicesSpecification$ServicesSpecificationBuilder.class
+com\platform\ads\controller\UserAdsController.class
 com\platform\ads\dto\enums\WorkingFrequency.class
 com\platform\ads\entity\PartsSpecification$PartsSpecificationBuilder.class
 com\platform\ads\dto\MarineElectronicsSpecificationDto$MarineElectronicsSpecificationDtoBuilder.class
 com\platform\ads\dto\enums\FishingTechnique.class
+com\platform\ads\dto\UserAdsStatisticsResponse.class
 com\platform\ads\dto\MarineElectronicsSpecificationDto$DepthRange.class
 com\platform\ads\exception\InvalidPriceException.class
 com\platform\ads\config\SecurityConfig.class
@@ -42,6 +44,7 @@ com\platform\ads\dto\BoatMarketplaceStatsResponse.class
 com\platform\ads\dto\MarineElectronicsSpecificationDto$Voltage.class
 com\platform\ads\entity\Ad.class
 com\platform\ads\dto\BoatSpecificationResponse$BoatSpecificationResponseBuilder.class
+com\platform\ads\dto\UpdateAdRequest$UpdateAdRequestBuilder.class
 com\platform\ads\dto\EngineSearchFilters.class
 com\platform\ads\entity\EngineSpecification.class
 com\platform\ads\service\BoatMarketplaceService$UserValidationResponse.class
@@ -120,6 +123,7 @@ com\platform\ads\repository\AdRepositoryCustomImpl.class
 com\platform\ads\exception\ErrorResponse$ErrorResponseBuilder.class
 com\platform\ads\dto\BoatSpecificationDto$ConsoleType.class
 com\platform\ads\dto\BoatSpecificationDto$EngineType.class
+com\platform\ads\service\UserAdsService.class
 com\platform\ads\dto\PartsSpecificationResponse$PartsSpecificationResponseBuilder.class
 com\platform\ads\dto\TrailerSearchFilters.class
 com\platform\ads\dto\enums\TrollingMotorBrand.class
@@ -184,6 +188,7 @@ com\platform\ads\dto\MarineElectronicsSpecificationDto$Frequency.class
 com\platform\ads\dto\TrailerSpecificationResponse$TrailerSpecificationResponseBuilder.class
 com\platform\ads\dto\enums\ServiceType.class
 com\platform\ads\dto\TrailerSearchFilters$TrailerSearchFiltersBuilder.class
+com\platform\ads\dto\UpdateAdRequest.class
 com\platform\ads\dto\enums\Mounting.class
 com\platform\ads\dto\PriceInfo.class
 com\platform\ads\dto\EngineSpecificationDto$ShaftLength.class
@@ -211,3 +216,4 @@ com\platform\ads\exception\ErrorResponse.class
 com\platform\ads\dto\EngineSpecificationDto$EngineSystemType.class
 com\platform\ads\dto\TrailerSpecificationDto$TrailerType.class
 com\platform\ads\exception\UnsupportedFileTypeException.class
+com\platform\ads\dto\UserAdsStatisticsResponse$UserAdsStatisticsResponseBuilder.class

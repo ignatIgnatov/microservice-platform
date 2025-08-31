@@ -36,10 +36,13 @@ public class Ad {
     private Boolean active;
     private Integer viewsCount;
     private Boolean featured;
-
-    // New fields for approval workflow
     private String approvalStatus; // PENDING, APPROVED, REJECTED
     private String rejectionReason;
     private String approvedByUserId;
     private LocalDateTime approvedAt;
+    private Boolean archived; // New field for archiving
+    private LocalDateTime archivedAt;
+    private Integer editCount; // Track how many times ad was edited
+    private LocalDateTime lastEditedAt;
+
 }

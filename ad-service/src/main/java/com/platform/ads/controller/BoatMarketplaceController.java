@@ -367,112 +367,112 @@ public class BoatMarketplaceController {
     // CATEGORY-SPECIFIC SEARCH ENDPOINTS
     // ===========================
 
-    @PostMapping("/boats/search")
-    @Operation(
-            summary = "Search boats and yachts",
-            description = "Search specifically in the boats and yachts category with boat-specific filters"
-    )
-    @Tag(name = "Category-Specific Search")
-    public Flux<BoatAdResponse> searchBoats(
-            @Parameter(description = "Boat-specific search criteria")
-            @Valid @RequestBody BoatSearchRequest searchRequest) {
-
-        searchRequest.setCategory(BoatCategory.BOATS_AND_YACHTS);
-        log.info("=== SEARCH BOATS === Brand: {}, Model: {}, YearRange: {}-{} ===",
-                searchRequest.getBrand(), searchRequest.getModel(),
-                searchRequest.getMinYear(), searchRequest.getMaxYear());
-
-        return searchService.searchAds(searchRequest);
-    }
-
-    @PostMapping("/jetskis/search")
-    @Operation(
-            summary = "Search jet skis",
-            description = "Search specifically in the jet skis category"
-    )
-    @Tag(name = "Category-Specific Search")
-    public Flux<BoatAdResponse> searchJetSkis(@Valid @RequestBody BoatSearchRequest searchRequest) {
-        searchRequest.setCategory(BoatCategory.JET_SKIS);
-        log.info("=== SEARCH JET SKIS === Brand: {}, Model: {} ===",
-                searchRequest.getBrand(), searchRequest.getModel());
-        return searchService.searchAds(searchRequest);
-    }
-
-    @PostMapping("/trailers/search")
-    @Operation(
-            summary = "Search trailers",
-            description = "Search specifically in the trailers category"
-    )
-    @Tag(name = "Category-Specific Search")
-    public Flux<BoatAdResponse> searchTrailers(@Valid @RequestBody BoatSearchRequest searchRequest) {
-        searchRequest.setCategory(BoatCategory.TRAILERS);
-        log.info("=== SEARCH TRAILERS === Brand: {} ===", searchRequest.getBrand());
-        return searchService.searchAds(searchRequest);
-    }
-
-    @PostMapping("/engines/search")
-    @Operation(
-            summary = "Search engines",
-            description = "Search specifically in the engines category"
-    )
-    @Tag(name = "Category-Specific Search")
-    public Flux<BoatAdResponse> searchEngines(@Valid @RequestBody BoatSearchRequest searchRequest) {
-        searchRequest.setCategory(BoatCategory.ENGINES);
-        log.info("=== SEARCH ENGINES === Brand: {}, YearRange: {}-{} ===",
-                searchRequest.getBrand(), searchRequest.getMinYear(), searchRequest.getMaxYear());
-        return searchService.searchAds(searchRequest);
-    }
-
-    @PostMapping("/electronics/search")
-    @Operation(
-            summary = "Search marine electronics",
-            description = "Search marine electronics including sonars, probes, and trolling motors"
-    )
-    @Tag(name = "Category-Specific Search")
-    public Flux<BoatAdResponse> searchMarineElectronics(@Valid @RequestBody BoatSearchRequest searchRequest) {
-        searchRequest.setCategory(BoatCategory.MARINE_ELECTRONICS);
-        log.info("=== SEARCH MARINE ELECTRONICS === Type: {}, Brand: {}, ScreenSize: {} ===",
-                searchRequest.getElectronicsType(), searchRequest.getBrand(), searchRequest.getScreenSize());
-        return searchService.searchAds(searchRequest);
-    }
-
-    @PostMapping("/fishing/search")
-    @Operation(
-            summary = "Search fishing equipment",
-            description = "Search fishing rods, reels, lures, and other fishing equipment"
-    )
-    @Tag(name = "Category-Specific Search")
-    public Flux<BoatAdResponse> searchFishing(@Valid @RequestBody BoatSearchRequest searchRequest) {
-        searchRequest.setCategory(BoatCategory.FISHING);
-        log.info("=== SEARCH FISHING === Type: {}, Technique: {}, TargetFish: {} ===",
-                searchRequest.getFishingType(), searchRequest.getFishingTechnique(), searchRequest.getTargetFish());
-        return searchService.searchAds(searchRequest);
-    }
-
-    @PostMapping("/parts/search")
-    @Operation(
-            summary = "Search boat parts",
-            description = "Search for boat parts, propellers, impellers, and accessories"
-    )
-    @Tag(name = "Category-Specific Search")
-    public Flux<BoatAdResponse> searchParts(@Valid @RequestBody BoatSearchRequest searchRequest) {
-        searchRequest.setCategory(BoatCategory.PARTS);
-        log.info("=== SEARCH PARTS === Type: {} ===", searchRequest.getPartType());
-        return searchService.searchAds(searchRequest);
-    }
-
-    @PostMapping("/services/search")
-    @Operation(
-            summary = "Search boat services",
-            description = "Search for boat repair services, engine services, and marine service providers"
-    )
-    @Tag(name = "Category-Specific Search")
-    public Flux<BoatAdResponse> searchServices(@Valid @RequestBody BoatSearchRequest searchRequest) {
-        searchRequest.setCategory(BoatCategory.SERVICES);
-        log.info("=== SEARCH SERVICES === Type: {}, AuthorizedService: {}, SupportedBrand: {} ===",
-                searchRequest.getServiceType(), searchRequest.getAuthorizedService(), searchRequest.getSupportedBrand());
-        return searchService.searchAds(searchRequest);
-    }
+//    @PostMapping("/boats/search")
+//    @Operation(
+//            summary = "Search boats and yachts",
+//            description = "Search specifically in the boats and yachts category with boat-specific filters"
+//    )
+//    @Tag(name = "Category-Specific Search")
+//    public Flux<BoatAdResponse> searchBoats(
+//            @Parameter(description = "Boat-specific search criteria")
+//            @Valid @RequestBody BoatSearchRequest searchRequest) {
+//
+//        searchRequest.setCategory(BoatCategory.BOATS_AND_YACHTS);
+//        log.info("=== SEARCH BOATS === Brand: {}, Model: {}, YearRange: {}-{} ===",
+//                searchRequest.getBrand(), searchRequest.getModel(),
+//                searchRequest.getMinYear(), searchRequest.getMaxYear());
+//
+//        return searchService.searchAds(searchRequest);
+//    }
+//
+//    @PostMapping("/jetskis/search")
+//    @Operation(
+//            summary = "Search jet skis",
+//            description = "Search specifically in the jet skis category"
+//    )
+//    @Tag(name = "Category-Specific Search")
+//    public Flux<BoatAdResponse> searchJetSkis(@Valid @RequestBody BoatSearchRequest searchRequest) {
+//        searchRequest.setCategory(BoatCategory.JET_SKIS);
+//        log.info("=== SEARCH JET SKIS === Brand: {}, Model: {} ===",
+//                searchRequest.getBrand(), searchRequest.getModel());
+//        return searchService.searchAds(searchRequest);
+//    }
+//
+//    @PostMapping("/trailers/search")
+//    @Operation(
+//            summary = "Search trailers",
+//            description = "Search specifically in the trailers category"
+//    )
+//    @Tag(name = "Category-Specific Search")
+//    public Flux<BoatAdResponse> searchTrailers(@Valid @RequestBody BoatSearchRequest searchRequest) {
+//        searchRequest.setCategory(BoatCategory.TRAILERS);
+//        log.info("=== SEARCH TRAILERS === Brand: {} ===", searchRequest.getBrand());
+//        return searchService.searchAds(searchRequest);
+//    }
+//
+//    @PostMapping("/engines/search")
+//    @Operation(
+//            summary = "Search engines",
+//            description = "Search specifically in the engines category"
+//    )
+//    @Tag(name = "Category-Specific Search")
+//    public Flux<BoatAdResponse> searchEngines(@Valid @RequestBody BoatSearchRequest searchRequest) {
+//        searchRequest.setCategory(BoatCategory.ENGINES);
+//        log.info("=== SEARCH ENGINES === Brand: {}, YearRange: {}-{} ===",
+//                searchRequest.getBrand(), searchRequest.getMinYear(), searchRequest.getMaxYear());
+//        return searchService.searchAds(searchRequest);
+//    }
+//
+//    @PostMapping("/electronics/search")
+//    @Operation(
+//            summary = "Search marine electronics",
+//            description = "Search marine electronics including sonars, probes, and trolling motors"
+//    )
+//    @Tag(name = "Category-Specific Search")
+//    public Flux<BoatAdResponse> searchMarineElectronics(@Valid @RequestBody BoatSearchRequest searchRequest) {
+//        searchRequest.setCategory(BoatCategory.MARINE_ELECTRONICS);
+//        log.info("=== SEARCH MARINE ELECTRONICS === Type: {}, Brand: {}, ScreenSize: {} ===",
+//                searchRequest.getElectronicsType(), searchRequest.getBrand(), searchRequest.getScreenSize());
+//        return searchService.searchAds(searchRequest);
+//    }
+//
+//    @PostMapping("/fishing/search")
+//    @Operation(
+//            summary = "Search fishing equipment",
+//            description = "Search fishing rods, reels, lures, and other fishing equipment"
+//    )
+//    @Tag(name = "Category-Specific Search")
+//    public Flux<BoatAdResponse> searchFishing(@Valid @RequestBody BoatSearchRequest searchRequest) {
+//        searchRequest.setCategory(BoatCategory.FISHING);
+//        log.info("=== SEARCH FISHING === Type: {}, Technique: {}, TargetFish: {} ===",
+//                searchRequest.getFishingType(), searchRequest.getFishingTechnique(), searchRequest.getTargetFish());
+//        return searchService.searchAds(searchRequest);
+//    }
+//
+//    @PostMapping("/parts/search")
+//    @Operation(
+//            summary = "Search boat parts",
+//            description = "Search for boat parts, propellers, impellers, and accessories"
+//    )
+//    @Tag(name = "Category-Specific Search")
+//    public Flux<BoatAdResponse> searchParts(@Valid @RequestBody BoatSearchRequest searchRequest) {
+//        searchRequest.setCategory(BoatCategory.PARTS);
+//        log.info("=== SEARCH PARTS === Type: {} ===", searchRequest.getPartType());
+//        return searchService.searchAds(searchRequest);
+//    }
+//
+//    @PostMapping("/services/search")
+//    @Operation(
+//            summary = "Search boat services",
+//            description = "Search for boat repair services, engine services, and marine service providers"
+//    )
+//    @Tag(name = "Category-Specific Search")
+//    public Flux<BoatAdResponse> searchServices(@Valid @RequestBody BoatSearchRequest searchRequest) {
+//        searchRequest.setCategory(BoatCategory.SERVICES);
+//        log.info("=== SEARCH SERVICES === Type: {}, AuthorizedService: {}, SupportedBrand: {} ===",
+//                searchRequest.getServiceType(), searchRequest.getAuthorizedService(), searchRequest.getSupportedBrand());
+//        return searchService.searchAds(searchRequest);
+//    }
 
     // ===========================
     // UTILITY METHODS
