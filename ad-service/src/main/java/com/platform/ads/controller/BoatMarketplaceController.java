@@ -114,7 +114,7 @@ public class BoatMarketplaceController {
 //                });
     }
 
-    @GetMapping("/ads/{id}")
+    @GetMapping("/{id}")
     @Operation(
             summary = "Get advertisement by ID",
             description = "Retrieves a specific advertisement by its ID. Automatically increments view count."
@@ -167,7 +167,7 @@ public class BoatMarketplaceController {
     // SEARCH ENDPOINTS
     // ===========================
 
-    @PostMapping("/ads/search")
+    @PostMapping("/search")
     @Operation(
             summary = "Advanced search for advertisements",
             description = "Performs advanced search across all advertisement categories with filtering, sorting, and pagination support"
@@ -210,7 +210,7 @@ public class BoatMarketplaceController {
 //                });
     }
 
-    @GetMapping("/ads/category/{category}")
+    @GetMapping("/category/{category}")
     @Operation(
             summary = "Get advertisements by category",
             description = "Retrieves all active advertisements for a specific category with optional limit"
@@ -244,7 +244,7 @@ public class BoatMarketplaceController {
                 });
     }
 
-    @GetMapping("/ads/location")
+    @GetMapping("/location")
     @Operation(
             summary = "Search advertisements by location",
             description = "Retrieves advertisements filtered by location with fuzzy matching"
@@ -271,7 +271,7 @@ public class BoatMarketplaceController {
     // FEATURED & TRENDING ENDPOINTS
     // ===========================
 
-    @GetMapping("/ads/featured")
+    @GetMapping("/featured")
     @Operation(
             summary = "Get featured advertisements",
             description = "Retrieves all currently featured advertisements across all categories"
@@ -292,7 +292,7 @@ public class BoatMarketplaceController {
                 });
     }
 
-    @GetMapping("/ads/recent")
+    @GetMapping("/recent")
     @Operation(
             summary = "Get most recent advertisements",
             description = "Retrieves the most recently created advertisements"
@@ -311,7 +311,7 @@ public class BoatMarketplaceController {
                 });
     }
 
-    @GetMapping("/ads/popular")
+    @GetMapping("/popular")
     @Operation(
             summary = "Get most viewed advertisements",
             description = "Retrieves advertisements sorted by view count in descending order"

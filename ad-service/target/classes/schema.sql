@@ -1,4 +1,3 @@
--- src/main/resources/schema.sql
 -- Main database schema for QHTI.BG Boat Marketplace
 
 -- Drop existing tables if they exist (for development only)
@@ -40,7 +39,7 @@ CREATE TABLE IF NOT EXISTS ads (
     approval_status VARCHAR(20) DEFAULT 'APPROVED',
     rejection_reason TEXT,
     approved_by_user_id VARCHAR(100),
-    approved_at TIMESTAMP
+    approved_at TIMESTAMP,
 
     -- Constraints
     CONSTRAINT valid_price_for_fixed_type
@@ -62,7 +61,7 @@ CREATE TABLE IF NOT EXISTS boat_specifications (
     width DECIMAL(6,2) NOT NULL CHECK (width > 0 AND width <= 100),
     draft DECIMAL(5,2) CHECK (draft >= 0 AND draft <= 50),
     max_people INTEGER NOT NULL CHECK (max_people > 0 AND max_people <= 1000),
-    year INTEGER NOT NULL CHECK (year >= 1900 AND year <= EXTRACT(YEAR FROM CURRENT_DATE) + 1),
+    year INTEGER NOT NULL CHECK (year >= 1900 AND year <= EXTRACT(YEAR FROM CURRENT_DATE) + 5), -- Changed to +5 years
     in_warranty BOOLEAN NOT NULL,
     weight DECIMAL(8,2) NOT NULL CHECK (weight > 0),
     fuel_capacity DECIMAL(7,2) NOT NULL CHECK (fuel_capacity >= 0),
@@ -89,7 +88,7 @@ CREATE TABLE IF NOT EXISTS jetski_specifications (
     modification VARCHAR(200),
     is_registered BOOLEAN NOT NULL,
     horsepower INTEGER NOT NULL CHECK (horsepower > 0 AND horsepower <= 1000),
-    year INTEGER NOT NULL CHECK (year >= 1900 AND year <= EXTRACT(YEAR FROM CURRENT_DATE) + 1),
+    year INTEGER NOT NULL CHECK (year >= 1900 AND year <= EXTRACT(YEAR FROM CURRENT_DATE) + 5), -- Changed to +5 years
     weight DECIMAL(6,2) NOT NULL CHECK (weight > 0),
     fuel_capacity DECIMAL(6,2) NOT NULL CHECK (fuel_capacity >= 0),
     operating_hours INTEGER NOT NULL CHECK (operating_hours >= 0 AND operating_hours <= 50000),
@@ -114,7 +113,7 @@ CREATE TABLE IF NOT EXISTS trailer_specifications (
     load_capacity DECIMAL(8,2) NOT NULL CHECK (load_capacity > 0),
     length DECIMAL(5,2) NOT NULL CHECK (length > 0),
     width DECIMAL(5,2) NOT NULL CHECK (width > 0),
-    year INTEGER NOT NULL CHECK (year >= 1900 AND year <= EXTRACT(YEAR FROM CURRENT_DATE) + 1),
+    year INTEGER NOT NULL CHECK (year >= 1900 AND year <= EXTRACT(YEAR FROM CURRENT_DATE) + 5), -- Changed to +5 years
     suspension_type VARCHAR(50) CHECK (suspension_type IN ('DOUBLE_TORSION', 'TORSION', 'LEAF_SPRING', 'RIGID')),
     keel_rollers VARCHAR(30) CHECK (keel_rollers IN ('ALL', 'TWO_ROLLERS', 'THREE_ROLLERS', 'FOUR_ROLLERS', 'FIVE_ROLLERS', 'MULTIPLE_ROLLERS')),
     in_warranty BOOLEAN NOT NULL,
@@ -138,7 +137,7 @@ CREATE TABLE IF NOT EXISTS engine_specifications (
     displacement_cc INTEGER CHECK (displacement_cc > 0),
     rpm INTEGER CHECK (rpm > 0),
     weight DECIMAL(6,2) CHECK (weight > 0),
-    year INTEGER NOT NULL CHECK (year >= 1900 AND year <= EXTRACT(YEAR FROM CURRENT_DATE) + 1),
+    year INTEGER NOT NULL CHECK (year >= 1900 AND year <= EXTRACT(YEAR FROM CURRENT_DATE) + 5), -- Changed to +5 years
     fuel_capacity DECIMAL(6,2) NOT NULL CHECK (fuel_capacity >= 0),
     ignition_type VARCHAR(20) NOT NULL CHECK (ignition_type IN ('ALL', 'MANUAL', 'ELECTRIC')),
     control_type VARCHAR(20) NOT NULL CHECK (control_type IN ('ALL', 'HANDLE', 'HYDRAULIC')),
@@ -184,17 +183,16 @@ CREATE TABLE IF NOT EXISTS trailer_specifications_features (
     CONSTRAINT unique_trailer_feature UNIQUE(trailer_spec_id, feature)
 );
 
-
 -- Marine Electronics Specifications Table
-CREATE TABLE marine_electronics_specifications (
+CREATE TABLE IF NOT EXISTS marine_electronics_specifications (
     id BIGSERIAL PRIMARY KEY,
     ad_id BIGINT NOT NULL REFERENCES ads(id) ON DELETE CASCADE,
     electronics_type VARCHAR(50) NOT NULL,
     brand VARCHAR(100) NOT NULL,
     model VARCHAR(100),
-    year INTEGER,
+    year INTEGER CHECK (year IS NULL OR (year >= 1900 AND year <= EXTRACT(YEAR FROM CURRENT_DATE) + 5)), -- Fixed constraint
     in_warranty BOOLEAN,
-    condition VARCHAR(20) NOT NULL,
+    condition VARCHAR(20) NOT NULL CHECK (condition IN ('ALL', 'NEW', 'USED', 'FOR_PARTS')),
 
     -- Sonar specific fields
     working_frequency VARCHAR(20),
@@ -213,7 +211,7 @@ CREATE TABLE marine_electronics_specifications (
     mounting VARCHAR(30),
 
     -- Trolling motor specific fields
-    thrust INTEGER,
+    thrust INTEGER CHECK (thrust IS NULL OR thrust >= 0),
     voltage VARCHAR(10),
     tube_length VARCHAR(20),
     control_type VARCHAR(20),
@@ -227,32 +225,32 @@ CREATE TABLE marine_electronics_specifications (
 );
 
 -- Fishing Specifications Table
-CREATE TABLE fishing_specifications (
+CREATE TABLE IF NOT EXISTS fishing_specifications (
     id BIGSERIAL PRIMARY KEY,
     ad_id BIGINT NOT NULL REFERENCES ads(id) ON DELETE CASCADE,
     fishing_type VARCHAR(50) NOT NULL,
     brand VARCHAR(100),
     fishing_technique VARCHAR(30) NOT NULL,
     target_fish VARCHAR(50) NOT NULL,
-    condition VARCHAR(20) NOT NULL,
+    condition VARCHAR(20) NOT NULL CHECK (condition IN ('ALL', 'NEW', 'USED', 'FOR_PARTS')),
 
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Parts Specifications Table
-CREATE TABLE parts_specifications (
+CREATE TABLE IF NOT EXISTS parts_specifications (
     id BIGSERIAL PRIMARY KEY,
     ad_id BIGINT NOT NULL REFERENCES ads(id) ON DELETE CASCADE,
     part_type VARCHAR(50) NOT NULL,
-    condition VARCHAR(20) NOT NULL,
+    condition VARCHAR(20) NOT NULL CHECK (condition IN ('ALL', 'NEW', 'USED', 'FOR_PARTS')),
 
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Services Specifications Table
-CREATE TABLE services_specifications (
+CREATE TABLE IF NOT EXISTS services_specifications (
     id BIGSERIAL PRIMARY KEY,
     ad_id BIGINT NOT NULL REFERENCES ads(id) ON DELETE CASCADE,
     service_type VARCHAR(50) NOT NULL,
@@ -318,13 +316,13 @@ CREATE INDEX IF NOT EXISTS idx_boat_equipment_boat_spec_id ON boat_equipment(boa
 
 -- Create indexes for better query performance
 CREATE INDEX IF NOT EXISTS idx_marine_electronics_specifications_ad_id ON marine_electronics_specifications(ad_id);
-CREATE INDEX idx_marine_electronics_specifications_electronics_type ON marine_electronics_specifications(electronics_type);
-CREATE INDEX idx_marine_electronics_specifications_brand ON marine_electronics_specifications(brand);
+CREATE INDEX IF NOT EXISTS idx_marine_electronics_specifications_electronics_type ON marine_electronics_specifications(electronics_type);
+CREATE INDEX IF NOT EXISTS idx_marine_electronics_specifications_brand ON marine_electronics_specifications(brand);
 
 CREATE INDEX IF NOT EXISTS idx_fishing_specifications_ad_id ON fishing_specifications(ad_id);
 CREATE INDEX IF NOT EXISTS idx_fishing_specifications_fishing_type ON fishing_specifications(fishing_type);
 CREATE INDEX IF NOT EXISTS idx_fishing_specifications_fishing_technique ON fishing_specifications(fishing_technique);
-CREATE INDEX idx_fishing_specifications_target_fish ON fishing_specifications(target_fish);
+CREATE INDEX IF NOT EXISTS idx_fishing_specifications_target_fish ON fishing_specifications(target_fish);
 
 CREATE INDEX IF NOT EXISTS idx_parts_specifications_ad_id ON parts_specifications(ad_id);
 CREATE INDEX IF NOT EXISTS idx_parts_specifications_part_type ON parts_specifications(part_type);
@@ -347,10 +345,4 @@ SELECT * FROM ads WHERE active = true;
 CREATE OR REPLACE VIEW featured_ads AS
 SELECT * FROM ads WHERE active = true AND featured = true;
 
--- Insert some sample data for development/testing
--- INSERT INTO ads (title, description, category, price_amount, price_type, location, ad_type, user_email, user_id, user_first_name, user_last_name, active)
--- VALUES
---     ('Красива моторна лодка', 'Отлична лодка в перфектно състояние. Подходяща за семейни разходки и риболов.', 'BOATS_AND_YACHTS', 15000.00, 'FIXED_PRICE', 'Варна', 'FROM_PRIVATE', 'test@example.com', 'user123', 'Иван', 'Петров', true);
-
 COMMIT;
-

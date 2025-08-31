@@ -27,6 +27,7 @@ C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform
 C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\dto\enums\MountingType.java
 C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\dto\enums\TubeLength.java
 C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\exception\AdNotActiveException.java
+C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\repository\BoatSpecificationSearchRepository.java
 C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\dto\enums\BoatCategory.java
 C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\repository\EngineSpecificationRepository.java
 C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\dto\DetailedStatsResponse.java
@@ -36,9 +37,11 @@ C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform
 C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\dto\JetSkiSpecificationDto.java
 C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\dto\enums\AdType.java
 C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\dto\UserStatisticsResponse.java
+C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\repository\EngineSpecificationSearchRepository.java
 C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\entity\JetSkiSpecification.java
 C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\entity\Ad.java
 C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\exception\SearchTimeoutException.java
+C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\repository\FishingSpecificationSearchRepository.java
 C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\service\BoatSearchService.java
 C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\dto\enums\Power.java
 C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\exception\MandatoryFieldMissingException.java
@@ -46,6 +49,7 @@ C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform
 C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\repository\BoatEquipmentRepository.java
 C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\dto\enums\ScreenSize.java
 C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\dto\PriceInfo.java
+C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\repository\ServicesSpecificationSearchRepository.java
 C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\dto\BoatSpecificationResponse.java
 C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\entity\BoatEquipment.java
 C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\dto\enums\EngineBrand.java
@@ -71,6 +75,7 @@ C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform
 C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\entity\TrailerSpecification.java
 C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\dto\enums\TrollingControlType.java
 C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\dto\JetSkiSpecificationResponse.java
+C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\repository\JetSkiSpecificationSearchRepository.java
 C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\controller\BoatMarketplaceAdminController.java
 C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\exception\UserNotFoundException.java
 C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\service\BoatMarketplaceAdminService.java
@@ -83,6 +88,7 @@ C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform
 C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\exception\AdNotFoundException.java
 C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\config\WebClientConfig.java
 C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\dto\TrailerSpecificationResponse.java
+C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\exception\InvalidFieldValueException.java
 C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\repository\BoatSpecificationRepository.java
 C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\dto\enums\Mounting.java
 C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\exception\InvalidSearchCriteriaException.java
@@ -98,6 +104,7 @@ C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform
 C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\dto\BoatAdRequest.java
 C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\dto\ServicesSpecificationResponse.java
 C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\dto\enums\InteriorFeature.java
+C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\repository\MarineElectronicsSpecificationSearchRepository.java
 C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\exception\InvalidTokenException.java
 C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\repository\BoatExteriorFeatureRepository.java
 C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\dto\FishingSpecificationDto.java
@@ -109,6 +116,8 @@ C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform
 C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\dto\enums\RangeLength.java
 C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\repository\TrailerSpecificationRepository.java
 C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\dto\JetSkiSearchFilters.java
+C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\repository\PartsSpecificationSearchRepository.java
+C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\repository\TrailerSpecificationSearchRepository.java
 C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\exception\ExternalServiceException.java
 C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\dto\enums\FishingType.java
 C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\dto\PartsSpecificationDto.java

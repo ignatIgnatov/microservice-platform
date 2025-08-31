@@ -1,5 +1,6 @@
 com\platform\ads\dto\BoatSpecificationDto$BoatSpecificationDtoBuilder.class
 com\platform\ads\AdServiceApplication.class
+com\platform\ads\exception\InvalidFieldValueException.class
 com\platform\ads\dto\BoatSpecificationDto$FuelType.class
 com\platform\ads\dto\BoatSearchRequest.class
 com\platform\ads\dto\DetailedStatsResponse$DetailedStatsResponseBuilder.class
@@ -10,6 +11,7 @@ com\platform\ads\entity\BoatSpecification$BoatSpecificationBuilder.class
 com\platform\ads\dto\PartsSpecificationDto.class
 com\platform\ads\exception\ImageUploadException.class
 com\platform\ads\dto\PartsSpecificationDto$PartType.class
+com\platform\ads\repository\JetSkiSpecificationSearchRepository.class
 com\platform\ads\dto\EngineSearchFilters$EngineSearchFiltersBuilder.class
 com\platform\ads\controller\BoatMarketplaceController.class
 com\platform\ads\dto\PartsSpecificationDto$PartsSpecificationDtoBuilder.class
@@ -44,6 +46,7 @@ com\platform\ads\dto\EngineSearchFilters.class
 com\platform\ads\entity\EngineSpecification.class
 com\platform\ads\service\BoatMarketplaceService$UserValidationResponse.class
 com\platform\ads\dto\ServicesSpecificationDto.class
+com\platform\ads\repository\TrailerSpecificationSearchRepository.class
 com\platform\ads\dto\enums\FishingType.class
 com\platform\ads\exception\ExternalServiceException.class
 com\platform\ads\dto\enums\ScreenType.class
@@ -53,6 +56,7 @@ com\platform\ads\dto\EngineSpecificationDto$EngineSpecificationDtoBuilder.class
 com\platform\ads\dto\TrailerSpecificationResponse.class
 com\platform\ads\service\BoatMarketplaceService$1.class
 com\platform\ads\dto\JetSkiSpecificationDto$JetSkiFuelType.class
+com\platform\ads\repository\ServicesSpecificationSearchRepository.class
 com\platform\ads\service\BoatSearchService$1.class
 com\platform\ads\dto\enums\ProbeBrand.class
 com\platform\ads\dto\FishingSpecificationDto$FishingSpecificationDtoBuilder.class
@@ -61,6 +65,7 @@ com\platform\ads\dto\enums\TubeLength.class
 com\platform\ads\exception\UserNotFoundException.class
 com\platform\ads\dto\enums\PartType.class
 com\platform\ads\dto\JetSkiSpecificationDto.class
+com\platform\ads\repository\BoatSpecificationSearchRepository.class
 com\platform\ads\repository\BoatInteriorFeatureRepository.class
 com\platform\ads\entity\BoatEquipment.class
 com\platform\ads\service\BoatMarketplaceAdminService.class
@@ -68,6 +73,7 @@ com\platform\ads\dto\enums\TargetFish.class
 com\platform\ads\dto\enums\InteriorFeature.class
 com\platform\ads\dto\enums\Power.class
 com\platform\ads\dto\PriceInfo$PriceType.class
+com\platform\ads\repository\MarineElectronicsSpecificationSearchRepository.class
 com\platform\ads\exception\AdNotFoundException.class
 com\platform\ads\dto\MarineElectronicsSpecificationResponse$MarineElectronicsSpecificationResponseBuilder.class
 com\platform\ads\exception\AdNotActiveException.class
@@ -167,6 +173,7 @@ com\platform\ads\entity\FishingSpecification.class
 com\platform\ads\entity\JetSkiSpecification.class
 com\platform\ads\dto\FishingSpecificationResponse$FishingSpecificationResponseBuilder.class
 com\platform\ads\dto\BoatAdRequest$BoatAdRequestBuilder.class
+com\platform\ads\repository\FishingSpecificationSearchRepository.class
 com\platform\ads\dto\UserStatisticsResponse.class
 com\platform\ads\dto\MarineElectronicsSpecificationDto$TrollingControlType.class
 com\platform\ads\entity\TrailerSpecification$TrailerSpecificationBuilder.class
@@ -188,11 +195,13 @@ com\platform\ads\dto\enums\SonarBrand.class
 com\platform\ads\dto\FishingSpecificationDto.class
 com\platform\ads\dto\MarineElectronicsSpecificationDto$Mounting.class
 com\platform\ads\dto\MarineElectronicsSpecificationDto$ScreenSize.class
+com\platform\ads\repository\PartsSpecificationSearchRepository.class
 com\platform\ads\dto\ServicesSpecificationDto$ServiceType.class
 com\platform\ads\exception\TooManyRequestsException.class
 com\platform\ads\dto\enums\BoatCategory.class
 com\platform\ads\dto\MarineElectronicsSpecificationDto$ScreenType.class
 com\platform\ads\dto\MarineElectronicsSpecificationDto$RangeLength.class
+com\platform\ads\repository\EngineSpecificationSearchRepository.class
 com\platform\ads\entity\MarineElectronicsSpecification$MarineElectronicsSpecificationBuilder.class
 com\platform\ads\repository\ServicesSpecificationRepository.class
 com\platform\ads\exception\SearchTimeoutException.class
