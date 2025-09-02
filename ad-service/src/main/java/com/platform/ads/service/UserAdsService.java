@@ -3,7 +3,7 @@ package com.platform.ads.service;
 import com.platform.ads.dto.BoatAdResponse;
 import com.platform.ads.dto.UpdateAdRequest;
 import com.platform.ads.dto.UserAdsStatisticsResponse;
-import com.platform.ads.dto.enums.BoatCategory;
+import com.platform.ads.dto.enums.MainBoatCategory;
 import com.platform.ads.entity.Ad;
 import com.platform.ads.exception.AdNotFoundException;
 import com.platform.ads.repository.AdImageRepository;
@@ -60,7 +60,7 @@ public class UserAdsService {
                 });
     }
 
-    public Flux<BoatAdResponse> getUserAdsByCategory(String userId, BoatCategory category) {
+    public Flux<BoatAdResponse> getUserAdsByCategory(String userId, MainBoatCategory category) {
         long startTime = System.currentTimeMillis();
         log.info("=== GET USER ADS BY CATEGORY === UserId: {}, Category: {} ===", userId, category);
 
@@ -73,7 +73,7 @@ public class UserAdsService {
                 });
     }
 
-    public Flux<BoatAdResponse> getUserAdsWithFilters(String userId, Boolean active, BoatCategory category, String sortBy) {
+    public Flux<BoatAdResponse> getUserAdsWithFilters(String userId, Boolean active, MainBoatCategory category, String sortBy) {
         long startTime = System.currentTimeMillis();
         log.info("=== GET USER ADS WITH FILTERS === UserId: {}, Active: {}, Category: {}, SortBy: {} ===",
                 userId, active, category, sortBy);

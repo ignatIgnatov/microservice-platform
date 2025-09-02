@@ -2,7 +2,7 @@ package com.platform.ads.service;
 
 import com.platform.ads.dto.BoatAdResponse;
 import com.platform.ads.dto.BoatSearchRequest;
-import com.platform.ads.dto.enums.BoatCategory;
+import com.platform.ads.dto.enums.MainBoatCategory;
 import com.platform.ads.entity.Ad;
 import com.platform.ads.exception.InvalidSearchCriteriaException;
 import com.platform.ads.repository.AdRepository;
@@ -278,7 +278,7 @@ public class BoatSearchService {
     // SIMPLE CATEGORY SEARCH METHODS
     // ===========================
 
-    public Flux<BoatAdResponse> searchByCategory(BoatCategory category) {
+    public Flux<BoatAdResponse> searchByCategory(MainBoatCategory category) {
         log.info("=== SIMPLE CATEGORY SEARCH === Category: {} ===", category);
 
         BoatSearchRequest searchRequest = BoatSearchRequest.builder()

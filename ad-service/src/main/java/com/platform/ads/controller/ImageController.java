@@ -28,7 +28,6 @@ import reactor.core.publisher.Mono;
 @RestController
 @RequestMapping("/ads/images")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*")
 @Tag(name = "Ad Images", description = "Upload and manage advertisement images")
 @SecurityRequirement(name = "bearerAuth")
 public class ImageController {

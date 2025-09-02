@@ -32,6 +32,8 @@ public class BoatSpecificationDto {
     @Size(max = 100, message = "Brand cannot exceed 100 characters")
     private String brand;
 
+    private String brandCategory; // MOTOR_BOATS, SAILBOATS, KAYAKS
+
     @NotBlank(message = "Model is required")
     @Size(max = 100, message = "Model cannot exceed 100 characters")
     private String model;

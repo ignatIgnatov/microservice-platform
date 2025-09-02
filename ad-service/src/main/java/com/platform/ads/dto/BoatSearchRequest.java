@@ -1,7 +1,7 @@
 package com.platform.ads.dto;
 
 import com.platform.ads.dto.enums.AdType;
-import com.platform.ads.dto.enums.BoatCategory;
+import com.platform.ads.dto.enums.MainBoatCategory;
 import lombok.Builder;
 import lombok.Data;
 
@@ -11,7 +11,7 @@ import java.math.BigDecimal;
 @Builder
 public class BoatSearchRequest {
     // Common search criteria
-    private BoatCategory category;
+    private MainBoatCategory category;
     private String location;
     private PriceInfo.PriceType priceType;
     private BigDecimal minPrice;

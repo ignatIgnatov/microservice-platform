@@ -1,7 +1,7 @@
 package com.platform.ads.dto;
 
 import com.platform.ads.dto.enums.AdType;
-import com.platform.ads.dto.enums.BoatCategory;
+import com.platform.ads.dto.enums.MainBoatCategory;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -20,7 +20,7 @@ public class BoatAdResponse {
     private String title;
     private String description;
     private String quickDescription;
-    private BoatCategory category;
+    private MainBoatCategory category;
     private PriceInfo price;
     private String location;
     private AdType adType;

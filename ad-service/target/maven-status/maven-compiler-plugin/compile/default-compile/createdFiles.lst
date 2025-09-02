@@ -30,6 +30,7 @@ com\platform\ads\config\SecurityConfig.class
 com\platform\ads\dto\EngineSpecificationDto$EngineColor.class
 com\platform\ads\exception\InvalidSearchCriteriaException.class
 com\platform\ads\dto\BoatAdRequest.class
+com\platform\ads\dto\BrandsByCategoryResponse$BrandsByCategoryResponseBuilder.class
 com\platform\ads\dto\FishingSpecificationDto$TargetFish.class
 com\platform\ads\dto\enums\RangeLength.class
 com\platform\ads\dto\enums\EngineBrand.class
@@ -58,6 +59,7 @@ com\platform\ads\exception\ExternalServiceException.class
 com\platform\ads\dto\enums\ScreenType.class
 com\platform\ads\exception\BusinessException.class
 com\platform\ads\dto\EngineSpecificationDto$ControlType.class
+com\platform\ads\entity\Brand$BrandBuilder.class
 com\platform\ads\service\ImageService.class
 com\platform\ads\dto\EngineSpecificationDto$EngineSpecificationDtoBuilder.class
 com\platform\ads\dto\TrailerSpecificationResponse.class
@@ -66,6 +68,7 @@ com\platform\ads\dto\JetSkiSpecificationDto$JetSkiFuelType.class
 com\platform\ads\repository\ServicesSpecificationSearchRepository.class
 com\platform\ads\service\BoatSearchService$1.class
 com\platform\ads\dto\enums\ProbeBrand.class
+com\platform\ads\repository\BrandRepository.class
 com\platform\ads\dto\FishingSpecificationDto$FishingSpecificationDtoBuilder.class
 com\platform\ads\exception\ConfigurationException.class
 com\platform\ads\dto\enums\TubeLength.class
@@ -99,10 +102,12 @@ com\platform\ads\dto\MarineElectronicsSpecificationDto$Power.class
 com\platform\ads\dto\PriceInfo$PriceInfoBuilder.class
 com\platform\ads\repository\AdRepository.class
 com\platform\ads\repository\TrailerSpecificationRepository.class
+com\platform\ads\dto\BrandsByCategoryResponse.class
 com\platform\ads\entity\BoatSpecification.class
 com\platform\ads\dto\enums\DepthRange.class
 com\platform\ads\dto\TrailerSpecificationDto$TrailerSpecificationDtoBuilder.class
 com\platform\ads\dto\enums\SortOrder.class
+com\platform\ads\service\BrandService.class
 com\platform\ads\dto\BoatAdResponse$BoatAdResponseBuilder.class
 com\platform\ads\service\BoatSearchService.class
 com\platform\ads\dto\JetSkiSpecificationResponse.class
@@ -121,7 +126,9 @@ com\platform\ads\dto\ServicesSpecificationResponse$ServicesSpecificationResponse
 com\platform\ads\dto\EngineSpecificationDto$StrokeType.class
 com\platform\ads\dto\CategoryStatsResponse.class
 com\platform\ads\dto\enums\Frequency.class
+com\platform\ads\dto\BrandResponse$BrandResponseBuilder.class
 com\platform\ads\exception\CategoryMismatchException.class
+com\platform\ads\dto\AllBrandsResponse.class
 com\platform\ads\exception\AdOwnershipException.class
 com\platform\ads\entity\BoatInteriorFeature$BoatInteriorFeatureBuilder.class
 com\platform\ads\dto\MarineElectronicsSpecificationDto$TubeLength.class
@@ -136,7 +143,9 @@ com\platform\ads\dto\TrailerSearchFilters.class
 com\platform\ads\dto\enums\TrollingMotorBrand.class
 com\platform\ads\repository\JetSkiSpecificationRepository.class
 com\platform\ads\dto\enums\WaterResistance.class
+com\platform\ads\entity\Brand.class
 com\platform\ads\service\BoatMarketplaceService.class
+com\platform\ads\dto\enums\MainBoatCategory.class
 com\platform\ads\dto\ServicesSpecificationResponse.class
 com\platform\ads\dto\enums\TrailerFeature.class
 com\platform\ads\dto\EngineSpecificationResponse.class
@@ -155,6 +164,7 @@ com\platform\ads\dto\MarineElectronicsSpecificationDto$MountingType.class
 com\platform\ads\exception\UserAlreadyExistsException.class
 com\platform\ads\dto\enums\Weight.class
 com\platform\ads\service\S3CleanupService.class
+com\platform\ads\dto\AllBrandsResponse$AllBrandsResponseBuilder.class
 com\platform\ads\dto\DetailedStatsResponse.class
 com\platform\ads\dto\BoatSearchFilters.class
 com\platform\ads\repository\BoatSpecificationRepository.class
@@ -172,6 +182,7 @@ com\platform\ads\entity\MarineElectronicsSpecification.class
 com\platform\ads\entity\PartsSpecification.class
 com\platform\ads\dto\UserStatisticsResponse$UserStatisticsResponseBuilder.class
 com\platform\ads\dto\ImageUploadResponse.class
+com\platform\ads\config\CacheConfig.class
 com\platform\ads\repository\BoatEquipmentRepository.class
 com\platform\ads\entity\ServicesSpecification.class
 com\platform\ads\dto\enums\ElectronicsType.class
@@ -202,6 +213,7 @@ com\platform\ads\dto\TrailerSearchFilters$TrailerSearchFiltersBuilder.class
 com\platform\ads\dto\UpdateAdRequest.class
 com\platform\ads\dto\enums\Mounting.class
 com\platform\ads\dto\PriceInfo.class
+com\platform\ads\dto\BrandResponse.class
 com\platform\ads\dto\EngineSpecificationDto$ShaftLength.class
 com\platform\ads\dto\ServicesSpecificationDto$MaterialType.class
 com\platform\ads\entity\TrailerSpecification.class
@@ -221,6 +233,7 @@ com\platform\ads\repository\EngineSpecificationSearchRepository.class
 com\platform\ads\entity\MarineElectronicsSpecification$MarineElectronicsSpecificationBuilder.class
 com\platform\ads\repository\ServicesSpecificationRepository.class
 com\platform\ads\exception\SearchTimeoutException.class
+com\platform\ads\controller\BrandController.class
 com\platform\ads\dto\FishingSpecificationDto$FishingType.class
 com\platform\ads\dto\JetSkiSearchFilters.class
 com\platform\ads\exception\ErrorResponse.class

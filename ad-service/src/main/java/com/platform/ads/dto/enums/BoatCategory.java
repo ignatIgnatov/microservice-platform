@@ -1,14 +1,9 @@
 package com.platform.ads.dto.enums;
 
 public enum BoatCategory {
-    BOATS_AND_YACHTS("Лодки и Яхти"),
-    JET_SKIS("Джетове"),
-    TRAILERS("Колесари"),
-    MARINE_ELECTRONICS("Морска Електроника"),
-    ENGINES("Двигатели"),
-    FISHING("Риболов"),
-    PARTS("Части"),
-    SERVICES("Услуги");
+    MOTOR_BOATS("Motor Boats/Yachts"),
+    SAILBOATS("Sailboats/Yachts"),
+    KAYAKS("Kayaks/Canoes");
 
     private final String displayName;
 
@@ -18,5 +13,14 @@ public enum BoatCategory {
 
     public String getDisplayName() {
         return displayName;
+    }
+
+    public static BoatCategory fromString(String category) {
+        for (BoatCategory bc : BoatCategory.values()) {
+            if (bc.name().equalsIgnoreCase(category)) {
+                return bc;
+            }
+        }
+        throw new IllegalArgumentException("Unknown category: " + category);
     }
 }

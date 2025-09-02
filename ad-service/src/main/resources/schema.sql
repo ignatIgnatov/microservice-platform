@@ -15,6 +15,19 @@
 -- DROP TABLE IF EXISTS boat_specifications CASCADE;
 -- DROP TABLE IF EXISTS ads CASCADE;
 
+-- Create brands table for brand validation
+CREATE TABLE IF NOT EXISTS brands (
+    id BIGSERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    category VARCHAR(50) NOT NULL CHECK (category IN ('MOTOR_BOATS', 'SAILBOATS', 'KAYAKS')),
+    active BOOLEAN NOT NULL DEFAULT true,
+    display_order INTEGER DEFAULT 0,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT unique_brand_category UNIQUE (name, category)
+);
+
 -- Main ads table
 CREATE TABLE IF NOT EXISTS ads (
     id BIGSERIAL PRIMARY KEY,
@@ -275,7 +288,7 @@ CREATE TABLE IF NOT EXISTS services_specifications (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE ad_images (
+CREATE TABLE IF NOT EXISTS ad_images (
     id BIGSERIAL PRIMARY KEY,
     ad_id BIGINT NOT NULL REFERENCES ads(id) ON DELETE CASCADE,
     file_name VARCHAR(255) NOT NULL,
@@ -293,6 +306,12 @@ CREATE TABLE ad_images (
 
     CONSTRAINT idx_ad_display_order UNIQUE (ad_id, display_order)
 );
+
+-- Create basic indexes for brands table
+CREATE INDEX IF NOT EXISTS idx_brands_category ON brands(category);
+CREATE INDEX IF NOT EXISTS idx_brands_active ON brands(active);
+CREATE INDEX IF NOT EXISTS idx_brands_display_order ON brands(category, display_order);
+CREATE INDEX IF NOT EXISTS idx_brands_name ON brands(name);
 
 -- Indexes for performance
 CREATE INDEX idx_ad_images_ad_id ON ad_images(ad_id);

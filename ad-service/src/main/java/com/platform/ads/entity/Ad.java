@@ -40,9 +40,9 @@ public class Ad {
     private String rejectionReason;
     private String approvedByUserId;
     private LocalDateTime approvedAt;
-    private Boolean archived; // New field for archiving
+    private Boolean archived;
     private LocalDateTime archivedAt;
-    private Integer editCount; // Track how many times ad was edited
+    private Integer editCount;
     private LocalDateTime lastEditedAt;
 
 }

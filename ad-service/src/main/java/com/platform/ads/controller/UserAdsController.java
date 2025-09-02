@@ -3,7 +3,7 @@ package com.platform.ads.controller;
 import com.platform.ads.dto.BoatAdResponse;
 import com.platform.ads.dto.UpdateAdRequest;
 import com.platform.ads.dto.UserAdsStatisticsResponse;
-import com.platform.ads.dto.enums.BoatCategory;
+import com.platform.ads.dto.enums.MainBoatCategory;
 import com.platform.ads.service.UserAdsService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -68,7 +68,7 @@ public class UserAdsController {
             description = "Retrieves user's advertisements filtered by category"
     )
     public Flux<BoatAdResponse> getMyAdsByCategory(
-            @PathVariable @NotNull BoatCategory category,
+            @PathVariable @NotNull MainBoatCategory category,
             Authentication authentication) {
 
         String userId = authentication.getName();
@@ -87,7 +87,7 @@ public class UserAdsController {
             @RequestParam(required = false) Boolean active,
 
             @Parameter(description = "Filter by category")
-            @RequestParam(required = false) BoatCategory category,
+            @RequestParam(required = false) MainBoatCategory category,
 
             @Parameter(description = "Sort order")
             @RequestParam(required = false) String sortBy,

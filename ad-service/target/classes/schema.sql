@@ -1,4 +1,5 @@
 -- Main database schema for QHTI.BG Boat Marketplace
+-- Complete schema including brands table for brand validation system
 
 -- Drop existing tables if they exist (for development only)
 -- DROP TABLE IF EXISTS boat_equipment CASCADE;
@@ -14,6 +15,28 @@
 -- DROP TABLE IF EXISTS jetski_specifications CASCADE;
 -- DROP TABLE IF EXISTS boat_specifications CASCADE;
 -- DROP TABLE IF EXISTS ads CASCADE;
+-- DROP TABLE IF EXISTS brands CASCADE;
+
+-- ===========================
+-- BRANDS TABLE FOR BRAND VALIDATION SYSTEM
+-- ===========================
+
+-- Create brands table for brand validation
+CREATE TABLE IF NOT EXISTS brands (
+    id BIGSERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    category VARCHAR(50) NOT NULL CHECK (category IN ('MOTOR_BOATS', 'SAILBOATS', 'KAYAKS')),
+    active BOOLEAN NOT NULL DEFAULT true,
+    display_order INTEGER DEFAULT 0,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT unique_brand_category UNIQUE (name, category)
+);
+
+-- ===========================
+-- MAIN MARKETPLACE TABLES
+-- ===========================
 
 -- Main ads table
 CREATE TABLE IF NOT EXISTS ads (
@@ -44,7 +67,6 @@ CREATE TABLE IF NOT EXISTS ads (
     archived_at TIMESTAMP NULL,
     edit_count INTEGER DEFAULT 0,
     last_edited_at TIMESTAMP NULL,
-
 
     -- Constraints
     CONSTRAINT valid_price_for_fixed_type
@@ -155,39 +177,6 @@ CREATE TABLE IF NOT EXISTS engine_specifications (
     CONSTRAINT unique_engine_spec_per_ad UNIQUE(ad_id)
 );
 
--- Feature tables for many-to-many relationships
-CREATE TABLE IF NOT EXISTS boat_interior_features (
-    id BIGSERIAL PRIMARY KEY,
-    boat_spec_id BIGINT NOT NULL REFERENCES boat_specifications(id) ON DELETE CASCADE,
-    feature VARCHAR(50) NOT NULL,
-
-    CONSTRAINT unique_interior_feature_per_boat UNIQUE(boat_spec_id, feature)
-);
-
-CREATE TABLE IF NOT EXISTS boat_exterior_features (
-    id BIGSERIAL PRIMARY KEY,
-    boat_spec_id BIGINT NOT NULL REFERENCES boat_specifications(id) ON DELETE CASCADE,
-    feature VARCHAR(50) NOT NULL,
-
-    CONSTRAINT unique_exterior_feature_per_boat UNIQUE(boat_spec_id, feature)
-);
-
-CREATE TABLE IF NOT EXISTS boat_equipment (
-    id BIGSERIAL PRIMARY KEY,
-    boat_spec_id BIGINT NOT NULL REFERENCES boat_specifications(id) ON DELETE CASCADE,
-    equipment VARCHAR(50) NOT NULL,
-
-    CONSTRAINT unique_equipment_per_boat UNIQUE(boat_spec_id, equipment)
-);
-
-CREATE TABLE IF NOT EXISTS trailer_specifications_features (
-    id BIGSERIAL PRIMARY KEY,
-    trailer_spec_id BIGINT NOT NULL REFERENCES trailer_specifications(id) ON DELETE CASCADE,
-    feature VARCHAR(100) NOT NULL,
-
-    CONSTRAINT unique_trailer_feature UNIQUE(trailer_spec_id, feature)
-);
-
 -- Marine Electronics Specifications Table
 CREATE TABLE IF NOT EXISTS marine_electronics_specifications (
     id BIGSERIAL PRIMARY KEY,
@@ -275,7 +264,41 @@ CREATE TABLE IF NOT EXISTS services_specifications (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE ad_images (
+-- Feature tables for many-to-many relationships
+CREATE TABLE IF NOT EXISTS boat_interior_features (
+    id BIGSERIAL PRIMARY KEY,
+    boat_spec_id BIGINT NOT NULL REFERENCES boat_specifications(id) ON DELETE CASCADE,
+    feature VARCHAR(50) NOT NULL,
+
+    CONSTRAINT unique_interior_feature_per_boat UNIQUE(boat_spec_id, feature)
+);
+
+CREATE TABLE IF NOT EXISTS boat_exterior_features (
+    id BIGSERIAL PRIMARY KEY,
+    boat_spec_id BIGINT NOT NULL REFERENCES boat_specifications(id) ON DELETE CASCADE,
+    feature VARCHAR(50) NOT NULL,
+
+    CONSTRAINT unique_exterior_feature_per_boat UNIQUE(boat_spec_id, feature)
+);
+
+CREATE TABLE IF NOT EXISTS boat_equipment (
+    id BIGSERIAL PRIMARY KEY,
+    boat_spec_id BIGINT NOT NULL REFERENCES boat_specifications(id) ON DELETE CASCADE,
+    equipment VARCHAR(50) NOT NULL,
+
+    CONSTRAINT unique_equipment_per_boat UNIQUE(boat_spec_id, equipment)
+);
+
+CREATE TABLE IF NOT EXISTS trailer_specifications_features (
+    id BIGSERIAL PRIMARY KEY,
+    trailer_spec_id BIGINT NOT NULL REFERENCES trailer_specifications(id) ON DELETE CASCADE,
+    feature VARCHAR(100) NOT NULL,
+
+    CONSTRAINT unique_trailer_feature UNIQUE(trailer_spec_id, feature)
+);
+
+-- Ad images table
+CREATE TABLE IF NOT EXISTS ad_images (
     id BIGSERIAL PRIMARY KEY,
     ad_id BIGINT NOT NULL REFERENCES ads(id) ON DELETE CASCADE,
     file_name VARCHAR(255) NOT NULL,
@@ -294,13 +317,38 @@ CREATE TABLE ad_images (
     CONSTRAINT idx_ad_display_order UNIQUE (ad_id, display_order)
 );
 
--- Indexes for performance
-CREATE INDEX idx_ad_images_ad_id ON ad_images(ad_id);
-CREATE INDEX idx_ad_images_display_order ON ad_images(ad_id, display_order);
-CREATE INDEX idx_ad_images_uploaded_by ON ad_images(uploaded_by);
-CREATE INDEX idx_ad_images_active ON ad_images(active);
+-- ===========================
+-- FUNCTIONS AND TRIGGERS
+-- ===========================
 
--- Indexes for performance optimization
+-- Create a function to update the updated_at timestamp
+CREATE OR REPLACE FUNCTION update_updated_at_column()
+RETURNS TRIGGER AS $$
+BEGIN
+    NEW.updated_at = CURRENT_TIMESTAMP;
+    RETURN NEW;
+END;
+$$ language 'plpgsql';
+
+-- Create trigger for updated_at on brands table
+DROP TRIGGER IF EXISTS update_brands_updated_at ON brands;
+CREATE TRIGGER update_brands_updated_at
+    BEFORE UPDATE ON brands
+    FOR EACH ROW
+    EXECUTE FUNCTION update_updated_at_column();
+
+-- ===========================
+-- INDEXES FOR PERFORMANCE OPTIMIZATION
+-- ===========================
+
+-- Brands table indexes
+CREATE INDEX IF NOT EXISTS idx_brands_category ON brands(category);
+CREATE INDEX IF NOT EXISTS idx_brands_active ON brands(active);
+CREATE INDEX IF NOT EXISTS idx_brands_display_order ON brands(category, display_order);
+CREATE INDEX IF NOT EXISTS idx_brands_name ON brands(name);
+CREATE INDEX IF NOT EXISTS idx_brands_category_active ON brands(category, active);
+
+-- Ads table indexes
 CREATE INDEX IF NOT EXISTS idx_ads_category ON ads(category);
 CREATE INDEX IF NOT EXISTS idx_ads_price_type ON ads(price_type);
 CREATE INDEX IF NOT EXISTS idx_ads_price_amount ON ads(price_amount) WHERE price_type = 'FIXED_PRICE';
@@ -315,6 +363,9 @@ CREATE INDEX IF NOT EXISTS idx_ads_archived ON ads(archived);
 CREATE INDEX IF NOT EXISTS idx_ads_user_archived ON ads(user_id, archived);
 CREATE INDEX IF NOT EXISTS idx_ads_archived_at ON ads(archived_at);
 CREATE INDEX IF NOT EXISTS idx_ads_last_edited ON ads(last_edited_at);
+CREATE INDEX IF NOT EXISTS idx_ads_approval_status ON ads(approval_status);
+CREATE INDEX IF NOT EXISTS idx_ads_approved_by ON ads(approved_by_user_id);
+CREATE INDEX IF NOT EXISTS idx_ads_approved_at ON ads(approved_at);
 
 -- Composite indexes for common queries
 CREATE INDEX IF NOT EXISTS idx_ads_category_active_created ON ads(category, active, created_at DESC);
@@ -348,7 +399,7 @@ CREATE INDEX IF NOT EXISTS idx_boat_interior_features_boat_spec_id ON boat_inter
 CREATE INDEX IF NOT EXISTS idx_boat_exterior_features_boat_spec_id ON boat_exterior_features(boat_spec_id);
 CREATE INDEX IF NOT EXISTS idx_boat_equipment_boat_spec_id ON boat_equipment(boat_spec_id);
 
--- Create indexes for better query performance
+-- Marine electronics, fishing, parts, services indexes
 CREATE INDEX IF NOT EXISTS idx_marine_electronics_specifications_ad_id ON marine_electronics_specifications(ad_id);
 CREATE INDEX IF NOT EXISTS idx_marine_electronics_specifications_electronics_type ON marine_electronics_specifications(electronics_type);
 CREATE INDEX IF NOT EXISTS idx_marine_electronics_specifications_brand ON marine_electronics_specifications(brand);
@@ -365,12 +416,18 @@ CREATE INDEX IF NOT EXISTS idx_services_specifications_ad_id ON services_specifi
 CREATE INDEX IF NOT EXISTS idx_services_specifications_service_type ON services_specifications(service_type);
 CREATE INDEX IF NOT EXISTS idx_services_specifications_company_name ON services_specifications(company_name);
 
-CREATE INDEX IF NOT EXISTS idx_ads_approval_status ON ads(approval_status);
-CREATE INDEX IF NOT EXISTS idx_ads_approved_by ON ads(approved_by_user_id);
-CREATE INDEX IF NOT EXISTS idx_ads_approved_at ON ads(approved_at);
+-- Ad images indexes
+CREATE INDEX idx_ad_images_ad_id ON ad_images(ad_id);
+CREATE INDEX idx_ad_images_display_order ON ad_images(ad_id, display_order);
+CREATE INDEX idx_ad_images_uploaded_by ON ad_images(uploaded_by);
+CREATE INDEX idx_ad_images_active ON ad_images(active);
 
 -- Text search indexes (if using PostgreSQL full-text search)
 CREATE INDEX IF NOT EXISTS idx_ads_text_search ON ads USING gin(to_tsvector('english', title || ' ' || description));
+
+-- ===========================
+-- VIEWS FOR COMMON QUERIES
+-- ===========================
 
 -- Views for common queries
 CREATE OR REPLACE VIEW active_ads AS
@@ -378,5 +435,29 @@ SELECT * FROM ads WHERE active = true;
 
 CREATE OR REPLACE VIEW featured_ads AS
 SELECT * FROM ads WHERE active = true AND featured = true;
+
+-- ===========================
+-- COMMENTS FOR DOCUMENTATION
+-- ===========================
+
+-- Table comments
+COMMENT ON TABLE brands IS 'Brand validation table for boat marketplace - stores all valid brands by category';
+COMMENT ON TABLE ads IS 'Main advertisements table for boat marketplace';
+COMMENT ON TABLE boat_specifications IS 'Detailed specifications for boat and yacht listings';
+COMMENT ON TABLE jetski_specifications IS 'Detailed specifications for jet ski listings';
+COMMENT ON TABLE trailer_specifications IS 'Detailed specifications for trailer listings';
+COMMENT ON TABLE engine_specifications IS 'Detailed specifications for engine listings';
+COMMENT ON TABLE marine_electronics_specifications IS 'Specifications for marine electronics equipment';
+COMMENT ON TABLE fishing_specifications IS 'Specifications for fishing equipment and gear';
+COMMENT ON TABLE parts_specifications IS 'Specifications for boat parts and components';
+COMMENT ON TABLE services_specifications IS 'Specifications for marine services and companies';
+COMMENT ON TABLE ad_images IS 'Image storage for advertisements';
+
+-- Column comments for key fields
+COMMENT ON COLUMN brands.category IS 'Brand category: MOTOR_BOATS, SAILBOATS, KAYAKS';
+COMMENT ON COLUMN brands.display_order IS 'Sort order for displaying brands in dropdowns';
+COMMENT ON COLUMN ads.approval_status IS 'Ad approval status: PENDING, APPROVED, REJECTED';
+COMMENT ON COLUMN ads.featured IS 'Whether ad is featured (premium placement)';
+COMMENT ON COLUMN ads.archived IS 'Soft delete - archived ads are hidden but preserved';
 
 COMMIT;

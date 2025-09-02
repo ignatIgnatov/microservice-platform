@@ -1,10 +1,61 @@
 package com.platform.ads.service;
 
-import com.platform.ads.dto.*;
-import com.platform.ads.dto.enums.*;
-import com.platform.ads.entity.*;
-import com.platform.ads.repository.*;
-import com.platform.ads.exception.*;
+import com.platform.ads.dto.BoatAdRequest;
+import com.platform.ads.dto.BoatAdResponse;
+import com.platform.ads.dto.BoatMarketplaceStatsResponse;
+import com.platform.ads.dto.BoatSpecificationDto;
+import com.platform.ads.dto.BoatSpecificationResponse;
+import com.platform.ads.dto.EngineSpecificationDto;
+import com.platform.ads.dto.EngineSpecificationResponse;
+import com.platform.ads.dto.FishingSpecificationDto;
+import com.platform.ads.dto.FishingSpecificationResponse;
+import com.platform.ads.dto.JetSkiSpecificationDto;
+import com.platform.ads.dto.JetSkiSpecificationResponse;
+import com.platform.ads.dto.MarineElectronicsSpecificationDto;
+import com.platform.ads.dto.MarineElectronicsSpecificationResponse;
+import com.platform.ads.dto.PartsSpecificationDto;
+import com.platform.ads.dto.PartsSpecificationResponse;
+import com.platform.ads.dto.PriceInfo;
+import com.platform.ads.dto.ServicesSpecificationDto;
+import com.platform.ads.dto.ServicesSpecificationResponse;
+import com.platform.ads.dto.TrailerSpecificationDto;
+import com.platform.ads.dto.TrailerSpecificationResponse;
+import com.platform.ads.dto.enums.AdType;
+import com.platform.ads.dto.enums.Equipment;
+import com.platform.ads.dto.enums.ExteriorFeature;
+import com.platform.ads.dto.enums.InteriorFeature;
+import com.platform.ads.dto.enums.ItemCondition;
+import com.platform.ads.dto.enums.MainBoatCategory;
+import com.platform.ads.entity.Ad;
+import com.platform.ads.entity.BoatEquipment;
+import com.platform.ads.entity.BoatExteriorFeature;
+import com.platform.ads.entity.BoatInteriorFeature;
+import com.platform.ads.entity.BoatSpecification;
+import com.platform.ads.entity.EngineSpecification;
+import com.platform.ads.entity.FishingSpecification;
+import com.platform.ads.entity.JetSkiSpecification;
+import com.platform.ads.entity.MarineElectronicsSpecification;
+import com.platform.ads.entity.PartsSpecification;
+import com.platform.ads.entity.ServicesSpecification;
+import com.platform.ads.entity.TrailerSpecification;
+import com.platform.ads.exception.AdNotFoundException;
+import com.platform.ads.exception.AuthServiceException;
+import com.platform.ads.exception.CategoryMismatchException;
+import com.platform.ads.exception.InvalidFieldValueException;
+import com.platform.ads.exception.MandatoryFieldMissingException;
+import com.platform.ads.exception.UserNotFoundException;
+import com.platform.ads.repository.AdRepository;
+import com.platform.ads.repository.BoatEquipmentRepository;
+import com.platform.ads.repository.BoatExteriorFeatureRepository;
+import com.platform.ads.repository.BoatInteriorFeatureRepository;
+import com.platform.ads.repository.BoatSpecificationRepository;
+import com.platform.ads.repository.EngineSpecificationRepository;
+import com.platform.ads.repository.FishingSpecificationRepository;
+import com.platform.ads.repository.JetSkiSpecificationRepository;
+import com.platform.ads.repository.MarineElectronicsSpecificationRepository;
+import com.platform.ads.repository.PartsSpecificationRepository;
+import com.platform.ads.repository.ServicesSpecificationRepository;
+import com.platform.ads.repository.TrailerSpecificationRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -28,6 +79,7 @@ public class BoatMarketplaceService {
     @Value("${services.auth-service.url}")
     private String authServiceUrl;
 
+    // Existing repositories
     private final AdRepository adRepository;
     private final BoatSpecificationRepository boatSpecRepository;
     private final JetSkiSpecificationRepository jetSkiSpecRepository;
@@ -40,6 +92,10 @@ public class BoatMarketplaceService {
     private final BoatInteriorFeatureRepository interiorFeatureRepository;
     private final BoatExteriorFeatureRepository exteriorFeatureRepository;
     private final BoatEquipmentRepository equipmentRepository;
+
+    // NEW: Brand service for validation
+    private final BrandService brandService;
+
     private final WebClient webClient;
 
     public BoatMarketplaceService(
@@ -55,6 +111,7 @@ public class BoatMarketplaceService {
             BoatInteriorFeatureRepository interiorFeatureRepository,
             BoatExteriorFeatureRepository exteriorFeatureRepository,
             BoatEquipmentRepository equipmentRepository,
+            BrandService brandService, // NEW: Add brand service
             WebClient webClient) {
         this.adRepository = adRepository;
         this.boatSpecRepository = boatSpecRepository;
@@ -68,44 +125,12 @@ public class BoatMarketplaceService {
         this.interiorFeatureRepository = interiorFeatureRepository;
         this.exteriorFeatureRepository = exteriorFeatureRepository;
         this.equipmentRepository = equipmentRepository;
+        this.brandService = brandService; // NEW: Initialize brand service
         this.webClient = webClient;
     }
 
     // ===========================
-    // USER VALIDATION
-    // ===========================
-    public Mono<UserValidationResponse> validateUser(String email, String token) {
-        long startTime = System.currentTimeMillis();
-        log.info("=== USER VALIDATION START === Email: {} ===", email);
-
-        return webClient.get()
-                .uri(authServiceUrl + "/auth/validate-user?email=" + email)
-                .header("Authorization", "Bearer " + token)
-                .retrieve()
-                .bodyToMono(UserValidationResponse.class)
-                .timeout(Duration.ofSeconds(10))
-                .doOnSuccess(response -> {
-                    long duration = System.currentTimeMillis() - startTime;
-                    log.info("=== USER VALIDATION SUCCESS === Email: {}, Exists: {}, UserID: {}, Duration: {}ms ===",
-                            email, response.isExists(), response.getUserId(), duration);
-                })
-                .onErrorMap(WebClientResponseException.class, e -> {
-                    long duration = System.currentTimeMillis() - startTime;
-                    log.error("=== USER VALIDATION AUTH ERROR === Email: {}, Status: {}, Duration: {}ms, Body: {} ===",
-                            email, e.getStatusCode(), duration, e.getResponseBodyAsString());
-                    return new AuthServiceException("Failed to validate user: " + e.getMessage());
-                })
-                .onErrorMap(Exception.class, e -> {
-                    if (e instanceof AuthServiceException) return e;
-                    long duration = System.currentTimeMillis() - startTime;
-                    log.error("=== USER VALIDATION UNEXPECTED ERROR === Email: {}, Duration: {}ms, Error: {} ===",
-                            email, duration, e.getMessage(), e);
-                    return new AuthServiceException("User validation failed: " + e.getMessage());
-                });
-    }
-
-    // ===========================
-    // AD CREATION
+    // AD CREATION - ENHANCED WITH BRAND VALIDATION
     // ===========================
     @Transactional
     public Mono<BoatAdResponse> createBoatAd(BoatAdRequest request, String token) {
@@ -113,16 +138,9 @@ public class BoatMarketplaceService {
         log.info("=== CREATE BOAT AD START === Category: {}, User: {}, Title: '{}' ===",
                 request.getCategory(), request.getUserEmail(), request.getTitle());
 
-        try {
-            validateCategorySpecificFields(request);
-            log.debug("Category-specific field validation passed for category: {}", request.getCategory());
-        } catch (Exception e) {
-            log.error("=== VALIDATION FAILED === Category: {}, User: {}, Error: {} ===",
-                    request.getCategory(), request.getUserEmail(), e.getMessage());
-            throw e;
-        }
-
-        return validateUser(request.getUserEmail(), token)
+        // NEW: Use async validation that includes brand validation
+        return validateCategorySpecificFieldsAsync(request)
+                .then(validateUser(request.getUserEmail(), token))
                 .flatMap(userInfo -> {
                     if (!userInfo.isExists()) {
                         log.warn("=== USER NOT FOUND === Email: {} ===", request.getUserEmail());
@@ -152,6 +170,379 @@ public class BoatMarketplaceService {
                 });
     }
 
+    // NEW: Async validation method that includes brand validation
+    private Mono<Void> validateCategorySpecificFieldsAsync(BoatAdRequest request) {
+        log.debug("=== VALIDATING CATEGORY FIELDS ASYNC === Category: {} ===", request.getCategory());
+
+        switch (request.getCategory()) {
+            case BOATS_AND_YACHTS:
+                return validateBoatSpecificationAsync(request.getBoatSpec());
+            case JET_SKIS:
+                return validateJetSkiSpecificationAsync(request.getJetSkiSpec());
+            case ENGINES:
+                return validateEngineSpecificationAsync(request.getEngineSpec());
+            case MARINE_ELECTRONICS:
+                return validateMarineElectronicsSpecificationAsync(request.getMarineElectronicsSpec());
+            case TRAILERS:
+                return validateTrailerSpecificationAsync(request.getTrailerSpec());
+            case FISHING:
+                return validateFishingSpecificationAsync(request.getFishingSpec());
+            case PARTS:
+                return validatePartsSpecificationAsync(request.getPartsSpec());
+            case SERVICES:
+                return validateServicesSpecificationAsync(request.getServicesSpec());
+            default:
+                log.error("=== UNSUPPORTED CATEGORY === Category: {} ===", request.getCategory());
+                return Mono.error(new CategoryMismatchException(request.getCategory().name(), "UNSUPPORTED"));
+        }
+    }
+
+    // ===========================
+    // ENHANCED VALIDATION METHODS WITH BRAND VALIDATION
+    // ===========================
+    private Mono<Void> validateBoatSpecificationAsync(BoatSpecificationDto spec) {
+        if (spec == null) {
+            return Mono.error(new MandatoryFieldMissingException("boatSpec", "BOATS_AND_YACHTS"));
+        }
+        if (spec.getType() == null) {
+            return Mono.error(new MandatoryFieldMissingException("type", "BOATS_AND_YACHTS"));
+        }
+        if (spec.getBrand() == null || spec.getBrand().trim().isEmpty()) {
+            return Mono.error(new MandatoryFieldMissingException("brand", "BOATS_AND_YACHTS"));
+        }
+        if (spec.getModel() == null || spec.getModel().trim().isEmpty()) {
+            return Mono.error(new MandatoryFieldMissingException("model", "BOATS_AND_YACHTS"));
+        }
+        if (spec.getEngineType() == null) {
+            return Mono.error(new MandatoryFieldMissingException("engineType", "BOATS_AND_YACHTS"));
+        }
+        if (spec.getEngineIncluded() == null) {
+            return Mono.error(new MandatoryFieldMissingException("engineIncluded", "BOATS_AND_YACHTS"));
+        }
+        if (spec.getHorsepower() == null) {
+            return Mono.error(new MandatoryFieldMissingException("horsepower", "BOATS_AND_YACHTS"));
+        }
+        if (spec.getLength() == null) {
+            return Mono.error(new MandatoryFieldMissingException("length", "BOATS_AND_YACHTS"));
+        }
+        if (spec.getWidth() == null) {
+            return Mono.error(new MandatoryFieldMissingException("width", "BOATS_AND_YACHTS"));
+        }
+        if (spec.getMaxPeople() == null) {
+            return Mono.error(new MandatoryFieldMissingException("maxPeople", "BOATS_AND_YACHTS"));
+        }
+        if (spec.getYear() == null) {
+            return Mono.error(new MandatoryFieldMissingException("year", "BOATS_AND_YACHTS"));
+        }
+        if (spec.getYear() < 1900 || spec.getYear() > LocalDate.now().getYear() + 5) {
+            return Mono.error(new InvalidFieldValueException("year", "Year must be between 1900 and " + (LocalDate.now().getYear() + 5)));
+        }
+        if (spec.getInWarranty() == null) {
+            return Mono.error(new MandatoryFieldMissingException("inWarranty", "BOATS_AND_YACHTS"));
+        }
+        if (spec.getWeight() == null) {
+            return Mono.error(new MandatoryFieldMissingException("weight", "BOATS_AND_YACHTS"));
+        }
+        if (spec.getFuelCapacity() == null) {
+            return Mono.error(new MandatoryFieldMissingException("fuelCapacity", "BOATS_AND_YACHTS"));
+        }
+        if (spec.getHasWaterTank() == null) {
+            return Mono.error(new MandatoryFieldMissingException("hasWaterTank", "BOATS_AND_YACHTS"));
+        }
+        if (spec.getNumberOfEngines() == null) {
+            return Mono.error(new MandatoryFieldMissingException("numberOfEngines", "BOATS_AND_YACHTS"));
+        }
+        if (spec.getHasAuxiliaryEngine() == null) {
+            return Mono.error(new MandatoryFieldMissingException("hasAuxiliaryEngine", "BOATS_AND_YACHTS"));
+        }
+        if (spec.getConsoleType() == null) {
+            return Mono.error(new MandatoryFieldMissingException("consoleType", "BOATS_AND_YACHTS"));
+        }
+        if (spec.getFuelType() == null) {
+            return Mono.error(new MandatoryFieldMissingException("fuelType", "BOATS_AND_YACHTS"));
+        }
+        if (spec.getMaterial() == null) {
+            return Mono.error(new MandatoryFieldMissingException("material", "BOATS_AND_YACHTS"));
+        }
+        if (spec.getIsRegistered() == null) {
+            return Mono.error(new MandatoryFieldMissingException("isRegistered", "BOATS_AND_YACHTS"));
+        }
+        if (spec.getCondition() == null) {
+            return Mono.error(new MandatoryFieldMissingException("condition", "BOATS_AND_YACHTS"));
+        }
+
+        // NEW: Brand validation
+        String boatCategory = mapBoatTypeToCategory(spec.getType());
+        return brandService.validateBrand(spec.getBrand(), boatCategory)
+                .filter(Boolean::booleanValue)
+                .switchIfEmpty(Mono.error(new InvalidFieldValueException("brand",
+                        "Brand '" + spec.getBrand() + "' is not valid for category '" + boatCategory + "'")))
+                .then();
+    }
+
+    private Mono<Void> validateJetSkiSpecificationAsync(JetSkiSpecificationDto spec) {
+        if (spec == null) {
+            return Mono.error(new MandatoryFieldMissingException("jetSkiSpec", "JET_SKIS"));
+        }
+        if (spec.getBrand() == null || spec.getBrand().trim().isEmpty()) {
+            return Mono.error(new MandatoryFieldMissingException("brand", "JET_SKIS"));
+        }
+        if (spec.getModel() == null || spec.getModel().trim().isEmpty()) {
+            return Mono.error(new MandatoryFieldMissingException("model", "JET_SKIS"));
+        }
+        if (spec.getIsRegistered() == null) {
+            return Mono.error(new MandatoryFieldMissingException("isRegistered", "JET_SKIS"));
+        }
+        if (spec.getHorsepower() == null) {
+            return Mono.error(new MandatoryFieldMissingException("horsepower", "JET_SKIS"));
+        }
+        if (spec.getYear() == null) {
+            return Mono.error(new MandatoryFieldMissingException("year", "JET_SKIS"));
+        }
+        if (spec.getYear() < 1900 || spec.getYear() > LocalDate.now().getYear() + 5) {
+            return Mono.error(new InvalidFieldValueException("year", "Year must be between 1900 and " + (LocalDate.now().getYear() + 5)));
+        }
+        if (spec.getWeight() == null) {
+            return Mono.error(new MandatoryFieldMissingException("weight", "JET_SKIS"));
+        }
+        if (spec.getFuelCapacity() == null) {
+            return Mono.error(new MandatoryFieldMissingException("fuelCapacity", "JET_SKIS"));
+        }
+        if (spec.getOperatingHours() == null) {
+            return Mono.error(new MandatoryFieldMissingException("operatingHours", "JET_SKIS"));
+        }
+        if (spec.getFuelType() == null) {
+            return Mono.error(new MandatoryFieldMissingException("fuelType", "JET_SKIS"));
+        }
+        if (spec.getTrailerIncluded() == null) {
+            return Mono.error(new MandatoryFieldMissingException("trailerIncluded", "JET_SKIS"));
+        }
+        if (spec.getInWarranty() == null) {
+            return Mono.error(new MandatoryFieldMissingException("inWarranty", "JET_SKIS"));
+        }
+        if (spec.getCondition() == null) {
+            return Mono.error(new MandatoryFieldMissingException("condition", "JET_SKIS"));
+        }
+
+        // NEW: Brand validation for Jet Skis (use MOTOR_BOATS category)
+        return brandService.validateBrand(spec.getBrand(), "MOTOR_BOATS")
+                .filter(Boolean::booleanValue)
+                .switchIfEmpty(Mono.error(new InvalidFieldValueException("brand",
+                        "Brand '" + spec.getBrand() + "' is not valid for jet skis")))
+                .then();
+    }
+
+    private Mono<Void> validateEngineSpecificationAsync(EngineSpecificationDto spec) {
+        if (spec == null) {
+            return Mono.error(new MandatoryFieldMissingException("engineSpec", "ENGINES"));
+        }
+        if (spec.getBrand() == null || spec.getBrand().trim().isEmpty()) {
+            return Mono.error(new MandatoryFieldMissingException("brand", "ENGINES"));
+        }
+        if (spec.getEngineType() == null) {
+            return Mono.error(new MandatoryFieldMissingException("engineType", "ENGINES"));
+        }
+        if (spec.getStrokeType() == null) {
+            return Mono.error(new MandatoryFieldMissingException("strokeType", "ENGINES"));
+        }
+        if (spec.getInWarranty() == null) {
+            return Mono.error(new MandatoryFieldMissingException("inWarranty", "ENGINES"));
+        }
+        if (spec.getHorsepower() == null) {
+            return Mono.error(new MandatoryFieldMissingException("horsepower", "ENGINES"));
+        }
+        if (spec.getOperatingHours() == null) {
+            return Mono.error(new MandatoryFieldMissingException("operatingHours", "ENGINES"));
+        }
+        if (spec.getYear() == null) {
+            return Mono.error(new MandatoryFieldMissingException("year", "ENGINES"));
+        }
+        if (spec.getYear() < 1900 || spec.getYear() > LocalDate.now().getYear() + 5) {
+            return Mono.error(new InvalidFieldValueException("year", "Year must be between 1900 and " + (LocalDate.now().getYear() + 5)));
+        }
+        if (spec.getFuelCapacity() == null) {
+            return Mono.error(new MandatoryFieldMissingException("fuelCapacity", "ENGINES"));
+        }
+        if (spec.getIgnitionType() == null) {
+            return Mono.error(new MandatoryFieldMissingException("ignitionType", "ENGINES"));
+        }
+        if (spec.getControlType() == null) {
+            return Mono.error(new MandatoryFieldMissingException("controlType", "ENGINES"));
+        }
+        if (spec.getShaftLength() == null) {
+            return Mono.error(new MandatoryFieldMissingException("shaftLength", "ENGINES"));
+        }
+        if (spec.getFuelType() == null) {
+            return Mono.error(new MandatoryFieldMissingException("fuelType", "ENGINES"));
+        }
+        if (spec.getEngineSystemType() == null) {
+            return Mono.error(new MandatoryFieldMissingException("engineSystemType", "ENGINES"));
+        }
+        if (spec.getCondition() == null) {
+            return Mono.error(new MandatoryFieldMissingException("condition", "ENGINES"));
+        }
+        if (spec.getColor() == null) {
+            return Mono.error(new MandatoryFieldMissingException("color", "ENGINES"));
+        }
+
+        // NEW: Brand validation for engines (use MOTOR_BOATS category for engine brands)
+        return brandService.validateBrand(spec.getBrand(), "MOTOR_BOATS")
+                .filter(Boolean::booleanValue)
+                .switchIfEmpty(Mono.error(new InvalidFieldValueException("brand",
+                        "Brand '" + spec.getBrand() + "' is not valid for engines")))
+                .then();
+    }
+
+    private Mono<Void> validateMarineElectronicsSpecificationAsync(MarineElectronicsSpecificationDto spec) {
+        if (spec == null) {
+            return Mono.error(new MandatoryFieldMissingException("marineElectronicsSpec", "MARINE_ELECTRONICS"));
+        }
+        if (spec.getElectronicsType() == null) {
+            return Mono.error(new MandatoryFieldMissingException("electronicsType", "MARINE_ELECTRONICS"));
+        }
+        if (spec.getBrand() == null || spec.getBrand().trim().isEmpty()) {
+            return Mono.error(new MandatoryFieldMissingException("brand", "MARINE_ELECTRONICS"));
+        }
+        if (spec.getCondition() == null) {
+            return Mono.error(new MandatoryFieldMissingException("condition", "MARINE_ELECTRONICS"));
+        }
+
+        // NEW: Brand validation for marine electronics (use MOTOR_BOATS category)
+        return brandService.validateBrand(spec.getBrand(), "MOTOR_BOATS")
+                .filter(Boolean::booleanValue)
+                .switchIfEmpty(Mono.error(new InvalidFieldValueException("brand",
+                        "Brand '" + spec.getBrand() + "' is not valid for marine electronics")))
+                .then();
+    }
+
+    private Mono<Void> validateTrailerSpecificationAsync(TrailerSpecificationDto spec) {
+        if (spec == null) {
+            return Mono.error(new MandatoryFieldMissingException("trailerSpec", "TRAILERS"));
+        }
+        if (spec.getTrailerType() == null) {
+            return Mono.error(new MandatoryFieldMissingException("trailerType", "TRAILERS"));
+        }
+        if (spec.getAxleCount() == null) {
+            return Mono.error(new MandatoryFieldMissingException("axleCount", "TRAILERS"));
+        }
+        if (spec.getIsRegistered() == null) {
+            return Mono.error(new MandatoryFieldMissingException("isRegistered", "TRAILERS"));
+        }
+        if (spec.getLoadCapacity() == null) {
+            return Mono.error(new MandatoryFieldMissingException("loadCapacity", "TRAILERS"));
+        }
+        if (spec.getLength() == null) {
+            return Mono.error(new MandatoryFieldMissingException("length", "TRAILERS"));
+        }
+        if (spec.getWidth() == null) {
+            return Mono.error(new MandatoryFieldMissingException("width", "TRAILERS"));
+        }
+        if (spec.getYear() == null) {
+            return Mono.error(new MandatoryFieldMissingException("year", "TRAILERS"));
+        }
+        if (spec.getYear() < 1900 || spec.getYear() > LocalDate.now().getYear() + 5) {
+            return Mono.error(new InvalidFieldValueException("year", "Year must be between 1900 and " + (LocalDate.now().getYear() + 5)));
+        }
+        if (spec.getInWarranty() == null) {
+            return Mono.error(new MandatoryFieldMissingException("inWarranty", "TRAILERS"));
+        }
+        if (spec.getCondition() == null) {
+            return Mono.error(new MandatoryFieldMissingException("condition", "TRAILERS"));
+        }
+
+        // NEW: Brand validation for trailers (if brand is provided)
+        if (spec.getBrand() != null && !spec.getBrand().trim().isEmpty()) {
+            return brandService.validateBrand(spec.getBrand(), "MOTOR_BOATS")
+                    .filter(Boolean::booleanValue)
+                    .switchIfEmpty(Mono.error(new InvalidFieldValueException("brand",
+                            "Brand '" + spec.getBrand() + "' is not valid for trailers")))
+                    .then();
+        }
+        return Mono.empty();
+    }
+
+    private Mono<Void> validateFishingSpecificationAsync(FishingSpecificationDto spec) {
+        if (spec == null) {
+            return Mono.error(new MandatoryFieldMissingException("fishingSpec", "FISHING"));
+        }
+        if (spec.getFishingType() == null) {
+            return Mono.error(new MandatoryFieldMissingException("fishingType", "FISHING"));
+        }
+        if (spec.getFishingTechnique() == null) {
+            return Mono.error(new MandatoryFieldMissingException("fishingTechnique", "FISHING"));
+        }
+        if (spec.getTargetFish() == null) {
+            return Mono.error(new MandatoryFieldMissingException("targetFish", "FISHING"));
+        }
+        if (spec.getCondition() == null) {
+            return Mono.error(new MandatoryFieldMissingException("condition", "FISHING"));
+        }
+
+        // NEW: Brand validation for fishing equipment (if brand is provided)
+        if (spec.getBrand() != null && !spec.getBrand().trim().isEmpty()) {
+            return brandService.validateBrand(spec.getBrand(), "MOTOR_BOATS")
+                    .filter(Boolean::booleanValue)
+                    .switchIfEmpty(Mono.error(new InvalidFieldValueException("brand",
+                            "Brand '" + spec.getBrand() + "' is not valid for fishing equipment")))
+                    .then();
+        }
+        return Mono.empty();
+    }
+
+    private Mono<Void> validatePartsSpecificationAsync(PartsSpecificationDto spec) {
+        if (spec == null) {
+            return Mono.error(new MandatoryFieldMissingException("partsSpec", "PARTS"));
+        }
+        if (spec.getPartType() == null) {
+            return Mono.error(new MandatoryFieldMissingException("partType", "PARTS"));
+        }
+        if (spec.getCondition() == null) {
+            return Mono.error(new MandatoryFieldMissingException("condition", "PARTS"));
+        }
+        return Mono.empty();
+    }
+
+    private Mono<Void> validateServicesSpecificationAsync(ServicesSpecificationDto spec) {
+        if (spec == null) {
+            return Mono.error(new MandatoryFieldMissingException("servicesSpec", "SERVICES"));
+        }
+        if (spec.getServiceType() == null) {
+            return Mono.error(new MandatoryFieldMissingException("serviceType", "SERVICES"));
+        }
+        if (spec.getCompanyName() == null || spec.getCompanyName().trim().isEmpty()) {
+            return Mono.error(new MandatoryFieldMissingException("companyName", "SERVICES"));
+        }
+        if (spec.getContactPhone() == null || spec.getContactPhone().trim().isEmpty()) {
+            return Mono.error(new MandatoryFieldMissingException("contactPhone", "SERVICES"));
+        }
+        if (spec.getContactEmail() == null || spec.getContactEmail().trim().isEmpty()) {
+            return Mono.error(new MandatoryFieldMissingException("contactEmail", "SERVICES"));
+        }
+        if (spec.getAddress() == null || spec.getAddress().trim().isEmpty()) {
+            return Mono.error(new MandatoryFieldMissingException("address", "SERVICES"));
+        }
+        return Mono.empty();
+    }
+
+    // NEW: Helper method to map boat types to brand categories
+    private String mapBoatTypeToCategory(BoatSpecificationDto.BoatType boatType) {
+        switch (boatType) {
+            case MOTOR_BOAT:
+                return "MOTOR_BOATS";
+            case SAILING_BOAT:
+                return "SAILBOATS";
+            case KAYAK_CANOE:
+                return "KAYAKS";
+            default:
+                return "MOTOR_BOATS";
+        }
+    }
+
+    // ===========================
+    // KEEP ALL YOUR EXISTING METHODS UNCHANGED
+    // ===========================
+
+    // Keep your original synchronous validation methods as fallback (if needed)
     private void validateCategorySpecificFields(BoatAdRequest request) {
         log.debug("=== VALIDATING CATEGORY FIELDS === Category: {} ===", request.getCategory());
 
@@ -188,9 +579,7 @@ public class BoatMarketplaceService {
         log.debug("=== CATEGORY VALIDATION COMPLETE === Category: {} ===", request.getCategory());
     }
 
-    // ===========================
-    // VALIDATION METHODS
-    // ===========================
+    // Keep all your original validation methods exactly as they are
     private void validateBoatSpecification(BoatSpecificationDto spec) {
         if (spec == null) {
             throw new MandatoryFieldMissingException("boatSpec", "BOATS_AND_YACHTS");
@@ -462,8 +851,9 @@ public class BoatMarketplaceService {
     }
 
     // ===========================
-    // AD CREATION WITH SPECIFICATIONS
+    // ALL YOUR EXISTING METHODS REMAIN THE SAME
     // ===========================
+
     private Mono<Ad> createAdWithSpecification(BoatAdRequest request, UserValidationResponse userInfo) {
         // Create main ad
         Ad ad = Ad.builder()
@@ -515,7 +905,7 @@ public class BoatMarketplaceService {
     }
 
     // ===========================
-    // SPECIFICATION CREATION METHODS
+    // SPECIFICATION CREATION METHODS - UNCHANGED
     // ===========================
     private Mono<Void> createBoatSpecification(Long adId, BoatSpecificationDto spec) {
         BoatSpecification boatSpec = BoatSpecification.builder()
@@ -743,7 +1133,7 @@ public class BoatMarketplaceService {
     }
 
     // ===========================
-    // SEARCH FUNCTIONALITY
+    // KEEP ALL OTHER EXISTING METHODS UNCHANGED
     // ===========================
 
     private int comparePrices(BoatAdResponse ad1, BoatAdResponse ad2) {
@@ -756,9 +1146,6 @@ public class BoatMarketplaceService {
         return ad1.getPrice().getAmount().compareTo(ad2.getPrice().getAmount());
     }
 
-    // ===========================
-    // GET AD BY ID
-    // ===========================
     public Mono<BoatAdResponse> getAdById(Long id) {
         return adRepository.findById(id)
                 .switchIfEmpty(Mono.error(new AdNotFoundException(id)))
@@ -767,16 +1154,13 @@ public class BoatMarketplaceService {
                 .flatMap(this::mapToResponse);
     }
 
-    // ===========================
-    // RESPONSE MAPPING
-    // ===========================
     public Mono<BoatAdResponse> mapToResponse(Ad ad) {
         BoatAdResponse.BoatAdResponseBuilder responseBuilder = BoatAdResponse.builder()
                 .id(ad.getId())
                 .title(ad.getTitle())
                 .description(ad.getDescription())
                 .quickDescription(ad.getQuickDescription())
-                .category(BoatCategory.valueOf(ad.getCategory()))
+                .category(MainBoatCategory.valueOf(ad.getCategory()))
                 .price(ad.getPriceAmount() != null ? PriceInfo.builder()
                         .amount(ad.getPriceAmount())
                         .type(PriceInfo.PriceType.valueOf(ad.getPriceType()))
@@ -795,9 +1179,9 @@ public class BoatMarketplaceService {
                 .featured(ad.getFeatured());
 
         // Load category-specific specifications
-        return loadSpecificationForResponse(ad.getId(), BoatCategory.valueOf(ad.getCategory()))
+        return loadSpecificationForResponse(ad.getId(), MainBoatCategory.valueOf(ad.getCategory()))
                 .map(spec -> {
-                    switch (BoatCategory.valueOf(ad.getCategory())) {
+                    switch (MainBoatCategory.valueOf(ad.getCategory())) {
                         case BOATS_AND_YACHTS:
                             responseBuilder.boatSpec((BoatSpecificationResponse) spec);
                             break;
@@ -828,7 +1212,7 @@ public class BoatMarketplaceService {
                 .defaultIfEmpty(responseBuilder.build());
     }
 
-    private Mono<Object> loadSpecificationForResponse(Long adId, BoatCategory category) {
+    private Mono<Object> loadSpecificationForResponse(Long adId, MainBoatCategory category) {
         switch (category) {
             case BOATS_AND_YACHTS:
                 return boatSpecRepository.findByAdId(adId)
@@ -868,7 +1252,7 @@ public class BoatMarketplaceService {
     }
 
     // ===========================
-    // SPECIFICATION MAPPING METHODS
+    // SPECIFICATION MAPPING METHODS - UNCHANGED
     // ===========================
     private Mono<BoatSpecificationResponse> mapBoatSpecToResponse(BoatSpecification spec) {
         return Mono.zip(
@@ -1059,7 +1443,7 @@ public class BoatMarketplaceService {
     }
 
     // ===========================
-    // STATISTICS
+    // STATISTICS - UNCHANGED
     // ===========================
     public Mono<BoatMarketplaceStatsResponse> getMarketplaceStats() {
         return Mono.zip(
@@ -1080,7 +1464,7 @@ public class BoatMarketplaceService {
     }
 
     // ===========================
-    // INNER DTO CLASS
+    // USER VALIDATION - UNCHANGED
     // ===========================
     public static class UserValidationResponse {
         private boolean exists;
@@ -1089,18 +1473,77 @@ public class BoatMarketplaceService {
         private String firstName;
         private String lastName;
 
-        // Constructors, getters, and setters
-        public UserValidationResponse() {}
+        public UserValidationResponse() {
+        }
 
-        public boolean isExists() { return exists; }
-        public void setExists(boolean exists) { this.exists = exists; }
-        public String getUserId() { return userId; }
-        public void setUserId(String userId) { this.userId = userId; }
-        public String getEmail() { return email; }
-        public void setEmail(String email) { this.email = email; }
-        public String getFirstName() { return firstName; }
-        public void setFirstName(String firstName) { this.firstName = firstName; }
-        public String getLastName() { return lastName; }
-        public void setLastName(String lastName) { this.lastName = lastName; }
+        public boolean isExists() {
+            return exists;
+        }
+
+        public void setExists(boolean exists) {
+            this.exists = exists;
+        }
+
+        public String getUserId() {
+            return userId;
+        }
+
+        public void setUserId(String userId) {
+            this.userId = userId;
+        }
+
+        public String getEmail() {
+            return email;
+        }
+
+        public void setEmail(String email) {
+            this.email = email;
+        }
+
+        public String getFirstName() {
+            return firstName;
+        }
+
+        public void setFirstName(String firstName) {
+            this.firstName = firstName;
+        }
+
+        public String getLastName() {
+            return lastName;
+        }
+
+        public void setLastName(String lastName) {
+            this.lastName = lastName;
+        }
+    }
+
+    public Mono<UserValidationResponse> validateUser(String email, String token) {
+        long startTime = System.currentTimeMillis();
+        log.info("=== USER VALIDATION START === Email: {} ===", email);
+
+        return webClient.get()
+                .uri(authServiceUrl + "/auth/validate-user?email=" + email)
+                .header("Authorization", "Bearer " + token)
+                .retrieve()
+                .bodyToMono(UserValidationResponse.class)
+                .timeout(Duration.ofSeconds(10))
+                .doOnSuccess(response -> {
+                    long duration = System.currentTimeMillis() - startTime;
+                    log.info("=== USER VALIDATION SUCCESS === Email: {}, Exists: {}, UserID: {}, Duration: {}ms ===",
+                            email, response.isExists(), response.getUserId(), duration);
+                })
+                .onErrorMap(WebClientResponseException.class, e -> {
+                    long duration = System.currentTimeMillis() - startTime;
+                    log.error("=== USER VALIDATION AUTH ERROR === Email: {}, Status: {}, Duration: {}ms, Body: {} ===",
+                            email, e.getStatusCode(), duration, e.getResponseBodyAsString());
+                    return new AuthServiceException("Failed to validate user: " + e.getMessage());
+                })
+                .onErrorMap(Exception.class, e -> {
+                    if (e instanceof AuthServiceException) return e;
+                    long duration = System.currentTimeMillis() - startTime;
+                    log.error("=== USER VALIDATION UNEXPECTED ERROR === Email: {}, Duration: {}ms, Error: {} ===",
+                            email, duration, e.getMessage(), e);
+                    return new AuthServiceException("User validation failed: " + e.getMessage());
+                });
     }
 }

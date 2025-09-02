@@ -4,7 +4,7 @@ import com.platform.ads.dto.BoatAdRequest;
 import com.platform.ads.dto.BoatAdResponse;
 import com.platform.ads.dto.BoatMarketplaceStatsResponse;
 import com.platform.ads.dto.BoatSearchRequest;
-import com.platform.ads.dto.enums.BoatCategory;
+import com.platform.ads.dto.enums.MainBoatCategory;
 import com.platform.ads.exception.AdNotFoundException;
 import com.platform.ads.exception.AuthServiceException;
 import com.platform.ads.exception.CategoryMismatchException;
@@ -228,7 +228,7 @@ public class BoatMarketplaceController {
     })
     public Flux<BoatAdResponse> getAdsByCategory(
             @Parameter(description = "Advertisement category", required = true, example = "BOATS_AND_YACHTS")
-            @PathVariable @NotNull BoatCategory category,
+            @PathVariable @NotNull MainBoatCategory category,
             @Parameter(description = "Maximum number of results to return", example = "20")
             @RequestParam(defaultValue = "20") @Min(1) @Max(100) int limit) {
 
