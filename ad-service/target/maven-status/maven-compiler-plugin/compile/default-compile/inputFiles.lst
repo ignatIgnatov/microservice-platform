@@ -32,6 +32,7 @@ C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform
 C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\exception\AdNotActiveException.java
 C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\repository\BoatSpecificationSearchRepository.java
 C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\dto\enums\BoatCategory.java
+C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\dto\UserValidationResponse.java
 C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\repository\EngineSpecificationRepository.java
 C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\config\CacheConfig.java
 C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\dto\DetailedStatsResponse.java
@@ -93,6 +94,7 @@ C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform
 C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\controller\BoatMarketplaceAdminController.java
 C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\exception\UserNotFoundException.java
 C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\service\BoatMarketplaceAdminService.java
+C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\service\ImageConversionService.java
 C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\entity\BoatSpecification.java
 C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\dto\enums\ScreenType.java
 C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\exception\UnsupportedFileTypeException.java
@@ -114,6 +116,7 @@ C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform
 C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\dto\enums\ItemCondition.java
 C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\dto\enums\WaterResistance.java
 C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\dto\enums\MaterialType.java
+C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\dto\ValidatedImageData.java
 C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\exception\InvalidPriceException.java
 C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\dto\BoatSearchFilters.java
 C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\dto\enums\ExteriorFeature.java

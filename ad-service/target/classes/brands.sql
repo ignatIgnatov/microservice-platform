@@ -1,8 +1,8 @@
 -- Complete Brand Database Insert Script
 
 -- Insert ALL Motor Boats/Yachts brands (A-Z) - Part 1
-INSERT INTO brands (name, category, display_order) VALUES
 -- A brands
+INSERT INTO brands (name, category, display_order) VALUES
 ('Azimut', 'MOTOR_BOATS', 1),
 ('Avalon', 'MOTOR_BOATS', 2),
 ('Axopar', 'MOTOR_BOATS', 3),
@@ -36,9 +36,11 @@ INSERT INTO brands (name, category, display_order) VALUES
 ('Andros', 'MOTOR_BOATS', 31),
 ('Arcadia Yachts', 'MOTOR_BOATS', 32),
 ('ACM', 'MOTOR_BOATS', 33),
-('Atlantis', 'MOTOR_BOATS', 34),
+('Atlantis', 'MOTOR_BOATS', 34)
+ON CONFLICT (name, category) DO NOTHING;
 
 -- B brands
+INSERT INTO brands (name, category, display_order) VALUES
 ('Boston Whaler', 'MOTOR_BOATS', 35),
 ('Bayliner', 'MOTOR_BOATS', 36),
 ('Bennington', 'MOTOR_BOATS', 37),
@@ -75,9 +77,11 @@ INSERT INTO brands (name, category, display_order) VALUES
 ('Boarncruiser', 'MOTOR_BOATS', 68),
 ('Botnia', 'MOTOR_BOATS', 69),
 ('Broom', 'MOTOR_BOATS', 70),
-('Berkshire', 'MOTOR_BOATS', 71),
+('Berkshire', 'MOTOR_BOATS', 71)
+ON CONFLICT (name, category) DO NOTHING;
 
 -- C brands
+INSERT INTO brands (name, category, display_order) VALUES
 ('Chaparral', 'MOTOR_BOATS', 72),
 ('Cobalt', 'MOTOR_BOATS', 73),
 ('Chris-Craft', 'MOTOR_BOATS', 74),
@@ -114,9 +118,11 @@ INSERT INTO brands (name, category, display_order) VALUES
 ('Champion', 'MOTOR_BOATS', 105),
 ('Cantieri di Pisa', 'MOTOR_BOATS', 106),
 ('Cayman Yachts', 'MOTOR_BOATS', 107),
-('Colombo', 'MOTOR_BOATS', 108),
+('Colombo', 'MOTOR_BOATS', 108)
+ON CONFLICT (name, category) DO NOTHING;
 
 -- D brands
+INSERT INTO brands (name, category, display_order) VALUES
 ('De Antonio Yachts', 'MOTOR_BOATS', 109),
 ('Donzi', 'MOTOR_BOATS', 110),
 ('Doral', 'MOTOR_BOATS', 111),
@@ -129,9 +135,11 @@ INSERT INTO brands (name, category, display_order) VALUES
 ('Deep Impact', 'MOTOR_BOATS', 118),
 ('Dominator', 'MOTOR_BOATS', 119),
 ('Dellapasqua', 'MOTOR_BOATS', 120),
-('Dusky', 'MOTOR_BOATS', 121),
+('Dusky', 'MOTOR_BOATS', 121)
+ON CONFLICT (name, category) DO NOTHING;
 
 -- E brands
+INSERT INTO brands (name, category, display_order) VALUES
 ('Everglades', 'MOTOR_BOATS', 122),
 ('Edgewater', 'MOTOR_BOATS', 123),
 ('Excel', 'MOTOR_BOATS', 124),
@@ -139,9 +147,11 @@ INSERT INTO brands (name, category, display_order) VALUES
 ('Explorer', 'MOTOR_BOATS', 126),
 ('Elegance', 'MOTOR_BOATS', 127),
 ('Ebbtide', 'MOTOR_BOATS', 128),
-('East Cape', 'MOTOR_BOATS', 129),
+('East Cape', 'MOTOR_BOATS', 129)
+ON CONFLICT (name, category) DO NOTHING;
 
 -- F brands
+INSERT INTO brands (name, category, display_order) VALUES
 ('Four Winns', 'MOTOR_BOATS', 130),
 ('Formula', 'MOTOR_BOATS', 131),
 ('Fairline', 'MOTOR_BOATS', 132),
@@ -160,7 +170,8 @@ INSERT INTO brands (name, category, display_order) VALUES
 ('Focus', 'MOTOR_BOATS', 145),
 ('FIM', 'MOTOR_BOATS', 146),
 ('Freedom', 'MOTOR_BOATS', 147),
-('Fleming', 'MOTOR_BOATS', 148);
+('Fleming', 'MOTOR_BOATS', 148)
+ON CONFLICT (name, category) DO NOTHING;
 
 -- Continue with G-Z Motor Boats
 INSERT INTO brands (name, category, display_order) VALUES
@@ -173,9 +184,11 @@ INSERT INTO brands (name, category, display_order) VALUES
 ('Godfrey Marine', 'MOTOR_BOATS', 154),
 ('Grand', 'MOTOR_BOATS', 155),
 ('Greenline', 'MOTOR_BOATS', 156),
-('Guy Couach', 'MOTOR_BOATS', 157),
+('Guy Couach', 'MOTOR_BOATS', 157)
+ON CONFLICT (name, category) DO NOTHING;
 
 -- H brands
+INSERT INTO brands (name, category, display_order) VALUES
 ('Harris', 'MOTOR_BOATS', 158),
 ('Highfield', 'MOTOR_BOATS', 159),
 ('Hurricane', 'MOTOR_BOATS', 160),
@@ -191,36 +204,44 @@ INSERT INTO brands (name, category, display_order) VALUES
 ('Hanover', 'MOTOR_BOATS', 170),
 ('Harris FloteBote', 'MOTOR_BOATS', 171),
 ('Houseboat', 'MOTOR_BOATS', 172),
-('Hunt Yachts', 'MOTOR_BOATS', 173),
+('Hunt Yachts', 'MOTOR_BOATS', 173)
+ON CONFLICT (name, category) DO NOTHING;
 
 -- I brands
+INSERT INTO brands (name, category, display_order) VALUES
 ('Intrepid', 'MOTOR_BOATS', 174),
 ('Invincible', 'MOTOR_BOATS', 175),
 ('Invictus', 'MOTOR_BOATS', 176),
 ('IKon', 'MOTOR_BOATS', 177),
 ('ISA', 'MOTOR_BOATS', 178),
 ('Iron', 'MOTOR_BOATS', 179),
-('Innovazione e Progetti', 'MOTOR_BOATS', 180),
+('Innovazione e Progetti', 'MOTOR_BOATS', 180)
+ON CONFLICT (name, category) DO NOTHING;
 
 -- J brands
+INSERT INTO brands (name, category, display_order) VALUES
 ('Jeanneau', 'MOTOR_BOATS', 181),
 ('Jupiter', 'MOTOR_BOATS', 182),
 ('JC', 'MOTOR_BOATS', 183),
 ('Joker Boat', 'MOTOR_BOATS', 184),
 ('Jefferson', 'MOTOR_BOATS', 185),
 ('Johnson', 'MOTOR_BOATS', 186),
-('Jarper Marine', 'MOTOR_BOATS', 187),
+('Jarper Marine', 'MOTOR_BOATS', 187)
+ON CONFLICT (name, category) DO NOTHING;
 
 -- K brands
+INSERT INTO brands (name, category, display_order) VALUES
 ('Key West', 'MOTOR_BOATS', 188),
 ('Kawasaki', 'MOTOR_BOATS', 189),
 ('Karnic', 'MOTOR_BOATS', 190),
 ('KenCraft', 'MOTOR_BOATS', 191),
 ('Kadey-Krogen', 'MOTOR_BOATS', 192),
 ('Key Largo', 'MOTOR_BOATS', 193),
-('KingFisher', 'MOTOR_BOATS', 194),
+('KingFisher', 'MOTOR_BOATS', 194)
+ON CONFLICT (name, category) DO NOTHING;
 
 -- L brands
+INSERT INTO brands (name, category, display_order) VALUES
 ('Ladia', 'MOTOR_BOATS', 195),
 ('Landau', 'MOTOR_BOATS', 196),
 ('Lagoon', 'MOTOR_BOATS', 197),
@@ -234,9 +255,11 @@ INSERT INTO brands (name, category, display_order) VALUES
 ('Lowe', 'MOTOR_BOATS', 205),
 ('Luhrs', 'MOTOR_BOATS', 206),
 ('Lund', 'MOTOR_BOATS', 207),
-('Luxe-Motor', 'MOTOR_BOATS', 208),
+('Luxe-Motor', 'MOTOR_BOATS', 208)
+ON CONFLICT (name, category) DO NOTHING;
 
 -- M brands
+INSERT INTO brands (name, category, display_order) VALUES
 ('MB', 'MOTOR_BOATS', 209),
 ('MJM', 'MOTOR_BOATS', 210),
 ('MTI', 'MOTOR_BOATS', 211),
@@ -278,9 +301,11 @@ INSERT INTO brands (name, category, display_order) VALUES
 ('Moomba', 'MOTOR_BOATS', 247),
 ('Moonen', 'MOTOR_BOATS', 248),
 ('Motor Yacht', 'MOTOR_BOATS', 249),
-('Mystic Powerboats', 'MOTOR_BOATS', 250),
+('Mystic Powerboats', 'MOTOR_BOATS', 250)
+ON CONFLICT (name, category) DO NOTHING;
 
 -- N brands
+INSERT INTO brands (name, category, display_order) VALUES
 ('NX Boats', 'MOTOR_BOATS', 251),
 ('Native Watercraft', 'MOTOR_BOATS', 252),
 ('NauticStar', 'MOTOR_BOATS', 253),
@@ -302,7 +327,8 @@ INSERT INTO brands (name, category, display_order) VALUES
 ('Novamarine', 'MOTOR_BOATS', 269),
 ('Novurania', 'MOTOR_BOATS', 270),
 ('Numarine', 'MOTOR_BOATS', 271),
-('Nuova Jolly', 'MOTOR_BOATS', 272);
+('Nuova Jolly', 'MOTOR_BOATS', 272)
+ON CONFLICT (name, category) DO NOTHING;
 
 -- Continue with O-Z Motor Boats
 INSERT INTO brands (name, category, display_order) VALUES
@@ -313,9 +339,11 @@ INSERT INTO brands (name, category, display_order) VALUES
 ('Ocqueteau', 'MOTOR_BOATS', 276),
 ('Omega', 'MOTOR_BOATS', 277),
 ('Offshore Yachts', 'MOTOR_BOATS', 278),
-('Outer Reef Yachts', 'MOTOR_BOATS', 279),
+('Outer Reef Yachts', 'MOTOR_BOATS', 279)
+ON CONFLICT (name, category) DO NOTHING;
 
 -- P brands
+INSERT INTO brands (name, category, display_order) VALUES
 ('Pacific', 'MOTOR_BOATS', 280),
 ('Pacific Craft', 'MOTOR_BOATS', 281),
 ('Pair Customs', 'MOTOR_BOATS', 282),
@@ -341,14 +369,18 @@ INSERT INTO brands (name, category, display_order) VALUES
 ('Pro-Line', 'MOTOR_BOATS', 302),
 ('Pro Marine', 'MOTOR_BOATS', 303),
 ('Protector', 'MOTOR_BOATS', 304),
-('Pursuit', 'MOTOR_BOATS', 305),
+('Pursuit', 'MOTOR_BOATS', 305)
+ON CONFLICT (name, category) DO NOTHING;
 
 -- Q brands
+INSERT INTO brands (name, category, display_order) VALUES
 ('Qwest', 'MOTOR_BOATS', 306),
 ('Quarken', 'MOTOR_BOATS', 307),
-('Quicksilver', 'MOTOR_BOATS', 308),
+('Quicksilver', 'MOTOR_BOATS', 308)
+ON CONFLICT (name, category) DO NOTHING;
 
 -- R brands
+INSERT INTO brands (name, category, display_order) VALUES
 ('RIO', 'MOTOR_BOATS', 309),
 ('RYCK', 'MOTOR_BOATS', 310),
 ('Rampage', 'MOTOR_BOATS', 311),
@@ -371,9 +403,11 @@ INSERT INTO brands (name, category, display_order) VALUES
 ('Rizzardi', 'MOTOR_BOATS', 328),
 ('Robalo', 'MOTOR_BOATS', 329),
 ('Rodman', 'MOTOR_BOATS', 330),
-('Rybovich', 'MOTOR_BOATS', 331),
+('Rybovich', 'MOTOR_BOATS', 331)
+ON CONFLICT (name, category) DO NOTHING;
 
 -- S brands
+INSERT INTO brands (name, category, display_order) VALUES
 ('SACS', 'MOTOR_BOATS', 332),
 ('Sabre', 'MOTOR_BOATS', 333),
 ('Saga', 'MOTOR_BOATS', 334),
@@ -453,9 +487,11 @@ INSERT INTO brands (name, category, display_order) VALUES
 ('Sweetwater', 'MOTOR_BOATS', 408),
 ('Sylvan', 'MOTOR_BOATS', 409),
 ('Symbol', 'MOTOR_BOATS', 410),
-('Suzuki Suzumar', 'MOTOR_BOATS', 411),
+('Suzuki Suzumar', 'MOTOR_BOATS', 411)
+ON CONFLICT (name, category) DO NOTHING;
 
 -- T brands
+INSERT INTO brands (name, category, display_order) VALUES
 ('Tahoe', 'MOTOR_BOATS', 412),
 ('Tahoe Pontoon', 'MOTOR_BOATS', 413),
 ('Talamex', 'MOTOR_BOATS', 414),
@@ -480,13 +516,17 @@ INSERT INTO brands (name, category, display_order) VALUES
 ('Trojan', 'MOTOR_BOATS', 433),
 ('Trophy', 'MOTOR_BOATS', 434),
 ('True North', 'MOTOR_BOATS', 435),
-('Twin Vee', 'MOTOR_BOATS', 436),
+('Twin Vee', 'MOTOR_BOATS', 436)
+ON CONFLICT (name, category) DO NOTHING;
 
 -- U brands
+INSERT INTO brands (name, category, display_order) VALUES
 ('Uniesse', 'MOTOR_BOATS', 437),
-('Uniflite', 'MOTOR_BOATS', 438),
+('Uniflite', 'MOTOR_BOATS', 438)
+ON CONFLICT (name, category) DO NOTHING;
 
 -- V brands
+INSERT INTO brands (name, category, display_order) VALUES
 ('Valhalla Boatworks', 'MOTOR_BOATS', 439),
 ('Valliant', 'MOTOR_BOATS', 440),
 ('Van der Heijden', 'MOTOR_BOATS', 441),
@@ -502,9 +542,11 @@ INSERT INTO brands (name, category, display_order) VALUES
 ('Viking', 'MOTOR_BOATS', 451),
 ('Viking Princess', 'MOTOR_BOATS', 452),
 ('Vision Marine Technologies', 'MOTOR_BOATS', 453),
-('Vri-Jon', 'MOTOR_BOATS', 454),
+('Vri-Jon', 'MOTOR_BOATS', 454)
+ON CONFLICT (name, category) DO NOTHING;
 
 -- W brands
+INSERT INTO brands (name, category, display_order) VALUES
 ('Wajer', 'MOTOR_BOATS', 455),
 ('Walker Bay', 'MOTOR_BOATS', 456),
 ('Wally', 'MOTOR_BOATS', 457),
@@ -516,22 +558,29 @@ INSERT INTO brands (name, category, display_order) VALUES
 ('White Shark', 'MOTOR_BOATS', 463),
 ('Williams Jet Tenders', 'MOTOR_BOATS', 464),
 ('Windy', 'MOTOR_BOATS', 465),
-('World Cat', 'MOTOR_BOATS', 466),
+('World Cat', 'MOTOR_BOATS', 466)
+ON CONFLICT (name, category) DO NOTHING;
 
 -- Y brands
+INSERT INTO brands (name, category, display_order) VALUES
 ('Yamaha Boats', 'MOTOR_BOATS', 467),
 ('Yamarin', 'MOTOR_BOATS', 468),
-('Yellowfin', 'MOTOR_BOATS', 469),
+('Yellowfin', 'MOTOR_BOATS', 469)
+ON CONFLICT (name, category) DO NOTHING;
 
 -- Z brands
+INSERT INTO brands (name, category, display_order) VALUES
 ('ZAR Mini', 'MOTOR_BOATS', 470),
 ('Zar', 'MOTOR_BOATS', 471),
 ('Zar Formenti', 'MOTOR_BOATS', 472),
 ('Zander', 'MOTOR_BOATS', 473),
-('Zodiac', 'MOTOR_BOATS', 474),
+('Zodiac', 'MOTOR_BOATS', 474)
+ON CONFLICT (name, category) DO NOTHING;
 
 -- Custom production option (always last)
-('Собствено производство', 'MOTOR_BOATS', 9999);
+INSERT INTO brands (name, category, display_order) VALUES
+('Собствено производство / Други', 'MOTOR_BOATS', 9999)
+ON CONFLICT (name, category) DO NOTHING;
 
 -- Insert ALL Sailboat brands (A-Z)
 INSERT INTO brands (name, category, display_order) VALUES
@@ -551,9 +600,11 @@ INSERT INTO brands (name, category, display_order) VALUES
 ('Arcona', 'SAILBOATS', 13),
 ('Astus', 'SAILBOATS', 14),
 ('Atlantic', 'SAILBOATS', 15),
-('Aventura', 'SAILBOATS', 16),
+('Aventura', 'SAILBOATS', 16)
+ON CONFLICT (name, category) DO NOTHING;
 
 -- B brands
+INSERT INTO brands (name, category, display_order) VALUES
 ('Baba', 'SAILBOATS', 17),
 ('Balance', 'SAILBOATS', 18),
 ('Bali', 'SAILBOATS', 19),
@@ -571,9 +622,11 @@ INSERT INTO brands (name, category, display_order) VALUES
 ('Brewer', 'SAILBOATS', 31),
 ('Bristol', 'SAILBOATS', 32),
 ('Bristol Channel', 'SAILBOATS', 33),
-('Bruce Roberts', 'SAILBOATS', 34),
+('Bruce Roberts', 'SAILBOATS', 34)
+ON CONFLICT (name, category) DO NOTHING;
 
 -- C brands
+INSERT INTO brands (name, category, display_order) VALUES
 ('Cutter', 'SAILBOATS', 35),
 ('C&C', 'SAILBOATS', 36),
 ('CAL', 'SAILBOATS', 37),
@@ -605,26 +658,32 @@ INSERT INTO brands (name, category, display_order) VALUES
 ('Contest', 'SAILBOATS', 63),
 ('Cornish Crabbers', 'SAILBOATS', 64),
 ('Corsair', 'SAILBOATS', 65),
-('Custom', 'SAILBOATS', 66),
+('Custom', 'SAILBOATS', 66)
+ON CONFLICT (name, category) DO NOTHING;
 
 -- D brands
+INSERT INTO brands (name, category, display_order) VALUES
 ('Damarin', 'SAILBOATS', 67),
 ('Dehler', 'SAILBOATS', 68),
 ('Delphia', 'SAILBOATS', 69),
 ('Discovery', 'SAILBOATS', 70),
 ('Downeast', 'SAILBOATS', 71),
 ('Dragonfly', 'SAILBOATS', 72),
-('Dufour', 'SAILBOATS', 73),
+('Dufour', 'SAILBOATS', 73)
+ON CONFLICT (name, category) DO NOTHING;
 
 -- E brands
+INSERT INTO brands (name, category, display_order) VALUES
 ('Elan', 'SAILBOATS', 74),
 ('Endeavour', 'SAILBOATS', 75),
 ('Endurance', 'SAILBOATS', 76),
 ('Ericson', 'SAILBOATS', 77),
 ('Etap', 'SAILBOATS', 78),
-('Excess', 'SAILBOATS', 79),
+('Excess', 'SAILBOATS', 79)
+ON CONFLICT (name, category) DO NOTHING;
 
 -- F brands
+INSERT INTO brands (name, category, display_order) VALUES
 ('FarEast', 'SAILBOATS', 80),
 ('Farr', 'SAILBOATS', 81),
 ('Feeling', 'SAILBOATS', 82),
@@ -635,18 +694,22 @@ INSERT INTO brands (name, category, display_order) VALUES
 ('Franchini', 'SAILBOATS', 87),
 ('Freedom', 'SAILBOATS', 88),
 ('Friendship', 'SAILBOATS', 89),
-('Furia', 'SAILBOATS', 90),
+('Furia', 'SAILBOATS', 90)
+ON CONFLICT (name, category) DO NOTHING;
 
 -- G brands
+INSERT INTO brands (name, category, display_order) VALUES
 ('Garcia', 'SAILBOATS', 91),
 ('Gemini', 'SAILBOATS', 92),
 ('Gib Sea', 'SAILBOATS', 93),
 ('Grand Soleil', 'SAILBOATS', 94),
 ('Gulet', 'SAILBOATS', 95),
 ('Gulfstar', 'SAILBOATS', 96),
-('Gunboat', 'SAILBOATS', 97),
+('Gunboat', 'SAILBOATS', 97)
+ON CONFLICT (name, category) DO NOTHING;
 
 -- H brands
+INSERT INTO brands (name, category, display_order) VALUES
 ('HH Catamarans', 'SAILBOATS', 98),
 ('Hake / Seaward', 'SAILBOATS', 99),
 ('Hallberg-Rassy', 'SAILBOATS', 100),
@@ -659,40 +722,50 @@ INSERT INTO brands (name, category, display_order) VALUES
 ('Hoek', 'SAILBOATS', 107),
 ('Hunter', 'SAILBOATS', 108),
 ('Hutting', 'SAILBOATS', 109),
-('Hylas', 'SAILBOATS', 110),
+('Hylas', 'SAILBOATS', 110)
+ON CONFLICT (name, category) DO NOTHING;
 
 -- I brands
+INSERT INTO brands (name, category, display_order) VALUES
 ('Ice Yachts', 'SAILBOATS', 111),
 ('Irwin', 'SAILBOATS', 112),
 ('Island Packet', 'SAILBOATS', 113),
 ('Islander', 'SAILBOATS', 114),
-('Italia Yachts', 'SAILBOATS', 115),
+('Italia Yachts', 'SAILBOATS', 115)
+ON CONFLICT (name, category) DO NOTHING;
 
 -- J brands
+INSERT INTO brands (name, category, display_order) VALUES
 ('J Boats', 'SAILBOATS', 116),
 ('JPK', 'SAILBOATS', 117),
 ('Jeanneau', 'SAILBOATS', 118),
 ('Jongert', 'SAILBOATS', 119),
 ('Jouet', 'SAILBOATS', 120),
-('Judel and Vrolijk', 'SAILBOATS', 121),
+('Judel and Vrolijk', 'SAILBOATS', 121)
+ON CONFLICT (name, category) DO NOTHING;
 
 -- K brands
+INSERT INTO brands (name, category, display_order) VALUES
 ('Kelsall', 'SAILBOATS', 122),
 ('Ker', 'SAILBOATS', 123),
 ('Ketch', 'SAILBOATS', 124),
 ('Kirie', 'SAILBOATS', 125),
 ('Knysna', 'SAILBOATS', 126),
-('Koopmans', 'SAILBOATS', 127),
+('Koopmans', 'SAILBOATS', 127)
+ON CONFLICT (name, category) DO NOTHING;
 
 -- L brands
+INSERT INTO brands (name, category, display_order) VALUES
 ('LM', 'SAILBOATS', 128),
 ('Lagoon', 'SAILBOATS', 129),
 ('Latitude 46', 'SAILBOATS', 130),
 ('Lemsteraak', 'SAILBOATS', 131),
 ('Leopard', 'SAILBOATS', 132),
-('Little Harbor', 'SAILBOATS', 133),
+('Little Harbor', 'SAILBOATS', 133)
+ON CONFLICT (name, category) DO NOTHING;
 
 -- M brands
+INSERT INTO brands (name, category, display_order) VALUES
 ('M.A.T.', 'SAILBOATS', 134),
 ('MacGregor', 'SAILBOATS', 135),
 ('Malo', 'SAILBOATS', 136),
@@ -711,9 +784,11 @@ INSERT INTO brands (name, category, display_order) VALUES
 ('Morgan', 'SAILBOATS', 149),
 ('Morris', 'SAILBOATS', 150),
 ('Motorsailer', 'SAILBOATS', 151),
-('Mylius', 'SAILBOATS', 152),
+('Mylius', 'SAILBOATS', 152)
+ON CONFLICT (name, category) DO NOTHING;
 
 -- N brands
+INSERT INTO brands (name, category, display_order) VALUES
 ('NEEL', 'SAILBOATS', 153),
 ('Najad', 'SAILBOATS', 154),
 ('Nauticat', 'SAILBOATS', 155),
@@ -725,17 +800,21 @@ INSERT INTO brands (name, category, display_order) VALUES
 ('Nonsuch', 'SAILBOATS', 161),
 ('Nordia', 'SAILBOATS', 162),
 ('Norseman', 'SAILBOATS', 163),
-('North Wind', 'SAILBOATS', 164),
+('North Wind', 'SAILBOATS', 164)
+ON CONFLICT (name, category) DO NOTHING;
 
 -- O brands
+INSERT INTO brands (name, category, display_order) VALUES
 ('O Day', 'SAILBOATS', 165),
 ('Ohlson', 'SAILBOATS', 166),
 ('One Design', 'SAILBOATS', 167),
 ('Outbound', 'SAILBOATS', 168),
 ('Outremer', 'SAILBOATS', 169),
-('Oyster', 'SAILBOATS', 170),
+('Oyster', 'SAILBOATS', 170)
+ON CONFLICT (name, category) DO NOTHING;
 
 -- P brands
+INSERT INTO brands (name, category, display_order) VALUES
 ('Pacific Seacraft', 'SAILBOATS', 171),
 ('Palmer Johnson', 'SAILBOATS', 172),
 ('Passport', 'SAILBOATS', 173),
@@ -746,9 +825,11 @@ INSERT INTO brands (name, category, display_order) VALUES
 ('Privilege', 'SAILBOATS', 178),
 ('Prout', 'SAILBOATS', 179),
 ('Puffin', 'SAILBOATS', 180),
-('Puma', 'SAILBOATS', 181),
+('Puma', 'SAILBOATS', 181)
+ON CONFLICT (name, category) DO NOTHING;
 
 -- Q brands
+INSERT INTO brands (name, category, display_order) VALUES
 ('Quarken', 'SAILBOATS', 182),
 
 -- R brands
@@ -791,9 +872,11 @@ INSERT INTO brands (name, category, display_order) VALUES
 ('Standfast', 'SAILBOATS', 217),
 ('Sunbeam', 'SAILBOATS', 218),
 ('Sunreef', 'SAILBOATS', 219),
-('Sweden Yachts', 'SAILBOATS', 220),
+('Sweden Yachts', 'SAILBOATS', 220)
+ON CONFLICT (name, category) DO NOTHING;
 
 -- T brands
+INSERT INTO brands (name, category, display_order) VALUES
 ('Ta Chiao', 'SAILBOATS', 221),
 ('Ta Shing', 'SAILBOATS', 222),
 ('Tartan', 'SAILBOATS', 223),
@@ -825,16 +908,17 @@ INSERT INTO brands (name, category, display_order) VALUES
 ('Westsail', 'SAILBOATS', 245),
 ('Whitby', 'SAILBOATS', 246),
 ('Windelo', 'SAILBOATS', 247),
-
 -- X brands
 ('X-Yachts', 'SAILBOATS', 248),
 ('Xquisite Yachts', 'SAILBOATS', 249),
-
 -- Z brands
-('Zeeschouw', 'SAILBOATS', 250),
+('Zeeschouw', 'SAILBOATS', 250)
+ON CONFLICT (name, category) DO NOTHING;
 
 -- Custom production option (always last)
-('Собствено производство', 'SAILBOATS', 9999);
+INSERT INTO brands (name, category, display_order) VALUES
+('Собствено производство / Други', 'SAILBOATS', 9999)
+ON CONFLICT (name, category) DO NOTHING;
 
 -- Insert ALL Kayak/Canoe brands
 INSERT INTO brands (name, category, display_order) VALUES
@@ -900,7 +984,10 @@ INSERT INTO brands (name, category, display_order) VALUES
 ('Williams Jet Tenders', 'KAYAKS', 33),
 
 -- Y brands
-('YAM', 'KAYAKS', 34),
+('YAM', 'KAYAKS', 34)
+ON CONFLICT (name, category) DO NOTHING;
 
 -- Custom production option (always last)
-('Собствено производство', 'KAYAKS', 9999);
+INSERT INTO brands (name, category, display_order) VALUES
+('Собствено производство / Други', 'KAYAKS', 9999)
+ON CONFLICT (name, category) DO NOTHING;

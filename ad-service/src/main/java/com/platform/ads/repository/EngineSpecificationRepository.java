@@ -1,6 +1,7 @@
 package com.platform.ads.repository;
 
 import com.platform.ads.entity.EngineSpecification;
+import org.springframework.data.r2dbc.repository.Modifying;
 import org.springframework.data.r2dbc.repository.Query;
 import org.springframework.data.repository.reactive.ReactiveCrudRepository;
 import org.springframework.stereotype.Repository;
@@ -11,6 +12,9 @@ import reactor.core.publisher.Mono;
 public interface EngineSpecificationRepository extends ReactiveCrudRepository<EngineSpecification, Long> {
 
     Mono<EngineSpecification> findByAdId(Long adId);
+
+    @Modifying
+    Mono<Void> deleteByAdId(Long adId);
 
     Flux<EngineSpecification> findByBrandIgnoreCaseContaining(String brand);
 

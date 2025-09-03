@@ -5,9 +5,9 @@ spring:
   application:
     name: ad-service
   r2dbc:
-    url: r2dbc:postgresql://postgres:5432/ad_service_db
-    username: postgres
-    password: password
+    url: r2dbc:postgresql://postgres:5432/${POSTGRES_DB_AD:ad_service_db}
+    username: ${POSTGRES_USER:postgres}
+    password: ${POSTGRES_PASSWORD:password}
     pool:
       initial-size: 10
       max-size: 20
@@ -16,7 +16,14 @@ spring:
   sql:
     init:
       schema-locations: classpath:schema.sql
-      mode: always
+      mode: never
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    url: jdbc:postgresql://postgres:5432/${POSTGRES_DB_AD:ad_service_db}
+    user: ${POSTGRES_USER:postgres}
+    password: ${POSTGRES_PASSWORD:password}
+    baseline-on-migrate: true
   cache:
     type: simple
     cache-names: brandsByCategory,allActiveBrands,brandsGroupedByCategory

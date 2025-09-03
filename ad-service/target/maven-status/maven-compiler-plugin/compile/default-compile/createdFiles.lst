@@ -51,7 +51,6 @@ com\platform\ads\dto\BoatSpecificationResponse$BoatSpecificationResponseBuilder.
 com\platform\ads\dto\UpdateAdRequest$UpdateAdRequestBuilder.class
 com\platform\ads\dto\EngineSearchFilters.class
 com\platform\ads\entity\EngineSpecification.class
-com\platform\ads\service\BoatMarketplaceService$UserValidationResponse.class
 com\platform\ads\dto\ServicesSpecificationDto.class
 com\platform\ads\repository\TrailerSpecificationSearchRepository.class
 com\platform\ads\dto\enums\FishingType.class
@@ -64,12 +63,14 @@ com\platform\ads\service\ImageService.class
 com\platform\ads\dto\EngineSpecificationDto$EngineSpecificationDtoBuilder.class
 com\platform\ads\dto\TrailerSpecificationResponse.class
 com\platform\ads\service\BoatMarketplaceService$1.class
+com\platform\ads\service\ImageConversionService$ConvertedImageData$ConvertedImageDataBuilder.class
 com\platform\ads\dto\JetSkiSpecificationDto$JetSkiFuelType.class
 com\platform\ads\repository\ServicesSpecificationSearchRepository.class
 com\platform\ads\service\BoatSearchService$1.class
 com\platform\ads\dto\enums\ProbeBrand.class
 com\platform\ads\repository\BrandRepository.class
 com\platform\ads\dto\FishingSpecificationDto$FishingSpecificationDtoBuilder.class
+com\platform\ads\dto\ValidatedImageData.class
 com\platform\ads\exception\ConfigurationException.class
 com\platform\ads\dto\enums\TubeLength.class
 com\platform\ads\exception\UserNotFoundException.class
@@ -86,7 +87,9 @@ com\platform\ads\dto\enums\Power.class
 com\platform\ads\dto\PriceInfo$PriceType.class
 com\platform\ads\repository\MarineElectronicsSpecificationSearchRepository.class
 com\platform\ads\exception\AdNotFoundException.class
+com\platform\ads\service\ImageConversionService$ConvertedImageData.class
 com\platform\ads\dto\MarineElectronicsSpecificationResponse$MarineElectronicsSpecificationResponseBuilder.class
+com\platform\ads\dto\ValidatedImageData$ValidatedImageDataBuilder.class
 com\platform\ads\exception\AdNotActiveException.class
 com\platform\ads\dto\JetSkiSpecificationResponse$JetSkiSpecificationResponseBuilder.class
 com\platform\ads\dto\EngineSpecificationDto.class
@@ -162,6 +165,7 @@ com\platform\ads\dto\JetSkiSpecificationDto$JetSkiSpecificationDtoBuilder.class
 com\platform\ads\dto\BoatSpecificationResponse.class
 com\platform\ads\dto\MarineElectronicsSpecificationDto$MountingType.class
 com\platform\ads\exception\UserAlreadyExistsException.class
+com\platform\ads\service\ImageConversionService.class
 com\platform\ads\dto\enums\Weight.class
 com\platform\ads\service\S3CleanupService.class
 com\platform\ads\dto\AllBrandsResponse$AllBrandsResponseBuilder.class
@@ -209,6 +213,7 @@ com\platform\ads\controller\BoatMarketplaceAdminController.class
 com\platform\ads\dto\MarineElectronicsSpecificationDto$Frequency.class
 com\platform\ads\dto\TrailerSpecificationResponse$TrailerSpecificationResponseBuilder.class
 com\platform\ads\dto\enums\ServiceType.class
+com\platform\ads\dto\UserValidationResponse.class
 com\platform\ads\dto\TrailerSearchFilters$TrailerSearchFiltersBuilder.class
 com\platform\ads\dto\UpdateAdRequest.class
 com\platform\ads\dto\enums\Mounting.class

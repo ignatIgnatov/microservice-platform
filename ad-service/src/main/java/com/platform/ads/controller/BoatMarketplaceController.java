@@ -9,6 +9,7 @@ import com.platform.ads.exception.AdNotFoundException;
 import com.platform.ads.exception.AuthServiceException;
 import com.platform.ads.exception.CategoryMismatchException;
 import com.platform.ads.exception.ErrorResponse;
+import com.platform.ads.exception.InvalidFieldValueException;
 import com.platform.ads.exception.MandatoryFieldMissingException;
 import com.platform.ads.exception.UserNotFoundException;
 import com.platform.ads.service.BoatMarketplaceService;
@@ -16,6 +17,7 @@ import com.platform.ads.service.BoatSearchService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -27,18 +29,24 @@ import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -51,67 +59,48 @@ public class BoatMarketplaceController {
     private final BoatMarketplaceService marketplaceService;
     private final BoatSearchService searchService;
 
-    // ===========================
-    // AD MANAGEMENT ENDPOINTS
-    // ===========================
-
-    @PostMapping("/create")
+    @PostMapping(value = "/create", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(
-            summary = "Create a new boat advertisement",
-            description = "Creates a new advertisement for boats, jet skis, trailers, engines, marine electronics, fishing equipment, parts, or services. Requires valid JWT token."
+            summary = "Create advertisement with images",
+            description = "Creates a new boat advertisement with mandatory images. At least 1 image is required, maximum 10 images allowed."
     )
-    @ApiResponses(value = {
-            @ApiResponse(
-                    responseCode = "201",
-                    description = "Advertisement successfully created",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = BoatAdResponse.class))
-            ),
-            @ApiResponse(
-                    responseCode = "400",
-                    description = "Invalid request data or missing mandatory fields",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))
-            ),
-            @ApiResponse(
-                    responseCode = "401",
-                    description = "Invalid or missing JWT token",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))
-            ),
-            @ApiResponse(
-                    responseCode = "404",
-                    description = "User not found in authentication service",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))
-            ),
-            @ApiResponse(
-                    responseCode = "500",
-                    description = "Internal server error",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))
-            )
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", description = "Advertisement created successfully",
+                    content = @Content(schema = @Schema(implementation = BoatAdResponse.class))),
+            @ApiResponse(responseCode = "400", description = "Invalid request data or missing images"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized - invalid or missing token"),
+            @ApiResponse(responseCode = "413", description = "Image file too large"),
+            @ApiResponse(responseCode = "422", description = "Validation failed - invalid image format or brand"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
     })
-    public Mono<ResponseEntity<BoatAdResponse>> createAd(
-            @Parameter(description = "Advertisement data with category-specific specifications", required = true)
-            @Valid @RequestBody BoatAdRequest request,
-            @Parameter(description = "JWT Bearer token for authentication", required = true, example = "Bearer eyJhbGciOiJIUzI1...")
+    public Mono<ResponseEntity<BoatAdResponse>> createAdWithImages(
+            @Parameter(description = "Advertisement data", required = true)
+            @RequestPart("adData") @Valid BoatAdRequest adRequest,
+
+            @Parameter(description = "Image files (1-14 images, max 10MB each, JPEG/PNG/WEBP/HEIC)", required = true)
+            @RequestPart("images") Flux<FilePart> images,
+
+            @Parameter(description = "JWT token", required = true)
             @RequestHeader("Authorization") String authHeader) {
 
         long startTime = System.currentTimeMillis();
-        log.info("=== CREATE AD REQUEST START === Category: {}, User: {}, Title: '{}' ===",
-                request.getCategory(), request.getUserEmail(), request.getTitle());
-
         String token = extractTokenFromHeader(authHeader);
 
-        return marketplaceService.createBoatAd(request, token)
+        log.info("=== CREATE AD WITH IMAGES REQUEST === User: {}, Category: {}, Title: '{}' ===",
+                adRequest.getUserEmail(), adRequest.getCategory(), adRequest.getTitle());
+
+        return marketplaceService.createBoatAdWithImages(adRequest, images, token)
                 .map(response -> {
                     long duration = System.currentTimeMillis() - startTime;
-                    log.info("=== CREATE AD SUCCESS === ID: {}, Duration: {}ms ===",
+                    log.info("=== CREATE AD WITH IMAGES RESPONSE === ID: {}, Duration: {}ms ===",
                             response.getId(), duration);
                     return ResponseEntity.status(HttpStatus.CREATED).body(response);
+                })
+                .doOnError(error -> {
+                    long duration = System.currentTimeMillis() - startTime;
+                    log.error("=== CREATE AD WITH IMAGES ERROR === User: {}, Duration: {}ms, Error: {} ===",
+                            adRequest.getUserEmail(), duration, error.getMessage());
                 });
-//                .onErrorResume(error -> {
-//                    long duration = System.currentTimeMillis() - startTime;
-//                    log.error("=== CREATE AD FAILED === Category: {}, User: {}, Duration: {}ms, Error: {} ===",
-//                            request.getCategory(), request.getUserEmail(), duration, error.getMessage());
-//                    return handleCreateAdError(error);
-//                });
     }
 
     @GetMapping("/{id}")
@@ -162,6 +151,261 @@ public class BoatMarketplaceController {
 //                    return Mono.just(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build());
 //                });
     }
+
+    @Operation(
+            summary = "Update boat advertisement with images",
+            description = "Updates an existing boat advertisement including specification details, " +
+                    "adding new images, and/or removing existing images. All operations are performed " +
+                    "in a single transaction to ensure data consistency."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Advertisement updated successfully",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = BoatAdResponse.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "Invalid request data or validation errors",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class),
+                            examples = @ExampleObject(
+                                    value = "{\n  \"error\": \"VALIDATION_ERROR\",\n  \"message\": \"Invalid field value\",\n  \"timestamp\": \"2025-01-15T10:30:00Z\"\n}"
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "401",
+                    description = "Unauthorized - invalid token or user not found",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "403",
+                    description = "Forbidden - user does not own this advertisement",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Advertisement not found",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "413",
+                    description = "Payload too large - file size exceeds 5MB limit",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "Internal server error",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorResponse.class)
+                    )
+            )
+    })
+    @PutMapping(value = "/{adId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public Mono<ResponseEntity<BoatAdResponse>> updateBoatAdWithImages(
+            @Parameter(
+                    description = "Advertisement ID to update",
+                    required = true,
+                    example = "123"
+            )
+            @PathVariable Long adId,
+
+            @Parameter(
+                    description = "Advertisement data in JSON format containing all ad details and specifications",
+                    required = true,
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = BoatAdRequest.class)
+                    )
+            )
+            @RequestPart("adData") BoatAdRequest request,
+
+            @Parameter(
+                    description = "New images to add to the advertisement. Supported formats: JPEG, PNG, WEBP. " +
+                            "Maximum file size: 10MB per image. Maximum total images per ad: 14",
+                    required = false,
+                    content = @Content(mediaType = "multipart/form-data")
+            )
+            @RequestPart(value = "newImages", required = false) Flux<FilePart> newImages,
+
+            @Parameter(
+                    description = "List of existing image IDs to delete from the advertisement",
+                    required = false,
+                    example = "[5, 7, 9]"
+            )
+            @RequestParam(value = "imagesToDelete", required = false) List<Long> imagesToDelete,
+
+            @Parameter(
+                    description = "Bearer token for authentication",
+                    required = true,
+                    example = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+            )
+            @RequestHeader("Authorization") String authHeader) {
+
+        log.info("=== UPDATE AD REQUEST === AdID: {}, User: {}, Category: {} ===",
+                adId, request.getUserEmail(), request.getCategory());
+
+        String token = authHeader.replace("Bearer ", "");
+
+        return marketplaceService.updateBoatAdWithImages(adId, request, newImages, imagesToDelete, token)
+                .map(response -> ResponseEntity.ok(response))
+                .onErrorResume(AdNotFoundException.class, e -> {
+                    log.warn("=== AD NOT FOUND === AdID: {} ===", adId);
+                    return Mono.just(ResponseEntity.notFound().build());
+                })
+                .onErrorResume(UserNotFoundException.class, e -> {
+                    log.warn("=== USER NOT FOUND === User: {} ===", request.getUserEmail());
+                    return Mono.just(ResponseEntity.status(HttpStatus.UNAUTHORIZED).build());
+                })
+                .onErrorResume(IllegalArgumentException.class, e -> {
+                    log.warn("=== VALIDATION ERROR === AdID: {}, Error: {} ===", adId, e.getMessage());
+                    return Mono.just(ResponseEntity.badRequest().build());
+                })
+                .onErrorResume(InvalidFieldValueException.class, e -> {
+                    log.warn("=== INVALID FIELD VALUE === AdID: {}, Field: {}, Error: {} ===",
+                            adId, e.getFieldName(), e.getMessage());
+                    return Mono.just(ResponseEntity.badRequest().build());
+                })
+                .onErrorResume(MandatoryFieldMissingException.class, e -> {
+                    log.warn("=== MISSING MANDATORY FIELD === AdID: {}, Field: {} ===",
+                            adId, e.getMessage());
+                    return Mono.just(ResponseEntity.badRequest().build());
+                })
+                .onErrorResume(Exception.class, e -> {
+                    log.error("=== UNEXPECTED ERROR === AdID: {}, Error: {} ===", adId, e.getMessage(), e);
+                    return Mono.just(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build());
+                });
+    }
+
+//    @Operation(
+//            summary = "Update boat advertisement details only",
+//            description = "Updates an existing boat advertisement details and specifications without " +
+//                    "modifying images. Use this endpoint when you only need to update text fields, " +
+//                    "prices, specifications, etc."
+//    )
+//    @ApiResponses(value = {
+//            @ApiResponse(
+//                    responseCode = "200",
+//                    description = "Advertisement details updated successfully",
+//                    content = @Content(
+//                            mediaType = "application/json",
+//                            schema = @Schema(implementation = BoatAdResponse.class)
+//                    )
+//            ),
+//            @ApiResponse(
+//                    responseCode = "400",
+//                    description = "Invalid request data or validation errors",
+//                    content = @Content(
+//                            mediaType = "application/json",
+//                            schema = @Schema(implementation = ErrorResponse.class)
+//                    )
+//            ),
+//            @ApiResponse(
+//                    responseCode = "401",
+//                    description = "Unauthorized - invalid token or user not found",
+//                    content = @Content(
+//                            mediaType = "application/json",
+//                            schema = @Schema(implementation = ErrorResponse.class)
+//                    )
+//            ),
+//            @ApiResponse(
+//                    responseCode = "403",
+//                    description = "Forbidden - user does not own this advertisement",
+//                    content = @Content(
+//                            mediaType = "application/json",
+//                            schema = @Schema(implementation = ErrorResponse.class)
+//                    )
+//            ),
+//            @ApiResponse(
+//                    responseCode = "404",
+//                    description = "Advertisement not found",
+//                    content = @Content(
+//                            mediaType = "application/json",
+//                            schema = @Schema(implementation = ErrorResponse.class)
+//                    )
+//            ),
+//            @ApiResponse(
+//                    responseCode = "500",
+//                    description = "Internal server error",
+//                    content = @Content(
+//                            mediaType = "application/json",
+//                            schema = @Schema(implementation = ErrorResponse.class)
+//                    )
+//            )
+//    })
+//    @PutMapping(value = "/{adId}/details", consumes = MediaType.APPLICATION_JSON_VALUE)
+//    public Mono<ResponseEntity<BoatAdResponse>> updateBoatAdDetails(
+//            @Parameter(
+//                    description = "Advertisement ID to update",
+//                    required = true,
+//                    example = "123"
+//            )
+//            @PathVariable Long adId,
+//
+//            @Parameter(
+//                    description = "Advertisement data containing all details and specifications to update",
+//                    required = true
+//            )
+//            @RequestBody @Valid BoatAdRequest request,
+//
+//            @Parameter(
+//                    description = "Bearer token for authentication",
+//                    required = true,
+//                    example = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+//            )
+//            @RequestHeader("Authorization") String authHeader) {
+//
+//        log.info("=== UPDATE AD DETAILS === AdID: {}, User: {} ===", adId, request.getUserEmail());
+//
+//        String token = authHeader.replace("Bearer ", "");
+//
+//        return marketplaceService.updateBoatAd(adId, request, token)
+//                .map(ResponseEntity::ok)
+//                .onErrorResume(AdNotFoundException.class, e -> {
+//                    log.warn("=== AD NOT FOUND === AdID: {} ===", adId);
+//                    return Mono.just(ResponseEntity.notFound().build());
+//                })
+//                .onErrorResume(UserNotFoundException.class, e -> {
+//                    log.warn("=== USER NOT FOUND === User: {} ===", request.getUserEmail());
+//                    return Mono.just(ResponseEntity.status(HttpStatus.UNAUTHORIZED).build());
+//                })
+//                .onErrorResume(IllegalArgumentException.class, e -> {
+//                    log.warn("=== VALIDATION ERROR === AdID: {}, Error: {} ===", adId, e.getMessage());
+//                    return Mono.just(ResponseEntity.badRequest().build());
+//                })
+//                .onErrorResume(InvalidFieldValueException.class, e -> {
+//                    log.warn("=== INVALID FIELD VALUE === AdID: {}, Field: {}, Error: {} ===",
+//                            adId, e.getFieldName(), e.getMessage());
+//                    return Mono.just(ResponseEntity.badRequest().build());
+//                })
+//                .onErrorResume(MandatoryFieldMissingException.class, e -> {
+//                    log.warn("=== MISSING MANDATORY FIELD === AdID: {}, Field: {} ===",
+//                            adId, e.getMessage());
+//                    return Mono.just(ResponseEntity.badRequest().build());
+//                })
+//                .onErrorResume(Exception.class, e -> {
+//                    log.error("=== UNEXPECTED ERROR === AdID: {}, Error: {} ===", adId, e.getMessage(), e);
+//                    return Mono.just(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build());
+//                });
+//    }
 
     // ===========================
     // SEARCH ENDPOINTS

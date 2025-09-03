@@ -1,6 +1,7 @@
 package com.platform.ads.repository;
 
 import com.platform.ads.entity.JetSkiSpecification;
+import org.springframework.data.r2dbc.repository.Modifying;
 import org.springframework.data.r2dbc.repository.Query;
 import org.springframework.data.repository.reactive.ReactiveCrudRepository;
 import org.springframework.stereotype.Repository;
@@ -11,6 +12,9 @@ import reactor.core.publisher.Mono;
 public interface JetSkiSpecificationRepository extends ReactiveCrudRepository<JetSkiSpecification, Long> {
 
     Mono<JetSkiSpecification> findByAdId(Long adId);
+
+    @Modifying
+    Mono<Void> deleteByAdId(Long adId);
 
     Flux<JetSkiSpecification> findByBrandIgnoreCaseContaining(String brand);
 

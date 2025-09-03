@@ -1,6 +1,7 @@
 package com.platform.ads.repository;
 
 import com.platform.ads.entity.BoatSpecification;
+import org.springframework.data.r2dbc.repository.Modifying;
 import org.springframework.data.r2dbc.repository.Query;
 import org.springframework.data.repository.reactive.ReactiveCrudRepository;
 import org.springframework.stereotype.Repository;
@@ -13,6 +14,9 @@ import java.math.BigDecimal;
 public interface BoatSpecificationRepository extends ReactiveCrudRepository<BoatSpecification, Long> {
 
     Mono<BoatSpecification> findByAdId(Long adId);
+
+    @Modifying
+    Mono<Void> deleteByAdId(Long adId);
 
     Flux<BoatSpecification> findByBrandIgnoreCaseContaining(String brand);
 

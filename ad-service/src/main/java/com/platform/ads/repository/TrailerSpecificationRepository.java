@@ -1,6 +1,7 @@
 package com.platform.ads.repository;
 
 import com.platform.ads.entity.TrailerSpecification;
+import org.springframework.data.r2dbc.repository.Modifying;
 import org.springframework.data.r2dbc.repository.Query;
 import org.springframework.data.repository.reactive.ReactiveCrudRepository;
 import org.springframework.stereotype.Repository;
@@ -13,6 +14,9 @@ import java.math.BigDecimal;
 public interface TrailerSpecificationRepository extends ReactiveCrudRepository<TrailerSpecification, Long> {
 
     Mono<TrailerSpecification> findByAdId(Long adId);
+
+    @Modifying
+    Mono<Void> deleteByAdId(Long adId);
 
     Flux<TrailerSpecification> findByBrandIgnoreCaseContaining(String brand);
 

@@ -314,10 +314,10 @@ CREATE INDEX IF NOT EXISTS idx_brands_display_order ON brands(category, display_
 CREATE INDEX IF NOT EXISTS idx_brands_name ON brands(name);
 
 -- Indexes for performance
-CREATE INDEX idx_ad_images_ad_id ON ad_images(ad_id);
-CREATE INDEX idx_ad_images_display_order ON ad_images(ad_id, display_order);
-CREATE INDEX idx_ad_images_uploaded_by ON ad_images(uploaded_by);
-CREATE INDEX idx_ad_images_active ON ad_images(active);
+CREATE INDEX IF NOT EXISTS idx_ad_images_ad_id ON ad_images(ad_id);
+CREATE INDEX IF NOT EXISTS idx_ad_images_display_order ON ad_images(ad_id, display_order);
+CREATE INDEX IF NOT EXISTS idx_ad_images_uploaded_by ON ad_images(uploaded_by);
+CREATE INDEX IF NOT EXISTS idx_ad_images_active ON ad_images(active);
 
 -- Indexes for performance optimization
 CREATE INDEX IF NOT EXISTS idx_ads_category ON ads(category);

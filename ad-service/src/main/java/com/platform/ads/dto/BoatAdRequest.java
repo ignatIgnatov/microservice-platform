@@ -55,6 +55,4 @@ public class BoatAdRequest {
     private FishingSpecificationDto fishingSpec;
     private PartsSpecificationDto partsSpec;
     private ServicesSpecificationDto servicesSpec;
-
-    private List<MultipartFile> images;
 }
