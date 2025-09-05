@@ -21,7 +21,6 @@ import java.util.List;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class BoatAdRequest {
 
-    @NotBlank(message = "Title is required")
     @Size(min = 5, max = 30, message = "Title must be between 5 and 30 characters")
     private String title;
 
@@ -48,12 +47,13 @@ public class BoatAdRequest {
     private String userEmail;
 
     @Size(max = 100, message = "Contact person name cannot exceed 100 characters")
-    private String contactPersonName; // "ЛИЦЕ ЗА КОНТАКТ"
+    private String contactPersonName;
 
     @Pattern(regexp = "^\\+?[1-9]\\d{1,14}$", message = "Invalid phone number format")
-    private String contactPhone; // "ТЕЛЕФОНЕН НОМЕР"
+    private String contactPhone;
 
     private List<Long> imagesToDelete;
+
     private BoatSpecificationDto boatSpec;
     private JetSkiSpecificationDto jetSkiSpec;
     private TrailerSpecificationDto trailerSpec;

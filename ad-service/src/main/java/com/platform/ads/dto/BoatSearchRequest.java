@@ -44,4 +44,25 @@ public class BoatSearchRequest {
     private String serviceType;
     private Boolean authorizedService;
     private String supportedBrand;
+
+    // ADD NEW FIELDS FOR WATER SPORTS
+    private String waterSportsType;
+
+    // ADD NEW FIELDS FOR MARINE ACCESSORIES
+    private String accessoryType;
+
+    // ADD NEW FIELDS FOR RENTALS
+    private String rentalType;
+    private Boolean licenseRequired;
+    private String managementType;
+    private String serviceTypeRentals; // To differentiate from services serviceType
+    private String companyName;
+    private Integer numberOfPeople;
+
+    // Additional common filters that might be useful
+    private Boolean inWarranty;
+    private Boolean isRegistered;
+    private String engineType;
+    private Integer minHorsepower;
+    private Integer maxHorsepower;
 }

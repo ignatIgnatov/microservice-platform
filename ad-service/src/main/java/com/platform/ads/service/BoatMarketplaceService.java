@@ -965,9 +965,9 @@ public class BoatMarketplaceService {
             return Mono.error(new MandatoryFieldMissingException("model", "BOATS_AND_YACHTS"));
         }
         // NEW FIELD VALIDATION
-        if (spec.getPurpose() == null) {
-            return Mono.error(new MandatoryFieldMissingException("purpose", "BOATS_AND_YACHTS"));
-        }
+//        if (spec.getPurpose() == null) {
+//            return Mono.error(new MandatoryFieldMissingException("purpose", "BOATS_AND_YACHTS"));
+//        }
         if (spec.getEngineType() == null) {
             return Mono.error(new MandatoryFieldMissingException("engineType", "BOATS_AND_YACHTS"));
         }
@@ -1026,15 +1026,15 @@ public class BoatMarketplaceService {
             return Mono.error(new MandatoryFieldMissingException("condition", "BOATS_AND_YACHTS"));
         }
         // NEW FIELD VALIDATION
-        if (spec.getWaterType() == null) {
-            return Mono.error(new MandatoryFieldMissingException("waterType", "BOATS_AND_YACHTS"));
-        }
-        if (spec.getEngineHours() == null) {
-            return Mono.error(new MandatoryFieldMissingException("engineHours", "BOATS_AND_YACHTS"));
-        }
-        if (spec.getLocatedInBulgaria() == null) {
-            return Mono.error(new MandatoryFieldMissingException("locatedInBulgaria", "BOATS_AND_YACHTS"));
-        }
+//        if (spec.getWaterType() == null) {
+//            return Mono.error(new MandatoryFieldMissingException("waterType", "BOATS_AND_YACHTS"));
+//        }
+//        if (spec.getEngineHours() == null) {
+//            return Mono.error(new MandatoryFieldMissingException("engineHours", "BOATS_AND_YACHTS"));
+//        }
+//        if (spec.getLocatedInBulgaria() == null) {
+//            return Mono.error(new MandatoryFieldMissingException("locatedInBulgaria", "BOATS_AND_YACHTS"));
+//        }
 
         String boatCategory = mapBoatTypeToCategory(spec.getType());
         return brandService.validateBrand(spec.getBrand(), boatCategory)
@@ -1340,7 +1340,7 @@ public class BoatMarketplaceService {
                 .boatType(spec.getType().name())
                 .brand(spec.getBrand())
                 .model(spec.getModel())
-                .boatPurpose(spec.getPurpose().name())                      // NEW FIELD
+//                .boatPurpose(spec.getPurpose().name())                      // NEW FIELD
                 .engineType(spec.getEngineType().name())
                 .engineIncluded(spec.getEngineIncluded())
                 .engineBrandModel(spec.getEngineBrandModel())
@@ -1362,9 +1362,9 @@ public class BoatMarketplaceService {
                 .isRegistered(spec.getIsRegistered())
                 .hasCommercialFishingLicense(spec.getHasCommercialFishingLicense())
                 .condition(spec.getCondition().name())
-                .waterType(spec.getWaterType().name())                      // NEW FIELD
-                .engineHours(spec.getEngineHours())                         // NEW FIELD
-                .locatedInBulgaria(spec.getLocatedInBulgaria())             // NEW FIELD
+//                .waterType(spec.getWaterType().name())                      // NEW FIELD
+//                .engineHours(spec.getEngineHours())                         // NEW FIELD
+//                .locatedInBulgaria(spec.getLocatedInBulgaria())             // NEW FIELD
                 .createdAt(LocalDateTime.now())                             // NEW FIELD
                 .updatedAt(LocalDateTime.now())                             // NEW FIELD
                 .build();

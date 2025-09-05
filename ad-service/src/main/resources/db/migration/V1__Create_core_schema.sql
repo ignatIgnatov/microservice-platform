@@ -55,6 +55,8 @@ CREATE TABLE ads (
     archived_at TIMESTAMP,
     edit_count INTEGER DEFAULT 0,
     last_edited_at TIMESTAMP,
+    contact_person_name VARCHAR(100),
+    contact_phone VARCHAR(20),
 
     CONSTRAINT valid_price_for_fixed_type CHECK (price_type != 'FIXED_PRICE' OR price_amount IS NOT NULL)
 );

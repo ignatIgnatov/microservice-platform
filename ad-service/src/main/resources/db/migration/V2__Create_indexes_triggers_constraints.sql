@@ -20,6 +20,8 @@ CREATE INDEX idx_ads_user_email ON ads(user_email);
 CREATE INDEX idx_ads_active ON ads(active);
 CREATE INDEX idx_ads_created_at ON ads(created_at DESC);
 CREATE INDEX idx_ads_updated_at ON ads(updated_at DESC);
+CREATE INDEX idx_ads_contact_phone ON ads(contact_phone);
+CREATE INDEX idx_ads_contact_person_name ON ads(contact_person_name);
 
 -- Performance indexes
 CREATE INDEX idx_ads_price_type ON ads(price_type);

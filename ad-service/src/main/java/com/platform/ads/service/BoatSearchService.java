@@ -10,10 +10,13 @@ import com.platform.ads.repository.BoatSpecificationSearchRepository;
 import com.platform.ads.repository.EngineSpecificationSearchRepository;
 import com.platform.ads.repository.FishingSpecificationSearchRepository;
 import com.platform.ads.repository.JetSkiSpecificationSearchRepository;
+import com.platform.ads.repository.MarineAccessoriesSpecificationSearchRepository;
 import com.platform.ads.repository.MarineElectronicsSpecificationSearchRepository;
 import com.platform.ads.repository.PartsSpecificationSearchRepository;
+import com.platform.ads.repository.RentalsSpecificationSearchRepository;
 import com.platform.ads.repository.ServicesSpecificationSearchRepository;
 import com.platform.ads.repository.TrailerSpecificationSearchRepository;
+import com.platform.ads.repository.WaterSportsSpecificationSearchRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -39,6 +42,11 @@ public class BoatSearchService {
     private final FishingSpecificationSearchRepository fishingSearchRepo;
     private final PartsSpecificationSearchRepository partsSearchRepo;
     private final ServicesSpecificationSearchRepository servicesSearchRepo;
+
+    // ADD NEW REPOSITORY DEPENDENCIES
+    private final WaterSportsSpecificationSearchRepository waterSportsSearchRepo;
+    private final MarineAccessoriesSpecificationSearchRepository marineAccessoriesSearchRepo;
+    private final RentalsSpecificationSearchRepository rentalsSearchRepo;
 
     // ===========================
     // MAIN SEARCH METHOD - SIMPLIFIED
@@ -141,7 +149,10 @@ public class BoatSearchService {
                 hasCategoryUniqueFilters(searchRequest);
     }
 
+    // UPDATED METHOD TO INCLUDE NEW CATEGORIES
     private boolean hasCategoryUniqueFilters(BoatSearchRequest searchRequest) {
+        if (searchRequest.getCategory() == null) return false;
+
         switch (searchRequest.getCategory()) {
             case MARINE_ELECTRONICS:
                 return searchRequest.getElectronicsType() != null ||
@@ -157,11 +168,22 @@ public class BoatSearchService {
                 return searchRequest.getServiceType() != null ||
                         searchRequest.getAuthorizedService() != null ||
                         searchRequest.getSupportedBrand() != null;
+            // ADD NEW CATEGORY FILTERS
+            case WATER_SPORTS:
+                return searchRequest.getWaterSportsType() != null;
+            case MARINE_ACCESSORIES:
+                return searchRequest.getAccessoryType() != null;
+            case RENTALS:
+                return searchRequest.getRentalType() != null ||
+                        searchRequest.getLicenseRequired() != null ||
+                        searchRequest.getManagementType() != null ||
+                        searchRequest.getServiceTypeRentals() != null;
             default:
                 return false;
         }
     }
 
+    // UPDATED METHOD TO INCLUDE NEW CATEGORIES
     private Flux<Long> getCategorySpecificAdIds(BoatSearchRequest searchRequest) {
         switch (searchRequest.getCategory()) {
             case BOATS_AND_YACHTS:
@@ -214,6 +236,32 @@ public class BoatSearchService {
                 return servicesSearchRepo.searchServicesAdIds(
                         searchRequest.getServiceType(), searchRequest.getAuthorizedService(),
                         searchRequest.getSupportedBrand(), null
+                );
+
+            // ADD NEW CATEGORY SEARCH METHODS
+            case WATER_SPORTS:
+                return waterSportsSearchRepo.searchWaterSportsAdIds(
+                        searchRequest.getBrand(),
+                        searchRequest.getWaterSportsType(),
+                        searchRequest.getCondition()
+                );
+
+            case MARINE_ACCESSORIES:
+                return marineAccessoriesSearchRepo.searchMarineAccessoriesAdIds(
+                        searchRequest.getBrand(),
+                        searchRequest.getAccessoryType(),
+                        searchRequest.getCondition()
+                );
+
+            case RENTALS:
+                return rentalsSearchRepo.searchRentalsAdIds(
+                        searchRequest.getRentalType(),
+                        searchRequest.getLicenseRequired(),
+                        searchRequest.getManagementType(),
+                        searchRequest.getServiceTypeRentals(),
+                        searchRequest.getCompanyName(),
+                        searchRequest.getMinPrice(),
+                        searchRequest.getMaxPrice()
                 );
 
             default:
