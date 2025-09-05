@@ -34,12 +34,12 @@ public class BoatSpecificationDto {
 
     private String brandCategory; // MOTOR_BOATS, SAILBOATS, KAYAKS
 
+    @NotNull(message = "Boat purpose is required")
+    private BoatPurpose purpose;
+
     @NotBlank(message = "Model is required")
     @Size(max = 100, message = "Model cannot exceed 100 characters")
     private String model;
-
-//    @NotNull(message = "Boat purpose is required")
-//    private BoatPurpose purpose;
 
     @NotNull(message = "Engine type is required")
     private EngineType engineType;
@@ -79,9 +79,6 @@ public class BoatSpecificationDto {
     @Max(value = 2030, message = "Year cannot be in the future")
     private Integer year;
 
-    @NotNull(message = "Warranty status is required")
-    private Boolean inWarranty;
-
     @NotNull(message = "Weight is required")
     @DecimalMin(value = "0.1", message = "Weight must be positive")
     private BigDecimal weight;
@@ -108,6 +105,9 @@ public class BoatSpecificationDto {
     @NotNull(message = "Registration status is required")
     private Boolean isRegistered;
 
+    @NotNull(message = "Warranty status is required")
+    private Boolean inWarranty;
+
     private Boolean hasCommercialFishingLicense;
 
     @NotNull(message = "Condition is required")
@@ -121,8 +121,8 @@ public class BoatSpecificationDto {
 //    @Min(value = 0, message = "Engine hours cannot be negative")
 //    private Integer engineHours;
 //
-//    @NotNull(message = "Location in Bulgaria is required")
-//    private Boolean locatedInBulgaria;
+    @NotNull(message = "Location in Bulgaria is required")
+    private Boolean locatedInBulgaria;
 
     private List<InteriorFeature> interiorFeatures;
     private List<ExteriorFeature> exteriorFeatures;

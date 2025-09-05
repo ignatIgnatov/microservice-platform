@@ -523,14 +523,12 @@ public class BoatMarketplaceService {
 
                     log.info("=== REORDERING IMAGES === AdID: {}, ImageCount: {} ===", adId, images.size());
 
-                    // STRATEGY: Use negative values first, then positive values to avoid conflicts
-                    // Step 1: Set all to negative values first (to avoid unique constraint conflicts)
                     return Flux.fromIterable(images)
                             .index()
                             .flatMap(tuple -> {
                                 int index = tuple.getT1().intValue();
                                 AdImage image = tuple.getT2();
-                                int temporaryOrder = -(index + 1000); // Use negative values like -1000, -1001, etc.
+                                int temporaryOrder = -(index + 1000);
 
                                 log.debug("=== SETTING TEMPORARY ORDER === ImageID: {}, TempOrder: {} ===",
                                         image.getId(), temporaryOrder);
@@ -950,7 +948,6 @@ public class BoatMarketplaceService {
     // ===========================
     // VALIDATION METHODS
     // ===========================
-    // Replace your existing validateBoatSpecificationAsync method with this updated version:
     private Mono<Void> validateBoatSpecificationAsync(BoatSpecificationDto spec) {
         if (spec == null) {
             return Mono.error(new MandatoryFieldMissingException("boatSpec", "BOATS_AND_YACHTS"));
@@ -965,9 +962,9 @@ public class BoatMarketplaceService {
             return Mono.error(new MandatoryFieldMissingException("model", "BOATS_AND_YACHTS"));
         }
         // NEW FIELD VALIDATION
-//        if (spec.getPurpose() == null) {
-//            return Mono.error(new MandatoryFieldMissingException("purpose", "BOATS_AND_YACHTS"));
-//        }
+        if (spec.getPurpose() == null) {
+            return Mono.error(new MandatoryFieldMissingException("purpose", "BOATS_AND_YACHTS"));
+        }
         if (spec.getEngineType() == null) {
             return Mono.error(new MandatoryFieldMissingException("engineType", "BOATS_AND_YACHTS"));
         }
@@ -1032,9 +1029,9 @@ public class BoatMarketplaceService {
 //        if (spec.getEngineHours() == null) {
 //            return Mono.error(new MandatoryFieldMissingException("engineHours", "BOATS_AND_YACHTS"));
 //        }
-//        if (spec.getLocatedInBulgaria() == null) {
-//            return Mono.error(new MandatoryFieldMissingException("locatedInBulgaria", "BOATS_AND_YACHTS"));
-//        }
+        if (spec.getLocatedInBulgaria() == null) {
+            return Mono.error(new MandatoryFieldMissingException("locatedInBulgaria", "BOATS_AND_YACHTS"));
+        }
 
         String boatCategory = mapBoatTypeToCategory(spec.getType());
         return brandService.validateBrand(spec.getBrand(), boatCategory)
@@ -1340,7 +1337,7 @@ public class BoatMarketplaceService {
                 .boatType(spec.getType().name())
                 .brand(spec.getBrand())
                 .model(spec.getModel())
-//                .boatPurpose(spec.getPurpose().name())                      // NEW FIELD
+                .boatPurpose(spec.getPurpose().name())
                 .engineType(spec.getEngineType().name())
                 .engineIncluded(spec.getEngineIncluded())
                 .engineBrandModel(spec.getEngineBrandModel())
@@ -1362,11 +1359,11 @@ public class BoatMarketplaceService {
                 .isRegistered(spec.getIsRegistered())
                 .hasCommercialFishingLicense(spec.getHasCommercialFishingLicense())
                 .condition(spec.getCondition().name())
-//                .waterType(spec.getWaterType().name())                      // NEW FIELD
-//                .engineHours(spec.getEngineHours())                         // NEW FIELD
-//                .locatedInBulgaria(spec.getLocatedInBulgaria())             // NEW FIELD
-                .createdAt(LocalDateTime.now())                             // NEW FIELD
-                .updatedAt(LocalDateTime.now())                             // NEW FIELD
+//                .waterType(spec.getWaterType().name())
+//                .engineHours(spec.getEngineHours())
+                .locatedInBulgaria(spec.getLocatedInBulgaria())
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
                 .build();
 
         return boatSpecRepository.save(boatSpec)

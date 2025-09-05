@@ -21,18 +21,11 @@ import java.util.List;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class BoatAdRequest {
 
-    @Size(min = 5, max = 30, message = "Title must be between 5 and 30 characters")
-    private String title;
-
-    @NotBlank(message = "Description is required")
-    @Size(min = 20, max = 2000, message = "Description must be between 20 and 2000 characters")
-    private String description;
-
-    @Size(min = 20, max = 210, message = "Quick description must be between 20 and 210 characters")
-    private String quickDescription;
-
     @NotNull(message = "Category is required")
     private MainBoatCategory category;
+
+    @NotNull(message = "Ad type is required")
+    private AdType adType;
 
     @NotNull(message = "Price info is required")
     private PriceInfo price;
@@ -40,9 +33,6 @@ public class BoatAdRequest {
     @NotBlank(message = "Location is required")
     @Size(max = 200, message = "Location cannot exceed 200 characters")
     private String location;
-
-    @NotNull(message = "Ad type is required")
-    private AdType adType;
 
     private String userEmail;
 
@@ -66,4 +56,14 @@ public class BoatAdRequest {
     private WaterSportsSpecificationDto waterSportsSpec;
     private MarineAccessoriesSpecificationDto marineAccessoriesSpec;
     private RentalsSpecificationDto rentalsSpec;
+
+    @Size(min = 5, max = 30, message = "Title must be between 5 and 30 characters")
+    private String title;
+
+    @NotBlank(message = "Description is required")
+    @Size(min = 20, max = 2000, message = "Description must be between 20 and 2000 characters")
+    private String description;
+
+    @Size(min = 20, max = 210, message = "Quick description must be between 20 and 210 characters")
+    private String quickDescription;
 }
