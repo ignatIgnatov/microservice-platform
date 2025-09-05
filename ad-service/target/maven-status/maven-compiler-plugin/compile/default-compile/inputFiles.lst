@@ -1,3 +1,4 @@
+C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\entity\MarineAccessoriesSpecification.java
 C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\dto\enums\SortOrder.java
 C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\dto\EngineSpecificationResponse.java
 C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\exception\ImageUploadException.java
@@ -5,6 +6,7 @@ C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform
 C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\dto\PartsSpecificationResponse.java
 C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\service\BoatMarketplaceService.java
 C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\exception\CategoryMismatchException.java
+C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\repository\MarineAccessoriesSpecificationRepository.java
 C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\dto\enums\SonarBrand.java
 C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\dto\enums\TrollingMotorBrand.java
 C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\exception\ConfigurationException.java
@@ -12,7 +14,9 @@ C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform
 C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\dto\enums\DepthRange.java
 C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\repository\JetSkiSpecificationRepository.java
 C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\service\BrandService.java
+C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\dto\WaterSportsSpecificationDto.java
 C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\dto\MarineElectronicsSpecificationDto.java
+C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\entity\WaterSportsSpecification.java
 C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\exception\TooManyRequestsException.java
 C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\dto\enums\MainBoatCategory.java
 C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\config\S3Config.java
@@ -24,6 +28,7 @@ C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform
 C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\repository\ServicesSpecificationRepository.java
 C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\dto\BoatAdResponse.java
 C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\exception\WrongPasswordException.java
+C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\dto\enums\BoatPurpose.java
 C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\config\SecurityConfig.java
 C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\exception\GlobalExceptionHandler.java
 C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\dto\enums\Frequency.java
@@ -43,6 +48,7 @@ C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform
 C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\dto\JetSkiSpecificationDto.java
 C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\dto\enums\AdType.java
 C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\repository\AdImageRepository.java
+C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\repository\RentalsSpecificationRepository.java
 C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\dto\UserStatisticsResponse.java
 C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\repository\EngineSpecificationSearchRepository.java
 C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\entity\JetSkiSpecification.java
@@ -63,6 +69,7 @@ C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform
 C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\dto\BoatSpecificationResponse.java
 C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\entity\BoatEquipment.java
 C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\dto\enums\EngineBrand.java
+C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\entity\RentalsSpecification.java
 C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\dto\FishingSpecificationResponse.java
 C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\entity\MarineElectronicsSpecification.java
 C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\dto\CategoryStatsResponse.java
@@ -75,6 +82,7 @@ C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform
 C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\exception\BusinessException.java
 C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\repository\BoatInteriorFeatureRepository.java
 C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\dto\TrailerSearchFilters.java
+C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\repository\WaterSportsSpecificationRepository.java
 C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\dto\EngineSpecificationDto.java
 C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\entity\EngineSpecification.java
 C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\service\UserAdsService.java
@@ -87,6 +95,7 @@ C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform
 C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\entity\TrailerSpecification.java
 C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\dto\AllBrandsResponse.java
 C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\dto\enums\TrollingControlType.java
+C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\dto\MarineAccessoriesSpecificationResponse.java
 C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\dto\JetSkiSpecificationResponse.java
 C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\controller\UserAdsController.java
 C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\repository\JetSkiSpecificationSearchRepository.java
@@ -103,6 +112,7 @@ C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform
 C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\entity\Brand.java
 C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\entity\AdImage.java
 C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\exception\AdValidationException.java
+C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\dto\RentalsSpecificationDto.java
 C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\exception\AdNotFoundException.java
 C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\config\WebClientConfig.java
 C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\dto\TrailerSpecificationResponse.java
@@ -123,12 +133,14 @@ C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform
 C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\dto\BoatSpecificationDto.java
 C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\dto\BoatAdRequest.java
 C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\dto\ServicesSpecificationResponse.java
+C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\dto\WaterSportsSpecificationResponse.java
 C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\dto\enums\InteriorFeature.java
 C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\dto\BrandsByCategoryResponse.java
 C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\dto\UserAdsStatisticsResponse.java
 C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\repository\MarineElectronicsSpecificationSearchRepository.java
 C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\exception\InvalidTokenException.java
 C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\repository\BoatExteriorFeatureRepository.java
+C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\dto\enums\WaterType.java
 C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\dto\FishingSpecificationDto.java
 C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\entity\BoatExteriorFeature.java
 C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\repository\PartsSpecificationRepository.java
@@ -136,6 +148,7 @@ C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform
 C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\dto\ServicesSpecificationDto.java
 C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\exception\AuthServiceException.java
 C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\dto\enums\RangeLength.java
+C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\dto\RentalsSpecificationResponse.java
 C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\repository\TrailerSpecificationRepository.java
 C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\dto\JetSkiSearchFilters.java
 C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\repository\PartsSpecificationSearchRepository.java
@@ -146,6 +159,7 @@ C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform
 C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\dto\PartsSpecificationDto.java
 C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\dto\BoatSearchRequest.java
 C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\dto\UpdateAdRequest.java
+C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\dto\MarineAccessoriesSpecificationDto.java
 C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\dto\enums\Equipment.java
 C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\repository\AdRepositoryCustomImpl.java
 C:\Users\user\Desktop\marketplace-platform\ad-service\src\main\java\com\platform\ads\controller\BoatMarketplaceController.java

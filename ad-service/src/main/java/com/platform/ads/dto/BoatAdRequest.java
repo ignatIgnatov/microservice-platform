@@ -10,7 +10,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -21,9 +20,6 @@ import java.util.List;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class BoatAdRequest {
 
-    @NotNull(message = "Category is required")
-    private MainBoatCategory category;
-
     @NotBlank(message = "Title is required")
     @Size(min = 5, max = 30, message = "Title must be between 5 and 30 characters")
     private String title;
@@ -32,8 +28,11 @@ public class BoatAdRequest {
     @Size(min = 20, max = 2000, message = "Description must be between 20 and 2000 characters")
     private String description;
 
-    @Size(max = 210, message = "Quick description cannot exceed 210 characters")
+    @Size(min = 20, max = 210, message = "Quick description must be between 20 and 210 characters")
     private String quickDescription;
+
+    @NotNull(message = "Category is required")
+    private MainBoatCategory category;
 
     @NotNull(message = "Price info is required")
     private PriceInfo price;
@@ -46,8 +45,8 @@ public class BoatAdRequest {
     private AdType adType;
 
     private String userEmail;
-    private List<Long> imagesToDelete;
 
+    private List<Long> imagesToDelete;
     private BoatSpecificationDto boatSpec;
     private JetSkiSpecificationDto jetSkiSpec;
     private TrailerSpecificationDto trailerSpec;
@@ -56,4 +55,8 @@ public class BoatAdRequest {
     private FishingSpecificationDto fishingSpec;
     private PartsSpecificationDto partsSpec;
     private ServicesSpecificationDto servicesSpec;
+
+    private WaterSportsSpecificationDto waterSportsSpec;
+    private MarineAccessoriesSpecificationDto marineAccessoriesSpec;
+    private RentalsSpecificationDto rentalsSpec;
 }

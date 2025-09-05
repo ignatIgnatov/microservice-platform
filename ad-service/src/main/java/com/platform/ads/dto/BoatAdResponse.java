@@ -47,6 +47,11 @@ public class BoatAdResponse {
     private PartsSpecificationResponse partsSpec;
     private ServicesSpecificationResponse servicesSpec;
 
+    // NEW specification responses
+    private WaterSportsSpecificationResponse waterSportsSpec;
+    private MarineAccessoriesSpecificationResponse marineAccessoriesSpec;
+    private RentalsSpecificationResponse rentalsSpec;
+
     // Computed fields
     private String userFullName;
     private String formattedPrice;

@@ -59,55 +59,52 @@ public class AuthService {
 
     public Mono<Void> registerUser(RegisterRequest request) {
         return Mono.fromCallable(() -> {
-                    // First check if user already exists
-                    UsersResource usersResource = keycloak.realm(realm).users();
-                    List<UserRepresentation> existingUsers = usersResource.search(request.getEmail(), true);
+            // validate confirm password
+            if (!request.getPassword().equals(request.getConfirmPassword())) {
+                throw new BusinessException("Passwords do not match", HttpStatus.BAD_REQUEST);
+            }
 
-                    if (!existingUsers.isEmpty()) {
-                        log.error("User already exists: {}", request.getEmail());
-                        throw new UserAlreadyExistsException(request.getEmail());
-                    }
+            UsersResource usersResource = keycloak.realm(realm).users();
+            List<UserRepresentation> existingUsers = usersResource.search(request.getEmail(), true);
 
-                    // Create new user
-                    UserRepresentation user = new UserRepresentation();
-                    user.setEnabled(true);
-                    user.setUsername(request.getEmail());
-                    user.setEmail(request.getEmail());
-                    user.setFirstName(request.getFirstName());
-                    user.setLastName(request.getLastName());
-                    user.setEmailVerified(true);
+            if (!existingUsers.isEmpty()) {
+                throw new UserAlreadyExistsException(request.getEmail());
+            }
 
-                    // Set credentials
-                    CredentialRepresentation credential = new CredentialRepresentation();
-                    credential.setType(CredentialRepresentation.PASSWORD);
-                    credential.setValue(request.getPassword());
-                    credential.setTemporary(false);
-                    user.setCredentials(Collections.singletonList(credential));
+            UserRepresentation user = new UserRepresentation();
+            user.setEnabled(true);
+            user.setUsername(request.getEmail());
+            user.setEmail(request.getEmail());
+            user.setFirstName(request.getName());
+            user.setEmailVerified(true);
 
-                    // Create user in Keycloak
-                    try (Response response = usersResource.create(user)) {
-                        int status = response.getStatus();
-                        log.info("Keycloak create user status: {}", status);
+            // add custom attributes
+            user.setAttributes(Map.of(
+                    "name", List.of(request.getName()),
+                    "telephone", List.of(request.getTelephone())
+            ));
 
-                        if (status == 201) {
-                            log.info("User {} registered successfully", request.getEmail());
-                            return null;
-                        } else if (status == 409) {
-                            throw new UserAlreadyExistsException(request.getEmail());
-                        } else if (status >= 400 && status < 500) {
-                            String body = response.readEntity(String.class);
-                            log.error("Failed to create user. Status: {}, Body: {}", status, body);
-                            throw new BusinessException("Invalid user data: " + body, HttpStatus.BAD_REQUEST);
-                        } else {
-                            String body = response.readEntity(String.class);
-                            log.error("Keycloak server error. Status: {}, Body: {}", status, body);
-                            throw new KeycloakOperationException("createUser", "Server error: " + body);
-                        }
-                    }
-                })
-                .subscribeOn(Schedulers.boundedElastic())
-                .then();
+            CredentialRepresentation credential = new CredentialRepresentation();
+            credential.setType(CredentialRepresentation.PASSWORD);
+            credential.setValue(request.getPassword());
+            credential.setTemporary(false);
+            user.setCredentials(Collections.singletonList(credential));
+
+            try (Response response = usersResource.create(user)) {
+                int status = response.getStatus();
+
+                if (status == 201) {
+                    return null;
+                } else if (status == 409) {
+                    throw new UserAlreadyExistsException(request.getEmail());
+                } else {
+                    String body = response.readEntity(String.class);
+                    throw new KeycloakOperationException("createUser", "Error: " + body);
+                }
+            }
+        }).subscribeOn(Schedulers.boundedElastic()).then();
     }
+
 
     public Mono<TokenResponse> authenticateUser(LoginRequest request) {
         String tokenUrl = keycloakServerUrl + "/realms/" + realm + "/protocol/openid-connect/token";
@@ -266,28 +263,42 @@ public class AuthService {
 
     public Mono<UserRepresentation> findUserByEmail(String email) {
         return Mono.fromCallable(() -> {
-                    try {
-                        log.debug("Searching for user with email: {}", email);
-                        UsersResource usersResource = keycloak.realm(realm).users();
-                        List<UserRepresentation> users = usersResource.search(email, true); // exact match
+            try {
+                log.debug("Searching for user with email: {}", email);
+                UsersResource usersResource = keycloak.realm(realm).users();
+                List<UserRepresentation> users = usersResource.search(email, true); // exact match
 
-                        if (users.isEmpty()) {
-                            log.warn("User not found with email: {}", email);
-                            throw new UserNotFoundException(email);
-                        }
+                if (users.isEmpty()) {
+                    log.warn("User not found with email: {}", email);
+                    throw new UserNotFoundException(email);
+                }
 
-                        UserRepresentation user = users.get(0);
-                        log.info("Found user: {} with ID: {}", user.getEmail(), user.getId());
-                        return user;
+                UserRepresentation user = users.get(0);
+                log.info("Found user: {} with ID: {}", user.getEmail(), user.getId());
 
-                    } catch (Exception e) {
-                        log.error("Error searching for user by email {}: {}", email, e.getMessage());
-                        if (e instanceof UserNotFoundException) {
-                            throw e;
-                        }
-                        throw new KeycloakOperationException("searchUser", "Failed to search user: " + e.getMessage());
+                // Safely read custom attributes
+                Map<String, List<String>> attrs = user.getAttributes();
+                if (attrs != null) {
+                    if (attrs.containsKey("name")) {
+                        String name = attrs.get("name").get(0);
+                        user.setFirstName(name);
                     }
-                })
-                .subscribeOn(Schedulers.boundedElastic());
+                    if (attrs.containsKey("telephone")) {
+                        String telephone = attrs.get("telephone").get(0);
+                        attrs.put("telephone", List.of(telephone));
+                    }
+                }
+
+                return user;
+
+            } catch (Exception e) {
+                log.error("Error searching for user by email {}: {}", email, e.getMessage(), e);
+                if (e instanceof UserNotFoundException) {
+                    throw e;
+                }
+                throw new KeycloakOperationException("searchUser", "Failed to search user: " + e.getMessage());
+            }
+        }).subscribeOn(Schedulers.boundedElastic());
     }
+
 }

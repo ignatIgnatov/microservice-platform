@@ -142,9 +142,10 @@ public class AuthController {
 
             List<String> roles = getRoles(jwt);
             return UserInfoResponse.builder()
+                    .id(jwt.getId())
                     .email(jwt.getClaimAsString("email"))
-                    .firstName(jwt.getClaimAsString("given_name"))
-                    .lastName(jwt.getClaimAsString("family_name"))
+                    .name(jwt.getClaimAsString("name"))
+                    .telephone(jwt.getClaimAsString("telephone"))
                     .roles(roles)
                     .build();
         });

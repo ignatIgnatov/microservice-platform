@@ -25,18 +25,21 @@ import java.util.List;
 @AllArgsConstructor
 public class BoatSpecificationDto {
 
+    @NotNull(message = "Boat type is required")
+    private BoatType type;
+
     @NotBlank(message = "Brand is required")
     @Size(max = 100, message = "Brand cannot exceed 100 characters")
     private String brand;
-
-    @NotNull(message = "Boat type is required")
-    private BoatType type;
 
     private String brandCategory; // MOTOR_BOATS, SAILBOATS, KAYAKS
 
     @NotBlank(message = "Model is required")
     @Size(max = 100, message = "Model cannot exceed 100 characters")
     private String model;
+
+    @NotNull(message = "Boat purpose is required")
+    private BoatPurpose purpose;
 
     @NotNull(message = "Engine type is required")
     private EngineType engineType;
@@ -110,18 +113,56 @@ public class BoatSpecificationDto {
     @NotNull(message = "Condition is required")
     private ItemCondition condition;
 
+    // NEW FIELDS from specification
+    @NotNull(message = "Water type is required")
+    private WaterType waterType;
+
+    @NotNull(message = "Engine hours is required")
+    @Min(value = 0, message = "Engine hours cannot be negative")
+    private Integer engineHours;
+
+    @NotNull(message = "Location in Bulgaria is required")
+    private Boolean locatedInBulgaria;
+
     private List<InteriorFeature> interiorFeatures;
     private List<ExteriorFeature> exteriorFeatures;
     private List<Equipment> equipment;
 
     public enum BoatType {
         ALL("Всички"),
-        MOTOR_BOAT("Моторна Лодка / Яхта"),
-        SAILING_BOAT("Ветроходна Лодка / Яхта"),
-        KAYAK_CANOE("Каяк / Кану");
+        MOTOR_BOAT("Моторна лодка"),
+        MOTOR_YACHT("Моторна яхта"),
+        SAILING_BOAT("Ветроходна лодка"),
+        SAILING_YACHT("Ветроходна яхта"),
+        INFLATABLE_BOAT("Надуваема лодка"),
+        SHIP("Кораб"),
+        CANOE("Кану"),
+        PONTOON("Понтон");
 
         private final String displayName;
         BoatType(String displayName) { this.displayName = displayName; }
+        public String getDisplayName() { return displayName; }
+    }
+
+    public enum BoatPurpose {
+        ALL("Всички"),
+        FISHING("Рибарска"),
+        BEACH("Плажна"),
+        WATER_SPORTS("Водни спортове"),
+        WORK("Работна");
+
+        private final String displayName;
+        BoatPurpose(String displayName) { this.displayName = displayName; }
+        public String getDisplayName() { return displayName; }
+    }
+
+    public enum WaterType {
+        ALL("Всички"),
+        FRESHWATER("Сладководен"),
+        SALTWATER("Соленоводен");
+
+        private final String displayName;
+        WaterType(String displayName) { this.displayName = displayName; }
         public String getDisplayName() { return displayName; }
     }
 

@@ -12,8 +12,9 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 public class UserInfoResponse {
+    private String id;
     private String email;
-    private String firstName;
-    private String lastName;
+    private String name;
+    private String telephone;
     private List<String> roles;
 }

@@ -7,8 +7,11 @@ public enum MainBoatCategory {
     MARINE_ELECTRONICS("Морска Електроника"),
     ENGINES("Двигатели"),
     FISHING("Риболов"),
+    WATER_SPORTS("Водни спортове"),
     PARTS("Части"),
-    SERVICES("Услуги");
+    MARINE_ACCESSORIES("Морски аксесоари"),
+    SERVICES("Услуги"),
+    RENTALS("Под Наем");
 
     private final String displayName;
 

@@ -9,6 +9,7 @@ import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @Data
 @Builder
@@ -31,6 +32,10 @@ public class BoatSpecification {
 
     @Column("model")
     private String model;
+
+    // NEW FIELD
+    @Column("boat_purpose")
+    private String boatPurpose;
 
     @Column("engine_type")
     private String engineType;
@@ -94,4 +99,19 @@ public class BoatSpecification {
 
     @Column("condition")
     private String condition;
+
+    @Column("water_type")
+    private String waterType;
+
+    @Column("engine_hours")
+    private Integer engineHours;
+
+    @Column("located_in_bulgaria")
+    private Boolean locatedInBulgaria;
+
+    @Column("created_at")
+    private LocalDateTime createdAt;
+
+    @Column("updated_at")
+    private LocalDateTime updatedAt;
 }

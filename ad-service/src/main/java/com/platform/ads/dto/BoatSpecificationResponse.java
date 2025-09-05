@@ -20,6 +20,7 @@ public class BoatSpecificationResponse {
     private BoatSpecificationDto.BoatType type;
     private String brand;
     private String model;
+    private BoatSpecificationDto.BoatPurpose purpose; // NEW
     private BoatSpecificationDto.EngineType engineType;
     private Boolean engineIncluded;
     private String engineBrandModel;
@@ -41,6 +42,9 @@ public class BoatSpecificationResponse {
     private Boolean isRegistered;
     private Boolean hasCommercialFishingLicense;
     private ItemCondition condition;
+    private BoatSpecificationDto.WaterType waterType;
+    private Integer engineHours;
+    private Boolean locatedInBulgaria;
     private List<InteriorFeature> interiorFeatures;
     private List<ExteriorFeature> exteriorFeatures;
     private List<Equipment> equipment;

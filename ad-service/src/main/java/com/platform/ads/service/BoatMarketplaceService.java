@@ -12,17 +12,23 @@ import com.platform.ads.dto.FishingSpecificationResponse;
 import com.platform.ads.dto.ImageUploadResponse;
 import com.platform.ads.dto.JetSkiSpecificationDto;
 import com.platform.ads.dto.JetSkiSpecificationResponse;
+import com.platform.ads.dto.MarineAccessoriesSpecificationDto;
+import com.platform.ads.dto.MarineAccessoriesSpecificationResponse;
 import com.platform.ads.dto.MarineElectronicsSpecificationDto;
 import com.platform.ads.dto.MarineElectronicsSpecificationResponse;
 import com.platform.ads.dto.PartsSpecificationDto;
 import com.platform.ads.dto.PartsSpecificationResponse;
 import com.platform.ads.dto.PriceInfo;
+import com.platform.ads.dto.RentalsSpecificationDto;
+import com.platform.ads.dto.RentalsSpecificationResponse;
 import com.platform.ads.dto.ServicesSpecificationDto;
 import com.platform.ads.dto.ServicesSpecificationResponse;
 import com.platform.ads.dto.TrailerSpecificationDto;
 import com.platform.ads.dto.TrailerSpecificationResponse;
 import com.platform.ads.dto.UserValidationResponse;
 import com.platform.ads.dto.ValidatedImageData;
+import com.platform.ads.dto.WaterSportsSpecificationDto;
+import com.platform.ads.dto.WaterSportsSpecificationResponse;
 import com.platform.ads.dto.enums.AdType;
 import com.platform.ads.dto.enums.Equipment;
 import com.platform.ads.dto.enums.ExteriorFeature;
@@ -40,8 +46,10 @@ import com.platform.ads.entity.FishingSpecification;
 import com.platform.ads.entity.JetSkiSpecification;
 import com.platform.ads.entity.MarineElectronicsSpecification;
 import com.platform.ads.entity.PartsSpecification;
+import com.platform.ads.entity.RentalsSpecification;
 import com.platform.ads.entity.ServicesSpecification;
 import com.platform.ads.entity.TrailerSpecification;
+import com.platform.ads.entity.WaterSportsSpecification;
 import com.platform.ads.exception.AdNotFoundException;
 import com.platform.ads.exception.AuthServiceException;
 import com.platform.ads.exception.CategoryMismatchException;
@@ -57,10 +65,13 @@ import com.platform.ads.repository.BoatSpecificationRepository;
 import com.platform.ads.repository.EngineSpecificationRepository;
 import com.platform.ads.repository.FishingSpecificationRepository;
 import com.platform.ads.repository.JetSkiSpecificationRepository;
+import com.platform.ads.repository.MarineAccessoriesSpecificationRepository;
 import com.platform.ads.repository.MarineElectronicsSpecificationRepository;
 import com.platform.ads.repository.PartsSpecificationRepository;
+import com.platform.ads.repository.RentalsSpecificationRepository;
 import com.platform.ads.repository.ServicesSpecificationRepository;
 import com.platform.ads.repository.TrailerSpecificationRepository;
+import com.platform.ads.repository.WaterSportsSpecificationRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.buffer.DataBuffer;
@@ -75,6 +86,11 @@ import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
+
+// New Entities
+import com.platform.ads.entity.MarineAccessoriesSpecification;
+
+// New Repositories (you'll need to create these)
 
 import java.math.BigDecimal;
 import java.time.Duration;
@@ -120,7 +136,9 @@ public class BoatMarketplaceService {
     private final S3Client s3Client;
     private final BrandService brandService;
     private final ImageConversionService imageConversionService;
-
+    private final WaterSportsSpecificationRepository waterSportsSpecRepository;
+    private final MarineAccessoriesSpecificationRepository marineAccessoriesSpecRepository;
+    private final RentalsSpecificationRepository rentalsSpecRepository;
     private final WebClient webClient;
 
     public BoatMarketplaceService(
@@ -136,7 +154,7 @@ public class BoatMarketplaceService {
             BoatInteriorFeatureRepository interiorFeatureRepository,
             BoatExteriorFeatureRepository exteriorFeatureRepository,
             BoatEquipmentRepository equipmentRepository, AdImageRepository adImageRepository, S3Client s3Client,
-            BrandService brandService, ImageConversionService imageConversionService,
+            BrandService brandService, ImageConversionService imageConversionService, WaterSportsSpecificationRepository waterSportsSpecRepository, MarineAccessoriesSpecificationRepository marineAccessoriesSpecRepository, RentalsSpecificationRepository rentalsSpecRepository,
             WebClient webClient) {
         this.adRepository = adRepository;
         this.boatSpecRepository = boatSpecRepository;
@@ -154,6 +172,9 @@ public class BoatMarketplaceService {
         this.s3Client = s3Client;
         this.brandService = brandService;
         this.imageConversionService = imageConversionService;
+        this.waterSportsSpecRepository = waterSportsSpecRepository;
+        this.marineAccessoriesSpecRepository = marineAccessoriesSpecRepository;
+        this.rentalsSpecRepository = rentalsSpecRepository;
         this.webClient = webClient;
     }
 
@@ -565,9 +586,64 @@ public class BoatMarketplaceService {
                 return partsSpecRepository.deleteByAdId(adId);
             case SERVICES:
                 return servicesSpecRepository.deleteByAdId(adId);
+            case WATER_SPORTS:                                         // NEW
+                return waterSportsSpecRepository.deleteByAdId(adId);   // NEW
+            case MARINE_ACCESSORIES:                                        // NEW
+                return marineAccessoriesSpecRepository.deleteByAdId(adId);  // NEW
+            case RENTALS:                                              // NEW
+                return rentalsSpecRepository.deleteByAdId(adId);       // NEW
             default:
                 return Mono.empty();
         }
+    }
+
+    private Mono<Void> createWaterSportsSpecification(Long adId, WaterSportsSpecificationDto spec) {
+        WaterSportsSpecification waterSportsSpec = WaterSportsSpecification.builder()
+                .adId(adId)
+                .waterSportsType(spec.getType().name())
+                .brand(spec.getBrand())
+                .condition(spec.getCondition().name())
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
+                .build();
+
+        return waterSportsSpecRepository.save(waterSportsSpec).then();
+    }
+
+    private Mono<Void> createMarineAccessoriesSpecification(Long adId, MarineAccessoriesSpecificationDto spec) {
+        MarineAccessoriesSpecification accessoriesSpec = MarineAccessoriesSpecification.builder()
+                .adId(adId)
+                .accessoryType(spec.getType().name())
+                .brand(spec.getBrand())
+                .condition(spec.getCondition().name())
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
+                .build();
+
+        return marineAccessoriesSpecRepository.save(accessoriesSpec).then();
+    }
+
+    private Mono<Void> createRentalsSpecification(Long adId, RentalsSpecificationDto spec) {
+        RentalsSpecification rentalsSpec = RentalsSpecification.builder()
+                .adId(adId)
+                .rentalType(spec.getRentalType().name())
+                .licenseRequired(spec.getLicenseRequired())
+                .managementType(spec.getManagementType().name())
+                .numberOfPeople(spec.getNumberOfPeople())
+                .serviceType(spec.getServiceType().name())
+                .companyName(spec.getCompanyName())
+                .description(spec.getDescription())
+                .contactPhone(spec.getContactPhone())
+                .contactEmail(spec.getContactEmail())
+                .address(spec.getAddress())
+                .website(spec.getWebsite())
+                .maxPrice(spec.getMaxPrice())
+                .priceSpecification(spec.getPriceSpecification())
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
+                .build();
+
+        return rentalsSpecRepository.save(rentalsSpec).then();
     }
 
     private Mono<Void> deleteBoatSpecification(Long adId) {
@@ -783,15 +859,98 @@ public class BoatMarketplaceService {
                 return validatePartsSpecificationAsync(request.getPartsSpec());
             case SERVICES:
                 return validateServicesSpecificationAsync(request.getServicesSpec());
+            case WATER_SPORTS:                                                              // NEW
+                return validateWaterSportsSpecificationAsync(request.getWaterSportsSpec()); // NEW
+            case MARINE_ACCESSORIES:                                                             // NEW
+                return validateMarineAccessoriesSpecificationAsync(request.getMarineAccessoriesSpec()); // NEW
+            case RENTALS:                                                               // NEW
+                return validateRentalsSpecificationAsync(request.getRentalsSpec());     // NEW
             default:
                 log.error("=== UNSUPPORTED CATEGORY === Category: {} ===", request.getCategory());
                 return Mono.error(new CategoryMismatchException(request.getCategory().name(), "UNSUPPORTED"));
         }
     }
 
+    private Mono<Void> validateWaterSportsSpecificationAsync(WaterSportsSpecificationDto spec) {
+        if (spec == null) {
+            return Mono.error(new MandatoryFieldMissingException("waterSportsSpec", "WATER_SPORTS"));
+        }
+        if (spec.getType() == null) {
+            return Mono.error(new MandatoryFieldMissingException("type", "WATER_SPORTS"));
+        }
+        if (spec.getCondition() == null) {
+            return Mono.error(new MandatoryFieldMissingException("condition", "WATER_SPORTS"));
+        }
+
+        if (spec.getBrand() != null && !spec.getBrand().trim().isEmpty()) {
+            return brandService.validateBrand(spec.getBrand(), "WATER_SPORTS")
+                    .filter(Boolean::booleanValue)
+                    .switchIfEmpty(Mono.error(new InvalidFieldValueException("brand",
+                            "Brand '" + spec.getBrand() + "' is not valid for water sports equipment")))
+                    .then();
+        }
+        return Mono.empty();
+    }
+
+    private Mono<Void> validateMarineAccessoriesSpecificationAsync(MarineAccessoriesSpecificationDto spec) {
+        if (spec == null) {
+            return Mono.error(new MandatoryFieldMissingException("marineAccessoriesSpec", "MARINE_ACCESSORIES"));
+        }
+        if (spec.getType() == null) {
+            return Mono.error(new MandatoryFieldMissingException("type", "MARINE_ACCESSORIES"));
+        }
+        if (spec.getCondition() == null) {
+            return Mono.error(new MandatoryFieldMissingException("condition", "MARINE_ACCESSORIES"));
+        }
+
+        if (spec.getBrand() != null && !spec.getBrand().trim().isEmpty()) {
+            return brandService.validateBrand(spec.getBrand(), "MARINE_ACCESSORIES")
+                    .filter(Boolean::booleanValue)
+                    .switchIfEmpty(Mono.error(new InvalidFieldValueException("brand",
+                            "Brand '" + spec.getBrand() + "' is not valid for marine accessories")))
+                    .then();
+        }
+        return Mono.empty();
+    }
+
+    private Mono<Void> validateRentalsSpecificationAsync(RentalsSpecificationDto spec) {
+        if (spec == null) {
+            return Mono.error(new MandatoryFieldMissingException("rentalsSpec", "RENTALS"));
+        }
+        if (spec.getRentalType() == null) {
+            return Mono.error(new MandatoryFieldMissingException("rentalType", "RENTALS"));
+        }
+        if (spec.getLicenseRequired() == null) {
+            return Mono.error(new MandatoryFieldMissingException("licenseRequired", "RENTALS"));
+        }
+        if (spec.getManagementType() == null) {
+            return Mono.error(new MandatoryFieldMissingException("managementType", "RENTALS"));
+        }
+        if (spec.getNumberOfPeople() == null) {
+            return Mono.error(new MandatoryFieldMissingException("numberOfPeople", "RENTALS"));
+        }
+        if (spec.getServiceType() == null) {
+            return Mono.error(new MandatoryFieldMissingException("serviceType", "RENTALS"));
+        }
+        if (spec.getCompanyName() == null || spec.getCompanyName().trim().isEmpty()) {
+            return Mono.error(new MandatoryFieldMissingException("companyName", "RENTALS"));
+        }
+        if (spec.getContactPhone() == null || spec.getContactPhone().trim().isEmpty()) {
+            return Mono.error(new MandatoryFieldMissingException("contactPhone", "RENTALS"));
+        }
+        if (spec.getMaxPrice() == null) {
+            return Mono.error(new MandatoryFieldMissingException("maxPrice", "RENTALS"));
+        }
+        if (spec.getPriceSpecification() == null || spec.getPriceSpecification().trim().isEmpty()) {
+            return Mono.error(new MandatoryFieldMissingException("priceSpecification", "RENTALS"));
+        }
+        return Mono.empty();
+    }
+
     // ===========================
     // VALIDATION METHODS
     // ===========================
+    // Replace your existing validateBoatSpecificationAsync method with this updated version:
     private Mono<Void> validateBoatSpecificationAsync(BoatSpecificationDto spec) {
         if (spec == null) {
             return Mono.error(new MandatoryFieldMissingException("boatSpec", "BOATS_AND_YACHTS"));
@@ -804,6 +963,10 @@ public class BoatMarketplaceService {
         }
         if (spec.getModel() == null || spec.getModel().trim().isEmpty()) {
             return Mono.error(new MandatoryFieldMissingException("model", "BOATS_AND_YACHTS"));
+        }
+        // NEW FIELD VALIDATION
+        if (spec.getPurpose() == null) {
+            return Mono.error(new MandatoryFieldMissingException("purpose", "BOATS_AND_YACHTS"));
         }
         if (spec.getEngineType() == null) {
             return Mono.error(new MandatoryFieldMissingException("engineType", "BOATS_AND_YACHTS"));
@@ -861,6 +1024,16 @@ public class BoatMarketplaceService {
         }
         if (spec.getCondition() == null) {
             return Mono.error(new MandatoryFieldMissingException("condition", "BOATS_AND_YACHTS"));
+        }
+        // NEW FIELD VALIDATION
+        if (spec.getWaterType() == null) {
+            return Mono.error(new MandatoryFieldMissingException("waterType", "BOATS_AND_YACHTS"));
+        }
+        if (spec.getEngineHours() == null) {
+            return Mono.error(new MandatoryFieldMissingException("engineHours", "BOATS_AND_YACHTS"));
+        }
+        if (spec.getLocatedInBulgaria() == null) {
+            return Mono.error(new MandatoryFieldMissingException("locatedInBulgaria", "BOATS_AND_YACHTS"));
         }
 
         String boatCategory = mapBoatTypeToCategory(spec.getType());
@@ -1113,11 +1286,17 @@ public class BoatMarketplaceService {
     private String mapBoatTypeToCategory(BoatSpecificationDto.BoatType boatType) {
         switch (boatType) {
             case MOTOR_BOAT:
+            case MOTOR_YACHT:
+            case INFLATABLE_BOAT:
+            case SHIP:
+            case PONTOON:
                 return "MOTOR_BOATS";
             case SAILING_BOAT:
+            case SAILING_YACHT:
                 return "SAILBOATS";
-            case KAYAK_CANOE:
+            case CANOE:
                 return "KAYAKS";
+            case ALL:
             default:
                 return "MOTOR_BOATS";
         }
@@ -1141,6 +1320,12 @@ public class BoatMarketplaceService {
                 return createPartsSpecification(ad.getId(), request.getPartsSpec());
             case SERVICES:
                 return createServicesSpecification(ad.getId(), request.getServicesSpec());
+            case WATER_SPORTS:                                                              // NEW
+                return createWaterSportsSpecification(ad.getId(), request.getWaterSportsSpec()); // NEW
+            case MARINE_ACCESSORIES:                                                             // NEW
+                return createMarineAccessoriesSpecification(ad.getId(), request.getMarineAccessoriesSpec()); // NEW
+            case RENTALS:                                                               // NEW
+                return createRentalsSpecification(ad.getId(), request.getRentalsSpec()); // NEW
             default:
                 return Mono.empty();
         }
@@ -1155,6 +1340,7 @@ public class BoatMarketplaceService {
                 .boatType(spec.getType().name())
                 .brand(spec.getBrand())
                 .model(spec.getModel())
+                .boatPurpose(spec.getPurpose().name())                      // NEW FIELD
                 .engineType(spec.getEngineType().name())
                 .engineIncluded(spec.getEngineIncluded())
                 .engineBrandModel(spec.getEngineBrandModel())
@@ -1176,6 +1362,11 @@ public class BoatMarketplaceService {
                 .isRegistered(spec.getIsRegistered())
                 .hasCommercialFishingLicense(spec.getHasCommercialFishingLicense())
                 .condition(spec.getCondition().name())
+                .waterType(spec.getWaterType().name())                      // NEW FIELD
+                .engineHours(spec.getEngineHours())                         // NEW FIELD
+                .locatedInBulgaria(spec.getLocatedInBulgaria())             // NEW FIELD
+                .createdAt(LocalDateTime.now())                             // NEW FIELD
+                .updatedAt(LocalDateTime.now())                             // NEW FIELD
                 .build();
 
         return boatSpecRepository.save(boatSpec)
@@ -1457,12 +1648,22 @@ public class BoatMarketplaceService {
                         case SERVICES:
                             responseBuilder.servicesSpec((ServicesSpecificationResponse) spec);
                             break;
+                        case WATER_SPORTS:                                                                  // NEW
+                            responseBuilder.waterSportsSpec((WaterSportsSpecificationResponse) spec);       // NEW
+                            break;                                                                          // NEW
+                        case MARINE_ACCESSORIES:                                                                 // NEW
+                            responseBuilder.marineAccessoriesSpec((MarineAccessoriesSpecificationResponse) spec); // NEW
+                            break;                                                                               // NEW
+                        case RENTALS:                                                                       // NEW
+                            responseBuilder.rentalsSpec((RentalsSpecificationResponse) spec);               // NEW
+                            break;                                                                          // NEW
                     }
                     return responseBuilder.build();
                 })
                 .defaultIfEmpty(responseBuilder.build());
     }
 
+    // Replace your existing loadSpecificationForResponse method:
     private Mono<Object> loadSpecificationForResponse(Long adId, MainBoatCategory category) {
         switch (category) {
             case BOATS_AND_YACHTS:
@@ -1497,9 +1698,55 @@ public class BoatMarketplaceService {
                 return servicesSpecRepository.findByAdId(adId)
                         .map(this::mapServicesSpecToResponse)
                         .cast(Object.class);
+            case WATER_SPORTS:                                                              // NEW
+                return waterSportsSpecRepository.findByAdId(adId)                           // NEW
+                        .map(this::mapWaterSportsSpecToResponse)                            // NEW
+                        .cast(Object.class);                                                // NEW
+            case MARINE_ACCESSORIES:                                                             // NEW
+                return marineAccessoriesSpecRepository.findByAdId(adId)                          // NEW
+                        .map(this::mapMarineAccessoriesSpecToResponse)                           // NEW
+                        .cast(Object.class);                                                     // NEW
+            case RENTALS:                                                               // NEW
+                return rentalsSpecRepository.findByAdId(adId)                           // NEW
+                        .map(this::mapRentalsSpecToResponse)                            // NEW
+                        .cast(Object.class);                                            // NEW
             default:
                 return Mono.empty();
         }
+    }
+
+    private WaterSportsSpecificationResponse mapWaterSportsSpecToResponse(WaterSportsSpecification spec) {
+        return WaterSportsSpecificationResponse.builder()
+                .waterSportsType(WaterSportsSpecificationDto.WaterSportsType.valueOf(spec.getWaterSportsType()))
+                .brand(spec.getBrand())
+                .condition(ItemCondition.valueOf(spec.getCondition()))
+                .build();
+    }
+
+    private MarineAccessoriesSpecificationResponse mapMarineAccessoriesSpecToResponse(MarineAccessoriesSpecification spec) {
+        return MarineAccessoriesSpecificationResponse.builder()
+                .accessoryType(MarineAccessoriesSpecificationDto.AccessoryType.valueOf(spec.getAccessoryType()))
+                .brand(spec.getBrand())
+                .condition(ItemCondition.valueOf(spec.getCondition()))
+                .build();
+    }
+
+    private RentalsSpecificationResponse mapRentalsSpecToResponse(RentalsSpecification spec) {
+        return RentalsSpecificationResponse.builder()
+                .rentalType(RentalsSpecificationDto.RentalType.valueOf(spec.getRentalType()))
+                .licenseRequired(spec.getLicenseRequired())
+                .managementType(RentalsSpecificationDto.ManagementType.valueOf(spec.getManagementType()))
+                .numberOfPeople(spec.getNumberOfPeople())
+                .serviceType(RentalsSpecificationDto.ServiceType.valueOf(spec.getServiceType()))
+                .companyName(spec.getCompanyName())
+                .description(spec.getDescription())
+                .contactPhone(spec.getContactPhone())
+                .contactEmail(spec.getContactEmail())
+                .address(spec.getAddress())
+                .website(spec.getWebsite())
+                .maxPrice(spec.getMaxPrice())
+                .priceSpecification(spec.getPriceSpecification())
+                .build();
     }
 
     // ===========================
@@ -1514,6 +1761,8 @@ public class BoatMarketplaceService {
                 .type(BoatSpecificationDto.BoatType.valueOf(spec.getBoatType()))
                 .brand(spec.getBrand())
                 .model(spec.getModel())
+                .purpose(spec.getBoatPurpose() != null ?                                     // NEW FIELD
+                        BoatSpecificationDto.BoatPurpose.valueOf(spec.getBoatPurpose()) : null) // NEW FIELD
                 .engineType(BoatSpecificationDto.EngineType.valueOf(spec.getEngineType()))
                 .engineIncluded(spec.getEngineIncluded())
                 .engineBrandModel(spec.getEngineBrandModel())
@@ -1535,6 +1784,10 @@ public class BoatMarketplaceService {
                 .isRegistered(spec.getIsRegistered())
                 .hasCommercialFishingLicense(spec.getHasCommercialFishingLicense())
                 .condition(ItemCondition.valueOf(spec.getCondition()))
+                .waterType(spec.getWaterType() != null ?                                     // NEW FIELD
+                        BoatSpecificationDto.WaterType.valueOf(spec.getWaterType()) : null)  // NEW FIELD
+                .engineHours(spec.getEngineHours())                                          // NEW FIELD
+                .locatedInBulgaria(spec.getLocatedInBulgaria())                              // NEW FIELD
                 .interiorFeatures(tuple.getT1().stream()
                         .map(f -> InteriorFeature.valueOf(f.getFeature()))
                         .collect(Collectors.toList()))
