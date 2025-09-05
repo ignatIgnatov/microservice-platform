@@ -38,8 +38,8 @@ public class BoatSpecificationDto {
     @Size(max = 100, message = "Model cannot exceed 100 characters")
     private String model;
 
-    @NotNull(message = "Boat purpose is required")
-    private BoatPurpose purpose;
+//    @NotNull(message = "Boat purpose is required")
+//    private BoatPurpose purpose;
 
     @NotNull(message = "Engine type is required")
     private EngineType engineType;
@@ -114,15 +114,15 @@ public class BoatSpecificationDto {
     private ItemCondition condition;
 
     // NEW FIELDS from specification
-    @NotNull(message = "Water type is required")
-    private WaterType waterType;
+//    @NotNull(message = "Water type is required")
+//    private WaterType waterType;
 
-    @NotNull(message = "Engine hours is required")
-    @Min(value = 0, message = "Engine hours cannot be negative")
-    private Integer engineHours;
-
-    @NotNull(message = "Location in Bulgaria is required")
-    private Boolean locatedInBulgaria;
+//    @NotNull(message = "Engine hours is required")
+//    @Min(value = 0, message = "Engine hours cannot be negative")
+//    private Integer engineHours;
+//
+//    @NotNull(message = "Location in Bulgaria is required")
+//    private Boolean locatedInBulgaria;
 
     private List<InteriorFeature> interiorFeatures;
     private List<ExteriorFeature> exteriorFeatures;

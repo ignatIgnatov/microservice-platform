@@ -28,6 +28,12 @@ public class BoatAdResponse {
     private String userId;
     private String userFirstName;
     private String userLastName;
+
+    // NEW CONTACT FIELDS (from form)
+    private String contactPersonName; // "ЛИЦЕ ЗА КОНТАКТ"
+    private String contactPhone;      // "ТЕЛЕФОНЕН НОМЕР"
+    private String website;           // "САЙТ"
+
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private Boolean active;
@@ -46,8 +52,6 @@ public class BoatAdResponse {
     private FishingSpecificationResponse fishingSpec;
     private PartsSpecificationResponse partsSpec;
     private ServicesSpecificationResponse servicesSpec;
-
-    // NEW specification responses
     private WaterSportsSpecificationResponse waterSportsSpec;
     private MarineAccessoriesSpecificationResponse marineAccessoriesSpec;
     private RentalsSpecificationResponse rentalsSpec;
@@ -66,6 +70,14 @@ public class BoatAdResponse {
             return userLastName;
         }
         return userEmail;
+    }
+
+    // NEW METHOD: Get best contact name to display
+    public String getDisplayContactName() {
+        if (contactPersonName != null && !contactPersonName.trim().isEmpty()) {
+            return contactPersonName;
+        }
+        return getUserFullName();
     }
 
     public String getFormattedPrice() {

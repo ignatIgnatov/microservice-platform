@@ -5,6 +5,7 @@ import com.platform.ads.dto.enums.AdType;
 import com.platform.ads.dto.enums.MainBoatCategory;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -45,6 +46,12 @@ public class BoatAdRequest {
     private AdType adType;
 
     private String userEmail;
+
+    @Size(max = 100, message = "Contact person name cannot exceed 100 characters")
+    private String contactPersonName; // "ЛИЦЕ ЗА КОНТАКТ"
+
+    @Pattern(regexp = "^\\+?[1-9]\\d{1,14}$", message = "Invalid phone number format")
+    private String contactPhone; // "ТЕЛЕФОНЕН НОМЕР"
 
     private List<Long> imagesToDelete;
     private BoatSpecificationDto boatSpec;

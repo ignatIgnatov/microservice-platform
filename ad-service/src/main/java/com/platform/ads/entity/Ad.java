@@ -44,5 +44,7 @@ public class Ad {
     private LocalDateTime archivedAt;
     private Integer editCount;
     private LocalDateTime lastEditedAt;
+    private String contactPersonName;
+    private String contactPhone;
 
 }
