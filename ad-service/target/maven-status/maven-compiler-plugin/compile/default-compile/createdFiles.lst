@@ -14,7 +14,6 @@ com\platform\ads\exception\ImageUploadException.class
 com\platform\ads\dto\PartsSpecificationDto$PartType.class
 com\platform\ads\repository\JetSkiSpecificationSearchRepository.class
 com\platform\ads\dto\EngineSearchFilters$EngineSearchFiltersBuilder.class
-com\platform\ads\controller\BoatMarketplaceController.class
 com\platform\ads\dto\PartsSpecificationDto$PartsSpecificationDtoBuilder.class
 com\platform\ads\entity\ServicesSpecification$ServicesSpecificationBuilder.class
 com\platform\ads\controller\UserAdsController.class
@@ -67,7 +66,6 @@ com\platform\ads\service\ImageConversionService$ConvertedImageData$ConvertedImag
 com\platform\ads\dto\JetSkiSpecificationDto$JetSkiFuelType.class
 com\platform\ads\repository\ServicesSpecificationSearchRepository.class
 com\platform\ads\service\BoatSearchService$1.class
-com\platform\ads\dto\enums\ProbeBrand.class
 com\platform\ads\repository\BrandRepository.class
 com\platform\ads\dto\FishingSpecificationDto$FishingSpecificationDtoBuilder.class
 com\platform\ads\dto\ValidatedImageData.class
@@ -81,12 +79,10 @@ com\platform\ads\repository\BoatSpecificationSearchRepository.class
 com\platform\ads\repository\BoatInteriorFeatureRepository.class
 com\platform\ads\entity\BoatEquipment.class
 com\platform\ads\service\BoatMarketplaceAdminService.class
-com\platform\ads\dto\enums\TargetFish.class
 com\platform\ads\dto\enums\InteriorFeature.class
 com\platform\ads\dto\enums\Power.class
 com\platform\ads\dto\PriceInfo$PriceType.class
 com\platform\ads\repository\MarineElectronicsSpecificationSearchRepository.class
-com\platform\ads\exception\AdNotFoundException.class
 com\platform\ads\service\ImageConversionService$ConvertedImageData.class
 com\platform\ads\dto\MarineElectronicsSpecificationResponse$MarineElectronicsSpecificationResponseBuilder.class
 com\platform\ads\dto\ValidatedImageData$ValidatedImageDataBuilder.class
@@ -98,7 +94,6 @@ com\platform\ads\dto\enums\ItemCondition.class
 com\platform\ads\dto\BoatMarketplaceStatsResponse$BoatMarketplaceStatsResponseBuilder.class
 com\platform\ads\dto\EngineSpecificationDto$IgnitionType.class
 com\platform\ads\dto\TrailerSpecificationDto$AxleCount.class
-com\platform\ads\dto\enums\ScreenSize.class
 com\platform\ads\entity\AdImage$AdImageBuilder.class
 com\platform\ads\dto\enums\TrollingControlType.class
 com\platform\ads\dto\MarineElectronicsSpecificationDto$Power.class
@@ -175,7 +170,6 @@ com\platform\ads\repository\BoatSpecificationRepository.class
 com\platform\ads\dto\MarineElectronicsSpecificationDto$Weight.class
 com\platform\ads\exception\GlobalExceptionHandler.class
 com\platform\ads\dto\enums\Equipment.class
-com\platform\ads\dto\enums\MotorType.class
 com\platform\ads\dto\EngineSpecificationResponse$EngineSpecificationResponseBuilder.class
 com\platform\ads\dto\TrailerSpecificationDto$KeelRollers.class
 com\platform\ads\repository\AdImageRepository.class
@@ -186,7 +180,6 @@ com\platform\ads\entity\MarineElectronicsSpecification.class
 com\platform\ads\entity\PartsSpecification.class
 com\platform\ads\dto\UserStatisticsResponse$UserStatisticsResponseBuilder.class
 com\platform\ads\dto\ImageUploadResponse.class
-com\platform\ads\config\CacheConfig.class
 com\platform\ads\repository\BoatEquipmentRepository.class
 com\platform\ads\entity\ServicesSpecification.class
 com\platform\ads\dto\enums\ElectronicsType.class
@@ -216,7 +209,6 @@ com\platform\ads\dto\enums\ServiceType.class
 com\platform\ads\dto\UserValidationResponse.class
 com\platform\ads\dto\TrailerSearchFilters$TrailerSearchFiltersBuilder.class
 com\platform\ads\dto\UpdateAdRequest.class
-com\platform\ads\dto\enums\Mounting.class
 com\platform\ads\dto\PriceInfo.class
 com\platform\ads\dto\BrandResponse.class
 com\platform\ads\dto\EngineSpecificationDto$ShaftLength.class

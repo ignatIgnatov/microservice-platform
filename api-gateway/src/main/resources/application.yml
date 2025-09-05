@@ -9,7 +9,7 @@ spring:
       globalcors:
         corsConfigurations:
           '[/**]':
-            allowedOrigins: "http://localhost:3000, https://qhti-v2.vercel.app"
+            allowedOrigins: "http://localhost:3000, http://3.124.214.107/"
             allowedMethods:
               - GET
               - POST
@@ -85,7 +85,7 @@ spring:
       globalcors:
         corsConfigurations:
           '[/**]':
-            allowedOrigins: "http://localhost:3000"
+            allowedOrigins: "http://localhost:3000, http://3.124.214.107/"
             allowedMethods:
               - GET
               - POST

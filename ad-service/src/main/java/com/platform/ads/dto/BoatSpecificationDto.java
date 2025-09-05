@@ -25,12 +25,12 @@ import java.util.List;
 @AllArgsConstructor
 public class BoatSpecificationDto {
 
-    @NotNull(message = "Boat type is required")
-    private BoatType type;
-
     @NotBlank(message = "Brand is required")
     @Size(max = 100, message = "Brand cannot exceed 100 characters")
     private String brand;
+
+    @NotNull(message = "Boat type is required")
+    private BoatType type;
 
     private String brandCategory; // MOTOR_BOATS, SAILBOATS, KAYAKS
 

@@ -27,12 +27,9 @@ public interface AdImageRepository extends ReactiveCrudRepository<AdImage, Long>
     Mono<Long> countByAdId(Long adId);
 
     // Check if image is owned by user
-    @Query("SELECT EXISTS(SELECT 1 FROM ad_images ai JOIN ads a ON ai.ad_id = a.id WHERE ai.id = :imageId AND a.user_id = :userId)")
+    @Query("SELECT CASE WHEN COUNT(ai) > 0 THEN true ELSE false END " +
+            "FROM AdImage ai WHERE ai.id = :imageId AND ai.uploadedBy = :userId")
     Mono<Boolean> isImageOwnedByUser(Long imageId, String userId);
-
-    // Update display order for reordering
-    @Query("UPDATE ad_images SET display_order = :displayOrder WHERE id = :imageId")
-    Mono<Void> updateDisplayOrder(Long imageId, Integer displayOrder);
 
     // Find images by ad ID (for internal use)
     Flux<AdImage> findByAdId(Long adId);
@@ -47,4 +44,12 @@ public interface AdImageRepository extends ReactiveCrudRepository<AdImage, Long>
 
     @Query("SELECT MAX(display_order) FROM ad_images WHERE ad_id = :adId")
     Mono<Integer> findMaxDisplayOrderByAdId(@Param("adId") Long adId);
+
+    Mono<AdImage> findByAdIdAndId(Long adId, Long id);
+
+    @Modifying
+    @Query("UPDATE ad_images SET display_order = :displayOrder WHERE id = :id")
+    Mono<Void> updateDisplayOrder(@Param("id") Long id, @Param("displayOrder") Integer displayOrder);
+
+    Flux<AdImage> findByAdIdOrderByDisplayOrderAsc(Long adId);
 }

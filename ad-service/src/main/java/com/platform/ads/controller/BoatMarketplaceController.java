@@ -221,51 +221,17 @@ public class BoatMarketplaceController {
     })
     @PutMapping(value = "/{adId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public Mono<ResponseEntity<BoatAdResponse>> updateBoatAdWithImages(
-            @Parameter(
-                    description = "Advertisement ID to update",
-                    required = true,
-                    example = "123"
-            )
             @PathVariable Long adId,
-
-            @Parameter(
-                    description = "Advertisement data in JSON format containing all ad details and specifications",
-                    required = true,
-                    content = @Content(
-                            mediaType = "application/json",
-                            schema = @Schema(implementation = BoatAdRequest.class)
-                    )
-            )
             @RequestPart("adData") BoatAdRequest request,
-
-            @Parameter(
-                    description = "New images to add to the advertisement. Supported formats: JPEG, PNG, WEBP. " +
-                            "Maximum file size: 10MB per image. Maximum total images per ad: 14",
-                    required = false,
-                    content = @Content(mediaType = "multipart/form-data")
-            )
             @RequestPart(value = "newImages", required = false) Flux<FilePart> newImages,
-
-            @Parameter(
-                    description = "List of existing image IDs to delete from the advertisement",
-                    required = false,
-                    example = "[5, 7, 9]"
-            )
-            @RequestParam(value = "imagesToDelete", required = false) List<Long> imagesToDelete,
-
-            @Parameter(
-                    description = "Bearer token for authentication",
-                    required = true,
-                    example = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
-            )
             @RequestHeader("Authorization") String authHeader) {
 
-        log.info("=== UPDATE AD REQUEST === AdID: {}, User: {}, Category: {} ===",
-                adId, request.getUserEmail(), request.getCategory());
+        log.info("=== UPDATE AD REQUEST === AdID: {}, User: {}, Category: {}, ImagesToDelete: {} ===",
+                adId, request.getUserEmail(), request.getCategory(), request.getImagesToDelete());
 
         String token = authHeader.replace("Bearer ", "");
 
-        return marketplaceService.updateBoatAdWithImages(adId, request, newImages, imagesToDelete, token)
+        return marketplaceService.updateBoatAdWithImages(adId, request, newImages, request.getImagesToDelete(), token)
                 .map(response -> ResponseEntity.ok(response))
                 .onErrorResume(AdNotFoundException.class, e -> {
                     log.warn("=== AD NOT FOUND === AdID: {} ===", adId);

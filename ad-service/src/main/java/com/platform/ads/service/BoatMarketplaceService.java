@@ -279,19 +279,14 @@ public class BoatMarketplaceService {
                         return Mono.error(new UserNotFoundException(request.getUserEmail()));
                     }
 
-                    // Validate user owns this ad
                     return adRepository.findById(adId)
                             .switchIfEmpty(Mono.error(new AdNotFoundException(adId)))
-                            .flatMap(existingAd -> {
-                                if (!userInfo.getUserId().equals(existingAd.getUserId())) {
-                                    log.warn("=== AD NOT OWNED BY USER === AdID: {}, UserId: {}, ActualOwner: {} ===",
-                                            adId, userInfo.getUserId(), existingAd.getUserId());
-                                    return Mono.error(new IllegalArgumentException("Advertisement not owned by user"));
-                                }
-
-                                return validateCategorySpecificFieldsAsync(request)
-                                        .then(processAdUpdateWithImages(adId, existingAd, request, userInfo, newImages, imagesToDelete));
-                            });
+                            .filter(ad -> userInfo.getUserId().equals(ad.getUserId()))
+                            .switchIfEmpty(Mono.error(new IllegalArgumentException("Advertisement not owned by user")))
+                            .flatMap(existingAd ->
+                                    validateCategorySpecificFieldsAsync(request)
+                                            .then(processAdUpdateWithImages(adId, existingAd, request, userInfo, newImages, imagesToDelete))
+                            );
                 })
                 .doOnSuccess(response -> {
                     long duration = System.currentTimeMillis() - startTime;
@@ -301,7 +296,7 @@ public class BoatMarketplaceService {
                 .doOnError(error -> {
                     long duration = System.currentTimeMillis() - startTime;
                     log.error("=== UPDATE BOAT AD WITH IMAGES FAILED === AdID: {}, Duration: {}ms, Error: {} ===",
-                            adId, duration, error.getMessage());
+                            adId, duration, error.getMessage(), error);
                 });
     }
 
@@ -312,6 +307,13 @@ public class BoatMarketplaceService {
             UserValidationResponse userInfo,
             Flux<FilePart> newImages,
             List<Long> imagesToDelete) {
+
+        // Add this logging to see what's being passed
+        log.info("=== PROCESS AD UPDATE WITH IMAGES === AdID: {}, " +
+                        "ImagesToDelete: {}, HasNewImages: {} ===",
+                adId,
+                imagesToDelete != null ? imagesToDelete.toString() : "null",
+                newImages != null ? "yes" : "no");
 
         // Update the main ad entity
         Ad updatedAd = Ad.builder()
@@ -340,47 +342,101 @@ public class BoatMarketplaceService {
                 .flatMap(savedAd -> {
                     log.info("=== AD UPDATED === ID: {} ===", savedAd.getId());
 
-                    // Process all operations in parallel
-                    Mono<Void> specUpdateMono = updateCategorySpecification(savedAd, request);
-                    Mono<Void> imageProcessingMono = processImageOperations(savedAd.getId(), userInfo.getUserId(),
-                            newImages, imagesToDelete);
+                    // Process operations in sequence to avoid conflicts
+                    log.info("=== STARTING IMAGE OPERATIONS === AdID: {}, DeleteCount: {}, AddNewImages: {} ===",
+                            adId,
+                            imagesToDelete != null ? imagesToDelete.size() : 0,
+                            newImages != null ? "yes" : "no");
 
-                    return Mono.when(specUpdateMono, imageProcessingMono)
+                    return deleteSpecifiedImages(adId, userInfo.getUserId(), imagesToDelete)
+                            .doOnSuccess(v -> log.info("=== DELETE IMAGES COMPLETED === AdID: {} ===", adId))
+                            .doOnError(e -> log.error("=== DELETE IMAGES FAILED === AdID: {}, Error: {} ===",
+                                    adId, e.getMessage()))
+                            .then(validateAndAddNewImages(adId, userInfo.getUserId(), newImages))
+                            .doOnSuccess(v -> log.info("=== ADD NEW IMAGES COMPLETED === AdID: {} ===", adId))
+                            .doOnError(e -> log.error("=== ADD NEW IMAGES FAILED === AdID: {}, Error: {} ===",
+                                    adId, e.getMessage()))
+                            .then(updateCategorySpecification(savedAd, request))
+                            .doOnSuccess(v -> log.info("=== UPDATE SPECIFICATION COMPLETED === AdID: {} ===", adId))
+                            .doOnError(e -> log.error("=== UPDATE SPECIFICATION FAILED === AdID: {}, Error: {} ===",
+                                    adId, e.getMessage()))
                             .thenReturn(savedAd);
                 })
                 .flatMap(this::mapToResponse);
     }
 
-    private Mono<Void> processImageOperations(Long adId, String userId, Flux<FilePart> newImages, List<Long> imagesToDelete) {
-        // Delete specified images first
-        Mono<Void> deleteMono = imagesToDelete != null && !imagesToDelete.isEmpty() ?
-                deleteSpecifiedImages(adId, userId, imagesToDelete) : Mono.empty();
-
-        // Add new images
-        Mono<Void> addMono = newImages != null ?
-                validateAndAddNewImages(adId, userId, newImages) : Mono.empty();
-
-        return deleteMono.then(addMono);
-    }
-
+    // Enhanced deleteSpecifiedImages with more debugging
     private Mono<Void> deleteSpecifiedImages(Long adId, String userId, List<Long> imagesToDelete) {
-        log.info("=== DELETING SPECIFIED IMAGES === AdID: {}, Count: {} ===", adId, imagesToDelete.size());
+        if (imagesToDelete == null || imagesToDelete.isEmpty()) {
+            log.info("=== NO IMAGES TO DELETE === AdID: {}, List is null or empty ===", adId);
+            return Mono.empty();
+        }
 
-        // Проверка дали всички изображения принадлежат на advertisement-а
+        log.info("=== DELETING SPECIFIED IMAGES === AdID: {}, Count: {}, UserID: {} ===",
+                adId, imagesToDelete.size(), userId);
+
         return Flux.fromIterable(imagesToDelete)
-                .flatMap(imageId -> adImageRepository.findById(imageId)
-                        .switchIfEmpty(Mono.error(new IllegalArgumentException("Image not found: " + imageId)))
-                        .filter(image -> image.getAdId().equals(adId))
-                        .switchIfEmpty(Mono.error(new IllegalArgumentException("Image " + imageId + " does not belong to ad " + adId)))
-                        .filter(image -> userId.equals(image.getUploadedBy()))
-                        .switchIfEmpty(Mono.error(new IllegalArgumentException("User does not own image " + imageId)))
-                        .flatMap(image -> {
-                            log.debug("=== DELETING IMAGE === ID: {}, S3Key: {} ===", imageId, image.getS3Key());
-                            return deleteFromS3(image.getS3Key())
-                                    .then(adImageRepository.deleteById(imageId));
-                        })
-                )
-                .then(reorderRemainingImages(adId));
+                .flatMap(imageId -> {
+                    log.info("=== PROCESSING DELETE FOR IMAGE === ImageID: {}, AdID: {}, UserID: {} ===",
+                            imageId, adId, userId);
+
+                    // Get the image and verify ownership without using the JOIN query
+                    return adImageRepository.findById(imageId)
+                            .switchIfEmpty(Mono.error(new IllegalArgumentException(
+                                    "Image " + imageId + " not found")))
+                            .flatMap(image -> {
+                                log.info("=== IMAGE FOUND === ID: {}, AdID: {}, UploadedBy: {}, S3Key: {} ===",
+                                        imageId, image.getAdId(), image.getUploadedBy(), image.getS3Key());
+
+                                // Check if image belongs to the correct ad
+                                if (!image.getAdId().equals(adId)) {
+                                    log.error("=== IMAGE BELONGS TO DIFFERENT AD === ImageID: {}, " +
+                                                    "Expected AdID: {}, Actual AdID: {} ===",
+                                            imageId, adId, image.getAdId());
+                                    return Mono.error(new IllegalArgumentException(
+                                            "Image " + imageId + " does not belong to ad " + adId));
+                                }
+
+                                // Now check if the ad belongs to the user (separate query)
+                                return adRepository.findById(adId)
+                                        .switchIfEmpty(Mono.error(new IllegalArgumentException(
+                                                "Ad " + adId + " not found")))
+                                        .flatMap(ad -> {
+                                            if (!userId.equals(ad.getUserId())) {
+                                                log.error("=== AD NOT OWNED BY USER === AdID: {}, " +
+                                                                "Expected UserID: {}, Actual UserID: {} ===",
+                                                        adId, userId, ad.getUserId());
+                                                return Mono.error(new IllegalArgumentException(
+                                                        "Ad " + adId + " not owned by user"));
+                                            }
+
+                                            log.info("=== OWNERSHIP VERIFIED === ImageID: {}, AdID: {}, UserID: {} ===",
+                                                    imageId, adId, userId);
+
+                                            // Delete from S3 first, then from database
+                                            return deleteFromS3(image.getS3Key())
+                                                    .doOnSuccess(v -> log.info("=== S3 DELETE SUCCESS === ImageID: {}, S3Key: {} ===",
+                                                            imageId, image.getS3Key()))
+                                                    .onErrorResume(e -> {
+                                                        log.warn("=== S3 DELETE FAILED (CONTINUING) === ImageID: {}, Error: {} ===",
+                                                                imageId, e.getMessage());
+                                                        return Mono.empty();
+                                                    })
+                                                    .then(adImageRepository.deleteById(imageId))
+                                                    .doOnSuccess(v -> log.info("=== DB DELETE SUCCESS === ImageID: {} ===", imageId))
+                                                    .doOnError(e -> log.error("=== DB DELETE FAILED === ImageID: {}, Error: {} ===",
+                                                            imageId, e.getMessage()));
+                                        });
+                            })
+                            .doOnError(e -> log.error("=== ERROR PROCESSING IMAGE === ImageID: {}, Error: {} ===",
+                                    imageId, e.getMessage()));
+                })
+                .then()
+                .then(reorderRemainingImages(adId))
+                .doOnSuccess(v -> log.info("=== ALL SPECIFIED IMAGES DELETED === AdID: {}, Count: {} ===",
+                        adId, imagesToDelete.size()))
+                .doOnError(e -> log.error("=== DELETE SPECIFIED IMAGES FAILED === AdID: {}, Error: {} ===",
+                        adId, e.getMessage()));
     }
 
     private Mono<Void> validateAndAddNewImages(Long adId, String userId, Flux<FilePart> newImages) {
@@ -436,14 +492,49 @@ public class BoatMarketplaceService {
     private Mono<Void> reorderRemainingImages(Long adId) {
         log.debug("=== REORDERING REMAINING IMAGES === AdID: {} ===", adId);
 
-        return adImageRepository.findByAdIdOrderByDisplayOrder(adId)
-                .index()
-                .flatMap(tuple -> {
-                    Long imageId = tuple.getT2().getId();
-                    Integer newOrder = tuple.getT1().intValue() + 1;
-                    return adImageRepository.updateDisplayOrder(imageId, newOrder);
+        return adImageRepository.findByAdIdOrderByDisplayOrderAsc(adId)
+                .collectList()
+                .flatMap(images -> {
+                    if (images.isEmpty()) {
+                        log.debug("=== NO IMAGES TO REORDER === AdID: {} ===", adId);
+                        return Mono.empty();
+                    }
+
+                    log.info("=== REORDERING IMAGES === AdID: {}, ImageCount: {} ===", adId, images.size());
+
+                    // STRATEGY: Use negative values first, then positive values to avoid conflicts
+                    // Step 1: Set all to negative values first (to avoid unique constraint conflicts)
+                    return Flux.fromIterable(images)
+                            .index()
+                            .flatMap(tuple -> {
+                                int index = tuple.getT1().intValue();
+                                AdImage image = tuple.getT2();
+                                int temporaryOrder = -(index + 1000); // Use negative values like -1000, -1001, etc.
+
+                                log.debug("=== SETTING TEMPORARY ORDER === ImageID: {}, TempOrder: {} ===",
+                                        image.getId(), temporaryOrder);
+
+                                return adImageRepository.updateDisplayOrder(image.getId(), temporaryOrder);
+                            })
+                            .then()
+                            // Step 2: Now set the correct positive values (1, 2, 3, etc.)
+                            .then(Flux.fromIterable(images)
+                                    .index()
+                                    .flatMap(tuple -> {
+                                        int index = tuple.getT1().intValue();
+                                        AdImage image = tuple.getT2();
+                                        int finalOrder = index + 1; // 1, 2, 3, etc.
+
+                                        log.debug("=== SETTING FINAL ORDER === ImageID: {}, FinalOrder: {} ===",
+                                                image.getId(), finalOrder);
+
+                                        return adImageRepository.updateDisplayOrder(image.getId(), finalOrder);
+                                    })
+                                    .then()
+                            );
                 })
-                .then();
+                .doOnSuccess(v -> log.info("=== REORDER COMPLETED === AdID: {} ===", adId))
+                .doOnError(e -> log.error("=== REORDER FAILED === AdID: {}, Error: {} ===", adId, e.getMessage()));
     }
 
     // ===========================
