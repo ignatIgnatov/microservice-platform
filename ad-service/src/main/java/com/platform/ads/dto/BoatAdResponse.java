@@ -17,9 +17,9 @@ import java.util.List;
 public class BoatAdResponse {
 
     private Long id;
-    private String title;
+//    private String title;
     private String description;
-    private String quickDescription;
+//    private String quickDescription;
     private MainBoatCategory category;
     private PriceInfo price;
     private String location;
@@ -28,11 +28,9 @@ public class BoatAdResponse {
     private String userId;
     private String userFirstName;
     private String userLastName;
-
-    // NEW CONTACT FIELDS (from form)
-    private String contactPersonName; // "ЛИЦЕ ЗА КОНТАКТ"
-    private String contactPhone;      // "ТЕЛЕФОНЕН НОМЕР"
-    private String website;           // "САЙТ"
+    private String contactPersonName;
+    private String contactPhone;
+//    private String website;
 
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;

@@ -184,8 +184,8 @@ public class BoatMarketplaceService {
     @Transactional
     public Mono<BoatAdResponse> createBoatAdWithImages(BoatAdRequest request, Flux<FilePart> images, String token) {
         long startTime = System.currentTimeMillis();
-        log.info("=== CREATE BOAT AD WITH IMAGES START === Category: {}, User: {}, Title: '{}' ===",
-                request.getCategory(), request.getUserEmail(), request.getTitle());
+        log.info("=== CREATE BOAT AD WITH IMAGES START === Category: {}, User: {} ===",
+                request.getCategory(), request.getUserEmail());
 
         return validateImagesFirst(images)
                 .flatMap(imageList -> {
@@ -339,9 +339,9 @@ public class BoatMarketplaceService {
         // Update the main ad entity
         Ad updatedAd = Ad.builder()
                 .id(existingAd.getId())
-                .title(request.getTitle())
+//                .title(request.getTitle())
                 .description(request.getDescription())
-                .quickDescription(request.getQuickDescription())
+//                .quickDescription(request.getQuickDescription())
                 .category(request.getCategory().name())
                 .priceAmount(request.getPrice() != null ? request.getPrice().getAmount() : null)
                 .priceType(request.getPrice() != null ? request.getPrice().getType().name() : null)
@@ -699,9 +699,9 @@ public class BoatMarketplaceService {
                                                         List<ValidatedImageData> images) {
         // Create main ad
         Ad ad = Ad.builder()
-                .title(request.getTitle())
+//                .title(request.getTitle())
                 .description(request.getDescription())
-                .quickDescription(request.getQuickDescription())
+//                .quickDescription(request.getQuickDescription())
                 .category(request.getCategory().name())
                 .priceAmount(request.getPrice() != null ? request.getPrice().getAmount() : null)
                 .priceType(request.getPrice() != null ? request.getPrice().getType().name() : null)
@@ -712,6 +712,8 @@ public class BoatMarketplaceService {
                 .userId(userInfo.getUserId())
                 .userFirstName(userInfo.getFirstName())
                 .userLastName(userInfo.getLastName())
+                .contactPersonName(request.getContactPersonName())
+                .contactPhone(request.getContactPhone())
                 .createdAt(LocalDateTime.now())
                 .active(true)
                 .viewsCount(0)
@@ -1573,9 +1575,9 @@ public class BoatMarketplaceService {
     public Mono<BoatAdResponse> mapToResponse(Ad ad) {
         BoatAdResponse.BoatAdResponseBuilder responseBuilder = BoatAdResponse.builder()
                 .id(ad.getId())
-                .title(ad.getTitle())
+//                .title(ad.getTitle())
                 .description(ad.getDescription())
-                .quickDescription(ad.getQuickDescription())
+//                .quickDescription(ad.getQuickDescription())
                 .category(MainBoatCategory.valueOf(ad.getCategory()))
                 .price(ad.getPriceAmount() != null ? PriceInfo.builder()
                         .amount(ad.getPriceAmount())
@@ -1592,7 +1594,9 @@ public class BoatMarketplaceService {
                 .updatedAt(ad.getUpdatedAt())
                 .active(ad.getActive())
                 .viewsCount(ad.getViewsCount())
-                .featured(ad.getFeatured());
+                .featured(ad.getFeatured())
+                .contactPersonName(ad.getContactPersonName())
+                .contactPhone(ad.getContactPhone());
 
         // Load images for the ad
         Mono<List<ImageUploadResponse>> imagesMono = adImageRepository.findByAdIdOrderByDisplayOrder(ad.getId())

@@ -8,13 +8,17 @@ import lombok.NoArgsConstructor;
 import java.util.List;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @Builder
-public class UserInfoResponse {
+public class CompanyInfoResponse {
     private String id;
+    private String companyName;
+    private String storeName;
+    private String businessRegistrationNumber;
+    private String city;
+    private String address;
     private String email;
-    private String name;
     private String phone;
     private List<String> roles;
     private String userType;

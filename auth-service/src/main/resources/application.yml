@@ -23,3 +23,6 @@ springdoc:
   swagger-ui:
     path: /swagger-ui.html
     enabled: true
+
+frontend:
+  url: ${FRONTEND_URL:localhost:3000}

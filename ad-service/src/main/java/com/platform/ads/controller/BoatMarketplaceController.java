@@ -33,6 +33,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -51,6 +52,7 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequestMapping("/ads")
+@CrossOrigin(origins = "*")
 @RequiredArgsConstructor
 @Validated
 @Tag(name = "Boat Marketplace", description = "QHTI.BG Boat Marketplace API for managing and searching boat advertisements across all categories")
@@ -62,7 +64,7 @@ public class BoatMarketplaceController {
     @PostMapping(value = "/create", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(
             summary = "Create advertisement with images",
-            description = "Creates a new boat advertisement with mandatory images. At least 1 image is required, maximum 10 images allowed."
+            description = "Creates a new boat advertisement with mandatory images. At least 1 image is required, maximum 14 images allowed."
     )
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "Advertisement created successfully",
@@ -86,8 +88,8 @@ public class BoatMarketplaceController {
         long startTime = System.currentTimeMillis();
         String token = extractTokenFromHeader(authHeader);
 
-        log.info("=== CREATE AD WITH IMAGES REQUEST === User: {}, Category: {}, Title: '{}' ===",
-                adRequest.getUserEmail(), adRequest.getCategory(), adRequest.getTitle());
+        log.info("=== CREATE AD WITH IMAGES REQUEST === User: {}, Category: {} ===",
+                adRequest.getUserEmail(), adRequest.getCategory());
 
         return marketplaceService.createBoatAdWithImages(adRequest, images, token)
                 .map(response -> {

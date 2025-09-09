@@ -27,7 +27,7 @@ public class SecurityConfig {
                 .authorizeExchange(exchanges ->
                         exchanges.pathMatchers(
                                         "/auth/login",
-                                        "/auth/register",
+                                        "/auth/register/**",
                                         "/auth/logout",
                                         "/auth/social/**",
                                         "/actuator/**",

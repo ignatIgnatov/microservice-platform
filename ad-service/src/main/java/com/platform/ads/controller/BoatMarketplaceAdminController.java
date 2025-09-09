@@ -205,8 +205,8 @@ public class BoatMarketplaceAdminController {
         // First verify the ad exists
         return marketplaceService.getAdById(id)
                 .flatMap(existingAd -> {
-                    log.info("=== ADMIN: AD FOUND FOR FEATURING === AdID: {}, Title: '{}', CurrentFeatured: {} ===",
-                            id, existingAd.getTitle(), existingAd.getFeatured());
+                    log.info("=== ADMIN: AD FOUND FOR FEATURING === AdID: {}, CurrentFeatured: {} ===",
+                            id, existingAd.getFeatured());
 
                     if (existingAd.getFeatured().equals(featured)) {
                         log.warn("=== ADMIN: NO CHANGE NEEDED === AdID: {}, Status already: {} ===", id, featured);
@@ -385,8 +385,8 @@ public class BoatMarketplaceAdminController {
         log.info("=== ADMIN: GET PENDING ADS REQUEST START ===");
 
         return adminService.getPendingApprovalAds()
-                .doOnNext(ad -> log.debug("=== PENDING AD RESPONSE === AdID: {}, Title: '{}' ===",
-                        ad.getId(), ad.getTitle()))
+                .doOnNext(ad -> log.debug("=== PENDING AD RESPONSE === AdID: {} ===",
+                        ad.getId()))
                 .doOnComplete(() -> {
                     long duration = System.currentTimeMillis() - startTime;
                     log.info("=== ADMIN: GET PENDING ADS COMPLETE === Duration: {}ms ===", duration);
